@@ -1,0 +1,6 @@
+# Exclude third party code from clang-format checks.
+#
+# This file is used by the clang-format-lint-action on Github.
+# When updating this list, remember to update Koord.pro's CLANG_SOURCES
+# as well.
+./libs

@@ -1,0 +1,31 @@
+--- QtAndroidWebViewController_orig.java	2022-08-31 15:28:19.188465600 +0200
++++ QtAndroidWebViewController.java	2022-08-31 15:21:36.596473300 +0200
+@@ -48,6 +48,7 @@
+ import android.webkit.WebViewClient;
+ import android.webkit.WebChromeClient;
+ import android.webkit.CookieManager;
++import android.webkit.PermissionRequest;
+ import java.lang.Runnable;
+ import android.app.Activity;
+ import android.content.Intent;
+@@ -188,6 +189,13 @@
+             }
+         }
+ 
++        // Added here due to https://bugreports.qt.io/browse/QTBUG-63731
++        @Override 
++        public void onPermissionRequest(PermissionRequest request) 
++        { 
++            request.grant(request.getResources()); 
++        }
++
+         @Override
+         public void onReceivedIcon(WebView view, Bitmap icon)
+         {
+@@ -567,4 +575,4 @@
+             e.printStackTrace();
+         }
+     }
+-}
++}
+\ No newline at end of file

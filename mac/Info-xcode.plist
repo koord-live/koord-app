@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleDisplayName</key>
+	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleIdentifier</key>
+	<string>live.koord.Koord-RT</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleVersion</key>
+	<string>${QMAKE_FULL_VERSION}</string>
+	<key>CFBundleShortVersionString</key>
+	<string>${QMAKE_FULL_VERSION}</string>
+	<key>CFBundleSupportedPlatforms</key>
+	<array>
+		<string>MacOSX</string>
+	</array>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.music</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>CFBundleExecutable</key>
+	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleIconFile</key>
+	<string>mac-mainicon.icns</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Koord - Created with QT</string>
+	<key>ITSAppUsesNonExemptEncryption</key>  
+	<false/>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Koord needs access to the microphone to record and stream your music to other musicians</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Koord needs access to the camera to stream your video to other musicians</string> 
+	<key>NSRequiresAquaSystemAppearance</key>
+	<string>true</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!-- Add URL Handler for koord:// URLs -->
+	<key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>live.koord.Koord-RT</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>koord</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>

@@ -1,0 +1,102 @@
+name: Build hacked webview jars
+
+env:
+  QT_VERSION: 6.3.2
+
+on:
+  push:
+    tags:
+      - "webviewjars*"
+    branches:
+      - webviewjars
+
+jobs:
+  buildjars:
+    runs-on: ubuntu-latest
+    steps:
+      - name:                       Checkout code
+        id:                         codecheck
+        uses:                       actions/checkout@v2
+
+      - name:                       Get git short hash
+        id:                         vars
+        run:                        echo "sha_short=sha-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        
+      - name:                       Echo git shorthash
+        run:                        echo ${{ steps.vars.outputs.sha_short }}
+
+      - name:                       Build Webview jars
+        id:                         webviewjar
+        run:                        ./.github/autobuild/webview_jars.sh build
+        env:
+          GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+          QT_VERSION:               ${{ env.QT_VERSION }}
+        
+      - name:                       Post-Build for jar build
+        id:                         get-artifacts
+        run:                        ./.github/autobuild/webview_jars.sh get-artifacts
+
+      - name:                       Upload Artifact 1 to Job
+        uses:                       actions/upload-artifact@v2
+        with:
+          name:                     ${{ steps.get-artifacts.outputs.artifact_1 }}
+          path:                     deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
+          retention-days:           31
+          if-no-files-found:        error
+
+      - name:                       Upload Artifact 2 to Job
+        uses:                       actions/upload-artifact@v2
+        with:
+          name:                     ${{ steps.get-artifacts.outputs.artifact_2 }}
+          path:                     deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
+          retention-days:           31
+          if-no-files-found:        error
+
+      - name:                       Upload Artifact 3 to Job
+        uses:                       actions/upload-artifact@v2
+        with:
+          name:                     ${{ steps.get-artifacts.outputs.artifact_3 }}
+          path:                     deploy/${{ steps.get-artifacts.outputs.artifact_3 }}
+          retention-days:           31
+          if-no-files-found:        error
+
+      - name:                       Upload Artifact 4 to Job
+        uses:                       actions/upload-artifact@v2
+        with:
+          name:                     ${{ steps.get-artifacts.outputs.artifact_4 }}
+          path:                     deploy/${{ steps.get-artifacts.outputs.artifact_4 }}
+          retention-days:           31
+          if-no-files-found:        error
+
+      - name:                       Create Release
+        id:                         create-release
+        uses:                       ncipollo/release-action@v1
+        with:
+          tag:                      ${{ env.QT_VERSION }}
+          artifacts:                "deploy/*.jar"
+          draft:                    false
+          token:                    ${{ secrets.GITHUB_TOKEN }}
+          name:                     Qt_Android_${{ env.QT_VERSION }}
+      
+
+      # - name:                       Upload Jar 1 to Release
+      #   id:                         upload-release-asset1
+      #   uses:                       actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url:               ${{ needs.create_release.outputs.upload_url }}
+      #     asset_path:               deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
+      #     asset_name:               ${{ steps.get-artifacts.outputs.artifact_1 }}
+      #     asset_content_type:       application/octet-stream
+
+      # - name:                       Upload Jar 2 to Release
+      #   id:                         upload-release-asset2
+      #   uses:                       actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url:               ${{ needs.create_release.outputs.upload_url }}
+      #     asset_path:               deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
+      #     asset_name:               ${{ steps.get-artifacts.outputs.artifact_2 }}
+      #     asset_content_type:       application/octet-stream

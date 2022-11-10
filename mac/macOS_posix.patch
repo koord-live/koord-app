@@ -1,0 +1,13 @@
+--- singleapplication_p.cpp	2022-11-02 12:58:05.450315600 +0200
++++ singleapplication_p_patched.cpp	2022-11-02 12:58:40.346336000 +0200
+@@ -172,6 +172,10 @@
+     // Replace the backslash in RFC 2045 Base64 [a-zA-Z0-9+/=] to comply with
+     // server naming requirements.
+     blockServerName = QString::fromUtf8(appData.result().toBase64().replace("/", "_"));
++#if defined ( Q_OS_MACOS )
++    // need to overwrite for macOS - app store - POSIX shmem requirements
++    blockServerName = "TXZ4FR95HG.koord/shared";
++#endif
+ }
+ 
+ void SingleApplicationPrivate::initializeMemoryBlock() const

@@ -1,0 +1,514 @@
+# This file builds the source and produces artifacts for every supported platform.
+# For release tags it creates a Github release and uploads the binaries to that releases.
+# The builds are instrumented with CodeQL.
+
+# see analyse_git_reference.py for implementation of the logic:
+#     for every push to a branch starting with "autobuild": (can be used during development for tighter supervision of builds)
+#          - do CodeQl while building for every platform
+#          - publish the created binaries/packs only as artifacts/appendix of the github-action-run (not as release), and only retain those files for limited period
+#     for every pull-request to master:
+#          - do CodeQl while building for every platform
+#          - publish the created binaries/packs only as artifacts/appendix of the github-action-run (not as release), and only retain those files for limited period
+#     for every tag that starts with 'r' and has an arbitrary suffix (e.g. beta1, rc1, etc.)
+#          - do CodeQl while building for every platform
+#          - publish the created binaries/packs only as artifacts/appendix as a prerelease
+#     for every tag that starts with 'r' and does not have any suffix:
+#          - do CodeQl while building for every platform
+#          - publish the created binaries/packs only as artifacts/appendix as a release
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_all_targets:
+        type: boolean
+        description: 'Build all targets (instead of just the main platforms)'
+  push:
+    tags:
+      - "r*"
+    branches:
+      # For developers: Branches starting with autobuild will be built and evaluated on each push.
+      - "autobuild**"
+      # CodeQL requires every branch from on.pull_request to be part of on.push as well in order to run comparisons.
+      # We also need master here to trigger builds on PR merge to master and manual pushes (e.g. as part of the release process):
+      - "master"
+    paths-ignore:
+      - '**README.md'
+      - 'docs/**'
+      - 'SECURITY.md'
+      - 'CONTRIBUTING.md'
+      - 'COMPILING.md'
+      - 'COPYING'
+      - 'APPLEAPPSTORE.LICENCE.WAIVER'
+      - '.github/ISSUE_TEMPLATE/*'
+      - '.github/pull_request_template.md'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - '**README.md'
+      - 'docs/**'
+      - 'SECURITY.md'
+      - 'CONTRIBUTING.md'
+      - 'COMPILING.md'
+      - 'COPYING'
+      - 'APPLEAPPSTORE.LICENCE.WAIVER'
+      - '.github/ISSUE_TEMPLATE/*'
+      - '.github/pull_request_template.md'
+
+name:                               Auto-Build
+jobs:
+  create_release:
+    # Check if we are doing a release or just a normal build.
+    # This must be done before actually building the app to find out where to upload the binaries and if we need to create a Github release.
+    name:                           Build vars & Github release (if required)
+    runs-on:                        ubuntu-20.04
+    outputs:
+      publish_to_release:           ${{ steps.get-build-vars.outputs.PUBLISH_TO_RELEASE }}
+      upload_url:                   ${{ steps.create-release.outputs.upload_url }}
+      build_version:                ${{ steps.get-build-vars.outputs.BUILD_VERSION }}
+      build_all_targets:            ${{ steps.decide-build-targets.outputs.build_all_targets }}
+    # env:
+    #   release_changelog_path:       ./.github_release_changelog.md
+
+    steps:
+      - name:                       Checkout code
+        uses:                       actions/checkout@v3
+
+      - name:                       Determine release version, type and prerelease variables
+        run:                        ./.github/autobuild/get_build_vars.py
+        id:                         get-build-vars
+
+      # - name:                       Extract Changelog for the Github release body
+      #   if:                         steps.get-build-vars.outputs.PUBLISH_TO_RELEASE == 'true'
+      #   run:                        ./.github/autobuild/extractVersionChangelog.pl ChangeLog ${{ steps.get-build-vars.outputs.KOORD_PRO_VERSION }} > ${{ env.release_changelog_path }}
+
+      - name:                       Remove release ${{steps.get-build-vars.outputs.RELEASE_TAG}}, if existing
+        if:                         steps.get-build-vars.outputs.PUBLISH_TO_RELEASE == 'true'
+        continue-on-error:          true
+        uses:                       dev-drprasad/delete-tag-and-release@085c6969f18bad0de1b9f3fe6692a3cd01f64fe5
+        with:
+          delete_release:           true
+          tag_name:                 ${{ steps.get-build-vars.outputs.RELEASE_TAG }}
+        env:
+          GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+
+      - name:                       Create Release ${{steps.get-build-vars.outputs.RELEASE_TAG}}  ${{steps.get-build-vars.outputs.RELEASE_TITLE}}
+        if:                         steps.get-build-vars.outputs.PUBLISH_TO_RELEASE == 'true'
+        id:                         create-release
+        uses:                       actions/create-release@v1
+        env:
+          GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name:                 ${{ steps.get-build-vars.outputs.RELEASE_TAG }}
+          release_name:             ${{ steps.get-build-vars.outputs.RELEASE_TITLE }}
+          # body_path:                ${{ env.release_changelog_path }}
+          prerelease:               ${{ steps.get-build-vars.outputs.IS_PRERELEASE }}
+          draft:                    false
+
+      - name:                       Decide which targets to build for
+        id:                         decide-build-targets
+        env:
+          GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+          INPUT_BUILD_ALL_TARGETS:  ${{ github.event.inputs.build_all_targets }}
+          PR_NUMBER:                ${{ github.event.number }}
+          PR_BASE:                  ${{ github.event.pull_request.base.sha }}
+          PR_HEAD:                  ${{ github.event.pull_request.head.sha }}
+        run:                        |
+          set -eu
+          build_all_targets() {
+            echo "build_all_targets=${1}" >> $GITHUB_OUTPUT
+            echo "Building for all targets? Result: ${1}"
+            exit 0
+          }
+
+          handle_push() {
+            if [[ "${GITHUB_REF}" == "refs/tags/"* ]]; then
+              echo 'Triggered by a tag push, building all targets'
+              build_all_targets 'true'
+            fi
+            if [[ "${GITHUB_REF}" == "refs/heads/autobuild"* ]]; then
+              echo 'Triggered by a push to an autobuild* branch, building all targets'
+              build_all_targets 'true'
+            fi
+          }
+
+          handle_workflow_dispatch() {
+            if [[ "${INPUT_BUILD_ALL_TARGETS}" == 'true' ]]; then
+              echo 'Triggered by manual run with "Build all targets" checkbox set'
+              build_all_targets 'true'
+            fi
+          }
+
+          handle_pull_request() {
+            pr_body_contains_magic_string() {
+              pr_body=$(gh pr view "${PR_NUMBER}" --json body --jq .body)
+              grep -vP '<!--' <<< "$pr_body" | grep -qiF -- 'AUTOBUILD: Please build all targets'
+            }
+            if pr_body_contains_magic_string; then
+              echo 'Triggered by a PR with magic AUTOBUILD: string, building all targets'
+              build_all_targets 'true'
+            fi
+
+            pr_contains_build_changes() {
+              git fetch origin "${PR_BASE}" "${PR_HEAD}"
+              git diff --name-only "${PR_BASE}..${PR_HEAD}" |
+                grep -qP 'autobuild|windows|linux|mac|ios|android|\.pro'
+            }
+            if pr_contains_build_changes; then
+              echo 'Triggered by a PR with build- or platform-specific changes, building all targets'
+              build_all_targets 'true'
+            fi
+          }
+
+          case "${GITHUB_EVENT_NAME}" in
+            push)
+              handle_push
+              ;;
+            workflow_dispatch)
+              handle_workflow_dispatch
+              ;;
+            pull_request)
+              handle_pull_request
+              ;;
+          esac
+
+          echo 'default case, not building all targets'
+          build_all_targets 'false'
+
+
+  release_assets:
+    name:                           Build for ${{ matrix.config.config_name }}
+    needs:                          create_release
+    strategy:
+      fail-fast:                    false
+      matrix:
+        # Think of this like a foreach loop. Basically runs the steps with every combination of
+        # the contents of this.
+        config:
+          - config_name:            Android 10+ - Play Store
+            target_os:              android
+            building_on_os:         ubuntu-22.04
+            base_command:           ./.github/autobuild/android.sh
+            run_codeql:             false
+            is_main_build_target:   true
+
+          # Qt6 requires Ubuntu 20.04+ for build, but apt packages only in 22.04+ 
+          # Can install Qt using aqtinstall on 20.04 - thus needs glibc>=2.31 
+          - config_name:            Linux 2.31+ - AppImage
+            target_os:              linux
+            building_on_os:         ubuntu-20.04
+            base_command:           ./.github/autobuild/linux.sh
+            run_codeql:             false
+            is_main_build_target:   true
+
+          # ## Qt6 from apt - crossbuild for armhf eg rPi
+          # ## Disable for now: likely no Qt6 on rPi anyway. AppImage preferable
+          # # - config_name:            Linux .deb armhf (artifacts)
+          # #   target_os:              linux
+          # #   building_on_os:         ubuntu-22.04
+          # #   base_command:           TARGET_ARCH=armhf ./.github/autobuild/linux.sh
+          # #   run_codeql:             false
+
+          - config_name:            MacOS 10.15 - dmg+AppStore
+            target_os:              macos
+            building_on_os:         macos-12
+            base_command:           QT_VERSION=6.3.2 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64 arm64" ./.github/autobuild/mac.sh
+            # Disable CodeQL on mac as it interferes with signing the binaries (signing hangs, see #2563 and #2564)
+            run_codeql:             false
+            is_main_build_target:   true
+            xcode_version:          14.0.1
+
+          - config_name:            iOS 10.13 - AppStore
+            target_os:              ios
+            building_on_os:         macos-12
+            base_command:           QT_VERSION=6.4.0 SIGN_IF_POSSIBLE=1 ./.github/autobuild/ios.sh
+            run_codeql:             false
+            is_main_build_target:   true
+            xcode_version:          14.0.1
+
+          - config_name:            Windows 10+ - exe+msix
+            target_os:              windows
+            building_on_os:         windows-2022
+            base_command:           powershell .\.github\autobuild\windows.ps1 -Stage
+            run_codeql:             false
+            is_main_build_target:   true
+
+        # This injects the build_all_targets information into each matrix output:
+        build_all_targets:
+          - ${{ needs.create_release.outputs.build_all_targets }}
+
+        # Exclude all non-main build targets if we are not building for all targets:
+        exclude:
+          - build_all_targets:      'false'  # This is based on a script output and is therefore a string
+            config:
+              is_main_build_target: null
+
+    runs-on:                        ${{ matrix.config.building_on_os }}
+    container:                      ${{ matrix.config.building_container }}
+    steps:
+      - name:                       Select Xcode version for Mac
+        if:                         matrix.config.target_os == 'macos' || matrix.config.target_os == 'ios'
+        uses:                       maxim-lobanov/setup-xcode@9a697e2b393340c3cacd97468baa318e4c883d98
+        with:
+          xcode-version:            ${{ matrix.config.xcode_version }}
+
+      - name:                       Checkout code
+        uses:                       actions/checkout@v3
+        with:
+          submodules:               recursive
+          fetch-depth:              0
+          # fetch-depth:              ${{ matrix.config.checkout_fetch_depth || '1' }}
+
+      - name:                       Cache Mac dependencies
+        if:                         matrix.config.target_os == 'macos'
+        uses:                       actions/cache@v3
+        with:
+          path: |
+            /usr/local/opt/qt
+            ~/Library/Cache/koord-homebrew-bottles
+          key:                      ${{ matrix.config.target_os }}-${{ hashFiles('.github/workflows/autobuild.yml', '.github/autobuild/mac.sh', 'mac/deploy_mac.sh') }}-${{ matrix.config.base_command }}
+
+      - name:                       Cache Windows dependencies
+        if:                         matrix.config.target_os == 'windows'
+        uses:                       actions/cache@v3
+        with:
+          path: |
+            C:\Qt
+            C:\ChocoCache
+            ~\windows\ASIOSDK2
+          key:                      ${{ matrix.config.target_os }}-${{ hashFiles('.github/workflows/autobuild.yml', '.github/autobuild/windows.ps1', 'windows/deploy_windows.ps1') }}-${{ matrix.config.base_command }}
+
+      - name:                       Cache Android dependencies
+        if:                         matrix.config.target_os == 'android'
+        uses:                       actions/cache@v3
+        with:
+          path: |
+            /opt/Qt
+            /opt/android/android-sdk
+            /opt/android/android-ndk
+          key:                      ${{ matrix.config.target_os }}-${{ hashFiles('.github/workflows/autobuild.yml', '.github/autobuild/android.sh') }}-${{ matrix.config.base_command }}
+
+      - name:                       Set up build dependencies for ${{ matrix.config.config_name }}
+        run:                        ${{ matrix.config.base_command }} setup
+        env:
+          KOORD_BUILD_VERSION:    ${{ needs.create_release.outputs.build_version }}
+
+      - name:                       Initialize CodeQL
+        if:                         matrix.config.run_codeql
+        uses:                       github/codeql-action/init@v2
+        with:
+          languages: 'cpp'
+
+      - name:                       Pre-build KoordASIO on Windows - set up msvc dev cmd
+        if:                         matrix.config.target_os == 'windows'
+        uses:                       ilammy/msvc-dev-cmd@v1
+        with:
+          arch:                     amd64
+      - name:                       Pre-build KoordASIO on Windows - cmake
+        if:                         matrix.config.target_os == 'windows'      
+        run:                        cmake -S KoordASIO/src -B KoordASIO/src/out/build/x64-Release -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/KoordASIO/src/out/install/x64-Release
+      - name:                       Pre-build KoordASIO on Windows - cmake --build
+        if:                         matrix.config.target_os == 'windows'          
+        run:                        cmake --build KoordASIO/src/out/build/x64-Release
+      - name:                       Pre-build KoordASIO on Windows - cmake --install
+        if:                         matrix.config.target_os == 'windows'
+        run:                        cmake --install KoordASIO/src/out/build/x64-Release
+
+      - name:                       Build for ${{ matrix.config.config_name }}
+        id:                         build
+        run:                        ${{ matrix.config.base_command }} build
+        env:
+          KOORD_BUILD_VERSION:    ${{ needs.create_release.outputs.build_version }}
+          MAC_ADHOC_CERT:           ${{ secrets.MAC_ADHOC_CERT}}
+          MAC_ADHOC_CERT_PWD:       ${{ secrets.MAC_ADHOC_CERT_PWD }}
+          MAC_ADHOC_CERT_ID:        ${{ secrets.MAC_ADHOC_CERT_ID }}
+          MACAPP_CERT:              ${{ secrets.MACAPP_CERT}}
+          MACAPP_CERT_PWD:          ${{ secrets.MACAPP_CERT_PWD }}
+          MACAPP_CERT_ID:           ${{ secrets.MACAPP_CERT_ID }}
+          MACAPP_INST_CERT:         ${{ secrets.MACAPP_INST_CERT}}
+          MACAPP_INST_CERT_PWD:     ${{ secrets.MACAPP_INST_CERT_PWD }}
+          MACAPP_INST_CERT_ID:      ${{ secrets.MACAPP_INST_CERT_ID }}
+          MAC_PROV_PROF_STORE:      ${{ secrets.MAC_PROV_PROF_STORE }}
+          MAC_PROV_PROF_ADHOC:      ${{ secrets.MAC_PROV_PROF_ADHOC }}
+          IOSDIST_CERTIFICATE:      ${{ secrets.IOSDIST_CERT}}
+          IOSDIST_CERTIFICATE_PWD:  ${{ secrets.IOSDIST_CERT_PWD }}
+          IOSDIST_CERTIFICATE_ID:   ${{ secrets.IOSDIST_CERT_ID }}
+          IOS_PROV_PROFILE_B64:     ${{ secrets.IOS_PROVISIONING_PROFILE }}
+          GOOGLE_RELEASE_KEYSTORE:  ${{ secrets.GOOGLE_KEYSTORE }}
+          GOOGLE_KEYSTORE_PASS:     ${{ secrets.GOOGLE_KEYSTORE_PASS }}
+          NOTARIZATION_USERNAME:    ${{ secrets.NOTARIZATION_USERNAME }}
+          NOTARIZATION_PASSWORD:    ${{ secrets.NOTARIZATION_PASSWORD }}
+          KEYCHAIN_PASSWORD:        ${{ secrets.KEYCHAIN_PASSWORD }}
+
+      - name:                       Post-Build for ${{ matrix.config.config_name }}
+        id:                         get-artifacts
+        run:                        ${{ matrix.config.base_command }} get-artifacts
+        env:
+          KOORD_BUILD_VERSION:    ${{ needs.create_release.outputs.build_version }}
+
+      - name:                       Upload Artifact 1 to Job
+        # builds such as iOS with signing produce no artifact to upload
+        if:                         steps.get-artifacts.outputs.artifact_1
+        uses:                       actions/upload-artifact@v2
+        with:
+          name:                     ${{ steps.get-artifacts.outputs.artifact_1 }}
+          path:                     deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
+          retention-days:           31
+          if-no-files-found:        error
+
+      - name:                       Upload Artifact 2 to Job
+        if:                         steps.get-artifacts.outputs.artifact_2
+        uses:                       actions/upload-artifact@v3
+        with:
+          name:                     ${{ steps.get-artifacts.outputs.artifact_2 }}
+          path:                     deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
+          retention-days:           31
+          if-no-files-found:        error
+
+      - name:                       Notarize macOS Release Build
+        if:                         >-
+                                    steps.build.outputs.macos_signed == 'true' &&
+                                    needs.create_release.outputs.publish_to_release == 'true'
+        id:                         notarize-macOS-app
+        uses:                       devbotsxyz/xcode-notarize@v1
+        with:
+          product-path:             deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
+          primary-bundle-id:        live.koord.Koord-RT
+          appstore-connect-username: ${{ secrets.NOTARIZATION_USERNAME }}
+          appstore-connect-password: ${{ secrets.NOTARIZATION_PASSWORD }}
+          verbose:                  true
+
+      - name:                       Staple macOS Release Build
+        if:                         >-
+                                    steps.build.outputs.macos_signed == 'true' &&
+                                    needs.create_release.outputs.publish_to_release == 'true'
+        id:                         staple-macOS-app
+        uses:                       devbotsxyz/xcode-staple@ae68b22ca35d15864b7f7923e1a166533b2944bf
+        with:
+          product-path:             deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
+
+      ## RELEASE PROCEDURE FOR:
+      ## - macOS adhoc dmg
+      ## - Windows exe (unsigned!)
+      ## - Linux AppImage - direct DL only until AppImageHub drops requirement on Ubuntu 18.04 glibc<2.31
+      ## Step: release artifact1 only to release, just for dmg,exe,appimage
+      - name:                       Upload Artifact 1 to Release
+        # Every build job has at least one artifact. Therefore, no `if artifact_1` condition here.
+        # If the artifact is missing, this should fail.
+        if:                         >-
+                                    needs.create_release.outputs.publish_to_release == 'true' &&
+                                    (matrix.config.target_os == 'macos' || 
+                                    matrix.config.target_os == 'windows' ||
+                                    matrix.config.target_os == 'linux')
+        id:                         upload-release-asset1
+        uses:                       actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url:               ${{ needs.create_release.outputs.upload_url }}
+          asset_path:               deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
+          asset_name:               ${{ steps.get-artifacts.outputs.artifact_1 }}
+          asset_content_type:       application/octet-stream
+
+      ## In general, "Artifact 2" should be for Store upload only - do not put into Release
+      ## ... but for now we need Windows msix as artifact for manual upload to Store :/
+      - name:                       Upload Artifact 2 to Release
+        if:                         >-
+                                    steps.get-artifacts.outputs.artifact_2 != '' &&
+                                    matrix.config.target_os == 'windows' &&
+                                    needs.create_release.outputs.publish_to_release == 'true'
+        id:                         upload-release-asset2
+        uses:                       actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url:               ${{ needs.create_release.outputs.upload_url }}
+          asset_path:               deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
+          asset_name:               ${{ steps.get-artifacts.outputs.artifact_2 }}
+          asset_content_type:       application/octet-stream
+
+      ## RELEASE PROCEDURE FOR:
+      ## - macOS App Store - storesign pkg
+      - name:                       Validate and Upload macOS Storesign Pkg
+        if:                         >-
+                                    steps.build.outputs.macos_signed == 'true' &&
+                                    needs.create_release.outputs.publish_to_release == 'true'
+        id:                         macos_validate_upload
+        run:                        ${{ matrix.config.base_command }} validate_and_upload
+        env:
+          ARTIFACT_PATH:            deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
+          NOTARIZATION_USERNAME:    ${{ secrets.NOTARIZATION_USERNAME }}
+          NOTARIZATION_PASSWORD:    ${{ secrets.NOTARIZATION_PASSWORD }}
+          KOORD_BUILD_VERSION:    ${{ needs.create_release.outputs.build_version }}
+          APPLE_TEAM_ID:            "TXZ4FR95HG"
+
+      ## RELEASE PROCEDURE FOR:
+      ## - iOS App Store - signed ipa
+      - name:                       Build AppStore-signed iOS ipa file
+        id:                         ios_build_signed_archive
+        if:                         >-
+                                    steps.build.outputs.ios_signed == 'true' &&
+                                    needs.create_release.outputs.publish_to_release == 'true'
+        uses:                       yukiarrr/ios-build-action@v1.5.0
+        with:
+          project-path:             Koord.xcodeproj
+          p12-base64:               ${{ secrets.IOSDIST_CERT }}
+          certificate-password:     ${{ secrets.IOSDIST_CERT_PWD }}
+          mobileprovision-base64:   ${{ secrets.IOS_PROVISIONING_PROFILE }}
+          code-signing-identity:    ${{ secrets.IOSDIST_CERT_ID }}
+          team-id:                  "TXZ4FR95HG"
+          output-path:              build/Koord.ipa
+          # workspace-path:           Koord.xcworkspace
+      ## Upload iOS build to App Store Connect - TestFlight
+      - name:                       Upload iOS app to TestFlight
+        id:                         ios_testflight_upload
+        if:                         >-
+                                    steps.build.outputs.ios_signed == 'true' &&
+                                    needs.create_release.outputs.publish_to_release == 'true'
+        run:                        ${{ matrix.config.base_command }} validate_and_upload
+        env: 
+          ARTIFACT_PATH:            build/Koord.ipa
+          NOTARIZATION_USERNAME:    ${{ secrets.NOTARIZATION_USERNAME }}
+          NOTARIZATION_PASSWORD:    ${{ secrets.NOTARIZATION_PASSWORD }}
+          KOORD_BUILD_VERSION:    ${{ needs.create_release.outputs.build_version }}
+
+      ## RELEASE PROCEDURE FOR:
+      ## - Android Play Store - aab
+      ## Requirement: Service Account JSON setup:
+      ## - Google Play Console -> Setup -> API Access -> Create/Link Google Cloud Project 
+      ## - Google Cloud console -> IAM & Admin -> Service Accounts -> Create (Wizard). Then create JSON key and export/save
+      - name:                       Publish all ABI Android builds to Play Store
+        if:                         >-
+                                    needs.create_release.outputs.publish_to_release == 'true' &&
+                                    matrix.config.target_os == 'android'
+        id:                         publish_android
+        uses:                       r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          packageName:              live.koord.koordrt
+          releaseFiles:             deploy/Koord*.aab
+          releaseName:              ${{ needs.create_release.outputs.build_version }}
+          track:                    beta
+          status:                   completed
+
+      ## RELEASE PROCEDURE FOR:
+      ## - Windows Store - msix
+      ## TEMP DISABLE WHILE WORKING OUT PARTNER / DEV account stuff: 
+      ## See: https://github.com/isaacrlevin/windows-store-action#prerequisites
+      # - name:                       Publish msix Windows build to Store
+      #   if:                         >-
+      #                               needs.create_release.outputs.publish_to_release == 'true' &&
+      #                               matrix.config.target_os == 'windows'
+      #   id:                         publish_windows
+      #   uses:                       isaacrlevin/windows-store-action@1.0
+      #   with:
+      #     tenant-id:                ${{ secrets.AZURE_AD_TENANT_ID }}
+      #     client-id:                ${{ secrets.AZURE_AD_APPLICATION_CLIENT_ID }}
+      #     client-secret:            ${{ secrets.AZURE_AD_APPLICATION_SECRET }}
+      #     app-id:                   ${{ secrets.WINDOWS_STORE_APP_ID }}
+      #     # package-path:             "deploy/${{ steps.get-artifacts.outputs.artifact_2 }}"
+      #     package-path:             "publish/"
+
+      - name:                       Perform CodeQL Analysis
+        if:                         matrix.config.run_codeql
+        uses:                       github/codeql-action/analyze@v2

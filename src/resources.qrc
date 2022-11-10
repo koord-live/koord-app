@@ -1,0 +1,80 @@
+<RCC>
+    <qresource prefix="/png/LEDs">
+        <file>res/CLEDDisabled.png</file>
+        <file>res/CLEDGrey.png</file>
+        <file>res/CLEDGreenBig.png</file>
+        <file>res/CLEDRedBig.png</file>
+        <file>res/CLEDYellowBig.png</file>
+        <file>res/CLEDBlackBig.png</file>
+        <file>res/IndicatorGreen.png</file>
+        <file>res/IndicatorYellow.png</file>
+        <file>res/IndicatorRed.png</file>
+        <file>res/HLEDGreen.png</file>
+        <file>res/HLEDBlack.png</file>
+        <file>res/HLEDRed.png</file>
+        <file>res/HLEDYellow.png</file>
+        <file>res/IndicatorRedFancy.png</file>
+        <file>res/IndicatorYellowFancy.png</file>
+        <file>res/CLEDGreenSmall.png</file>
+        <file>res/CLEDBlackSmall.png</file>
+        <file>res/CLEDRedSmall.png</file>
+        <file>res/CLEDYellowSmall.png</file>
+    </qresource>
+    <qresource prefix="/png/fader">
+        <file>res/faderbackground.png</file>
+        <file>res/faderhandle.png</file>
+        <file>res/faderhandlesmall.png</file>
+        <file>res/ledbuttonnotpressed.png</file>
+        <file>res/ledbuttonpressed.png</file>
+        <file>res/transparent1x1.png</file>
+        <file>res/mutediconorange.png</file>
+    </qresource>
+    <qresource prefix="/png/main">
+        <file>res/fronticon.png</file>
+        <file>res/fronticonserver.png</file>
+        <file>res/background.png</file>
+        <file>res/mute_btn_off.png</file>
+        <file>res/krt_logo.png</file>
+        <file>res/orange_btn.png</file>
+        <file>res/create_btn.png</file>
+        <file>res/reverb_txt.png</file>
+        <file>res/latency_txt.png</file>
+        <file>res/private_sessions.png</file>
+        <file>res/led.png</file>
+        <file>res/settings_txt.png</file>
+        <file>res/publicjam_txt.png</file>
+        <file>res/chatbox_txt.png</file>
+        <file>res/input_txt.png</file>
+        <file>res/reverb_knob_label.png</file>
+        <file>res/general_btn_off.png</file>
+        <file>res/general_btn_on.png</file>
+        <file>res/mute_btn_on.png</file>
+        <file>res/solo_btn_off.png</file>
+        <file>res/solo_btn_on.png</file>
+        <file>res/servertrayiconactive.png</file>
+        <file>res/servertrayiconinactive.png</file>
+        <file>res/Help.png</file>
+        <file>res/Chat02.png</file>
+        <file>res/Settings.png</file>
+        <file>res/Video04.png</file>
+        <file>res/MainSession.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>webview.qml</file>
+        <file>webengineview.qml</file>
+        <file>nosessionview.qml</file>
+        <file>androidwebview.qml</file>
+    </qresource>
+    <qresource prefix="/svg/main">
+        <file>res/share-via.svg</file>
+        <file>res/copy-link.svg</file>
+        <file>res/whatsapp.svg</file>
+        <file>res/mail-to.svg</file>
+        <file>res/download.svg</file>
+        <file>res/update.svg</file>
+    </qresource>
+    <qresource prefix="/sounds">
+        <file>res/sounds/new_user.wav</file>
+        <file>res/sounds/new_message.wav</file>
+    </qresource>
+</RCC>

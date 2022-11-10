@@ -1,0 +1,44 @@
+name: Coding Style Check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '**.mm'
+      - '**.sh'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '**.mm'
+      - '**.sh'
+
+permissions:
+  contents: read
+
+jobs:
+  check-coding-style:
+    name: Verify coding style
+    # As this action runs with minimal permissions and does not influence the build output,
+    # we perform no version pinning for the runner or the installed tools here.
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Check .cpp/.h/.mm with clang-format
+      uses: DoozyX/clang-format-lint-action@2ec1a72dfb593e52255693c9039e6d94984187dc
+      with:
+        clangFormatVersion: 10
+        # When updating the extension list, remember to update
+        # Koord.pro's CLANG_SOURCES as well and the paths: in 'on:' list above.
+        extensions: 'cpp,h,mm'
+    # shellcheck is already pre-installed on ubuntu-latest
+    - name: Check .sh with shellcheck
+      run: find -name '*.sh' -not -path './libs/*' -exec shellcheck --shell=bash {} +
+    - name: Install shfmt
+      run: sudo snap install shfmt
+    - name: Check .sh with shfmt
+      run: shfmt -d .

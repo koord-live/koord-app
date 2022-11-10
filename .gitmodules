@@ -1,0 +1,9 @@
+[submodule "libs/oboe"]
+	path = libs/oboe
+	url = git@github.com:google/oboe.git
+[submodule "KoordASIO"]
+	path = KoordASIO
+	url = https://github.com/koord-live/KoordASIO.git
+[submodule "singleapplication"]
+	path = singleapplication
+	url = https://github.com/itay-grudev/SingleApplication.git

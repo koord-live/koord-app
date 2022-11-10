@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Koord
+Comment=Koord Server
+GenericName=Internet Jam Session Software
+Icon=koordrt
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;Mixer;Qt;Network;Application;
+Keywords=jam;play;live;online;music;conference;
+Exec=koord-headless %u
+Encoding=UTF-8
+MimeType=x-scheme-handler/koord;

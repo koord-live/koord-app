@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Koord
+Comment=Play Music Remote with Koord
+GenericName=Real-Time Music Collaboration Software
+Icon=koordrt
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;Mixer;Qt;Network;Application;
+Keywords=jam;play;rehearse;live;online;music;
+Exec=koord %u
+Encoding=UTF-8
+MimeType=x-scheme-handler/koord;

@@ -1,0 +1,14 @@
+--- main.cpp	2022-11-02 16:12:37.260590200 +0200
++++ main_posix.cpp	2022-11-02 16:40:17.395921400 +0200
+@@ -855,9 +855,9 @@
+     // Make main application object
+     // Note: SingleApplication not needed or desired on mobile ie iOS and Android (also ChromeOS)
+     // Also: SingleApplication problematic on appstore macOS builds (posix)
+-#if defined (Q_OS_IOS) || defined (Q_OS_ANDROID)
++#if defined (Q_OS_IOS) || defined (Q_OS_ANDROID) || defined (Q_OS_MACOS)
+     KdApplication* pApp = new KdApplication ( argc, argv );
+-#elif defined (Q_OS_MACOS) || defined (Q_OS_WINDOWS) || defined (Q_OS_LINUX)
++#elif defined (Q_OS_WINDOWS) || defined (Q_OS_LINUX)
+     KdSingleApplication* pApp = new KdSingleApplication (argc, argv);
+ 
+     // singleapplication - handle primary / secondary instances
