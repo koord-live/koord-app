@@ -2,7 +2,7 @@
 
 
 ## Installation (all devices):
-- please go to the [Koord.Live downloads page](https://koord.live/downloads)
+For installers, please go to the [Koord.Live downloads page](https://koord.live/downloads)
 
 
 ![macOS_Screens_Mixer](https://user-images.githubusercontent.com/584572/195409629-15ea1060-3b95-4849-9789-2013152854de.png)
