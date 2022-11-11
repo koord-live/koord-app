@@ -249,7 +249,6 @@ build_disk_image()
       --text-size 12 \
       --icon-size 72 \
       --icon "${client_target_name}.app" 630 210 \
-      --eula "${root_path}/COPYING" \
       "${deploypkg_path}/${client_target_name}-${KOORD_BUILD_VERSION}-installer-mac.dmg" \
       "${deploy_path}/"
 }

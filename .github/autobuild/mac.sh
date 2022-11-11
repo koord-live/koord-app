@@ -150,12 +150,17 @@ valid8_n_upload() {
     # test the signature of package
     pkgutil --check-signature "${ARTIFACT_PATH}"
     
+    # validate and upload
+    xcrun altool --validate-app -f "${ARTIFACT_PATH}" -t macos -u $NOTARIZATION_USERNAME -p $NOTARIZATION_PASSWORD
+    xcrun altool --upload-app -f "${ARTIFACT_PATH}" -t macos -u $NOTARIZATION_USERNAME -p $NOTARIZATION_PASSWORD
+
+    # notarytool results in "Invalid" status
     ## Use notarytool to submit to AppStore Connect:
-    xcrun notarytool submit "${ARTIFACT_PATH}" \
-        --apple-id $NOTARIZATION_USERNAME \
-        --team-id $APPLE_TEAM_ID \
-        --password $NOTARIZATION_PASSWORD \
-        --wait
+    # xcrun notarytool submit "${ARTIFACT_PATH}" \
+    #     --apple-id $NOTARIZATION_USERNAME \
+    #     --team-id $APPLE_TEAM_ID \
+    #     --password $NOTARIZATION_PASSWORD \
+    #     --wait
 
 }
 

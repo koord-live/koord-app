@@ -648,10 +648,7 @@ contains(QT_ARCH, armeabi-v7a) | contains(QT_ARCH, arm64-v8a) {
 }
 DEFINES_OPUS += OPUS_BUILD=1 USE_ALLOCA=1 OPUS_HAVE_RTCD=1 HAVE_LRINTF=1 HAVE_LRINT=1
 
-DISTFILES += ChangeLog \
-    COPYING \
-    CONTRIBUTING.md \
-    README.md \
+DISTFILES += README.md \
     distributions/koordrt.desktop.in \
     distributions/koordrt.png \
     distributions/koordrt.svg \
