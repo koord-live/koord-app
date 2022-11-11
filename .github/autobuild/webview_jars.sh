@@ -27,7 +27,6 @@ set -eu
 setup() {
     # Install build deps from apt
     sudo apt-get install -y --no-install-recommends \
-        openjdk-11-jdk \
         ninja-build \
         flex bison \
         libgl-dev \
@@ -35,6 +34,7 @@ setup() {
         libclang-11-dev \
         gperf \
         nodejs
+    # openjdk-11-jdk \
 
     # Python deps for build
     sudo pip install html5lib
@@ -46,7 +46,9 @@ setup() {
     aqt install-qt linux desktop ${QT_VERSION} -m qtshadertools
 
     # Set path env vars for build
-    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+    # export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+    # use Github-installed JDK
+    export JAVA_HOME=$(JAVA_HOME_11_X64)
     export PATH=$JAVA_HOME/bin:$PATH
 
     # Get Qt source - only base and modules necessary for QtWebView build
