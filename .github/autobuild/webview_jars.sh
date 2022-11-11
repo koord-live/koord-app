@@ -48,7 +48,7 @@ setup() {
     # Set path env vars for build
     # export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
     # use Github-installed JDK
-    export JAVA_HOME=$(JAVA_HOME_11_X64)
+    export JAVA_HOME=${JAVA_HOME_11_X64}
     export PATH=$JAVA_HOME/bin:$PATH
 
     # Get Qt source - only base and modules necessary for QtWebView build
