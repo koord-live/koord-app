@@ -16,16 +16,12 @@ Requirements:
 
 Go to https://koord.live to learn more about the Koord service.
 
-
 ## Acknowledgements
 
-The Koord app contains code from different sources (see also [COPYING](COPYING)). The developers wish
+The Koord app contains code from different sources. The developers wish
 to thank the maintainers of these projects for making their efforts available to us under their respective licences:
 
 *   Jamulus - real-time audio collaboration: [jamulus.io](https://jamulus.io)
 *   Qt cross-platform application framework: [qt.io](https://www.qt.io)
 *   Opus Interactive Audio Codec: [opus-codec.org](https://www.opus-codec.org/)
 *   ASIO is a trademark and software of Steinberg Media Technologies GmbH
-
-We would also like to acknowledge the contributors listed in the
-[Github Contributors list](https://github.com/jamulussoftware/jamulus/graphs/contributors).
