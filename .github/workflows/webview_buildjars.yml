@@ -1,4 +1,4 @@
-name: Build hacked webview jars
+name: Build Android custom webview jars
 
 env:
   QT_VERSION: 6.3.2
