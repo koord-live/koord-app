@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+##FIXME - not working atm. Secrets values end up empty in Github - don't know why
+
 ## Util to add secrets to a Github repo from a text file
 
 ## Requirements:
