@@ -81,7 +81,6 @@ prepare_signing() {
     [[ -n "${NOTARIZATION_USERNAME:-}" ]] || return 1
     [[ -n "${NOTARIZATION_PASSWORD:-}" ]] || return 1
     [[ -n "${KEYCHAIN_PASSWORD:-}" ]] || return 1
-    [[ -n "${MAC_PROV_PROF_STORE:-}" ]] || return 1
 
     echo "Signing was requested and all dependencies are satisfied"
 
