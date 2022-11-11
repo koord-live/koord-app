@@ -47,7 +47,6 @@ build_qt() {
     cmake --install .
 
     # Create archive
-    cd ${GITHUB_WORKSPACE}
     echo ">>> Archiving QT installation..."
     cd /usr/local/Qt-${QT_VERSION}
     tar cf ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_posix.tar  .
