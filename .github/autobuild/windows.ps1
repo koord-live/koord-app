@@ -100,7 +100,8 @@ Function setupCodeSignCertificate
     # write Windows OV CodeSIgn cert password to file
     Write-Output "Writing CodeSign password to C:\KoordOVCertPwd ..."
     # $Env:WINDOWS_CODESIGN_PWD | Out-File 'C:\KoordOVCertPwd'
-    [IO.File]::WriteAllBytes('C:\KoordOVCertPwd', $Env:WINDOWS_CODESIGN_PWD)
+    $cert_pw = $Env:WINDOWS_CODESIGN_PWD
+    [IO.File]::WriteAllBytes( 'C:\KoordOVCertPwd', $cert_pw )
     ls 'C:\KoordOVCertPwd'
     echo 'C:\KoordOVCertPwd'
 }
