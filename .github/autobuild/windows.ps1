@@ -29,7 +29,7 @@ if ( $KoordVersion -notmatch '^\d+\.\d+\.\d+.*' )
     throw "Environment variable KOORD_BUILD_VERSION has to be set to a valid version string"
 }
 
-Function Install-Qt
+Function installQt
 {
     param(
         [string] $QtVersion,
@@ -47,7 +47,7 @@ Function Install-Qt
     aqt install-qt @Args
     if ( !$? )
     {
-        echo "WARNING: Qt installation via first aqt run failed, re-starting with different base URL."
+        Write-Output "WARNING: Qt installation via first aqt run failed, re-starting with different base URL."
         aqt install-qt -b https://mirrors.ocf.berkeley.edu/qt/ @Args
         if ( !$? )
         {
@@ -63,15 +63,15 @@ Function Install-Qt
     aqt install-tool windows desktop --outputdir C:\Qt tools_cmake qt.tools.cmake
 }
 
-Function Ensure-Qt
+Function ensureQt
 {
     if ( Test-Path -Path $QtDir )
     {
-        echo "Using Qt installation from previous run (actions/cache)"
+        Write-Output "Using Qt installation from previous run (actions/cache)"
         return
     }
 
-    echo "Install Qt..."
+    Write-Output "Install Qt..."
     # Install Qt
     #   "Preparing metadata (pyproject.toml) did not run successfully."
     pip install "aqtinstall==$AqtinstallVersion" 
@@ -80,22 +80,33 @@ Function Ensure-Qt
         throw "pip install aqtinstall failed with exit code $LastExitCode"
     }
 
-    echo "Get Qt 64 bit..."
-    Install-Qt "${Qt64Version}" "${Msvc64Version}"
+    Write-Output "Get Qt 64 bit..."
+    installQt "${Qt64Version}" "${Msvc64Version}"
 
     # Enough with 32bit !!!
-    # echo "Get Qt 32 bit..."
-    # Install-Qt "${Qt32Version}" "${Msvc32Version}"
+    # Write-Output "Get Qt 32 bit..."
+    # installQt "${Qt32Version}" "${Msvc32Version}"
 }
 
-Function Ensure-jom
+Function ensureJom
 {
     choco install --no-progress -y jom --version "${JomVersion}"
 }
 
-Function Build-App-With-Installer
+Function setupCodeSignCertificate
 {
-    echo "Build app and create installer..."
+    # write Windows OV CodeSign cert to file
+    $B64Cert = $Env:WINDOWS_CODESIGN_CERT
+    $WindowsOVCert = [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($B64Cert))
+    $WindowsOVCert | Out-File 'C:\KoordOVCert.pfx'
+
+    # write Windows OV CodeSIgn cert password to file
+    $Env:WINDOWS_CODESIGN_PWD | Out-File 'C:\KoordOVCertPwd'
+}
+
+Function buildAppWithInstaller
+{
+    Write-Output "Build app and create installer..."
     $ExtraArgs = @()
     if ( $BuildOption -ne "" )
     {
@@ -108,40 +119,40 @@ Function Build-App-With-Installer
     }
 }
 
-Function Pass-EXE-Artifact-to-Job
+Function passExeArtifactToJob
 {
     $artifact = "Koord_${KoordVersion}.exe"
 
-    echo "Copying artifact to ${artifact}"
+    Write-Output "Copying artifact to ${artifact}"
     # "Output" is name of dir for innosetup output
-    move ".\Output\Koord*.exe" ".\deploy\${artifact}"
+    Move-Item ".\Output\Koord*.exe" ".\deploy\${artifact}"
     if ( !$? )
     {
-        throw "move failed with exit code $LastExitCode"
+        throw "Move-Item failed with exit code $LastExitCode"
     }
-    echo "Setting Github step output name=artifact_1::${artifact}"
-    echo "artifact_1=${artifact}" >> "$Env:GITHUB_OUTPUT"
+    Write-Output "Setting Github step output name=artifact_1::${artifact}"
+    Write-Output "artifact_1=${artifact}" >> "$Env:GITHUB_OUTPUT"
 }
 
-Function Pass-MSIX-Artifact-to-Job
+Function passMsixArtifactToJob
 {
     $artifact = "Koord_${KoordVersion}.msix"
 
-    echo "Copying artifact to ${artifact}"
+    Write-Output "Copying artifact to ${artifact}"
     # "deploy" is dir of MakeAppx output
 
     # make special dir for store upload
     New-Item -Path  ".\publish" -ItemType Directory
-    # copy .msix artifact to publish/ dir
-    copy ".\deploy\Koord.msix" ".\publish\${artifact}"
+    # Copy-Item .msix artifact to publish/ dir
+    Copy-Item ".\deploy\Koord.msix" ".\publish\${artifact}"
 
-    move ".\deploy\Koord.msix" ".\deploy\${artifact}"
+    Move-Item ".\deploy\Koord.msix" ".\deploy\${artifact}"
     if ( !$? )
     {
-        throw "move failed with exit code $LastExitCode"
+        throw "Move-Item failed with exit code $LastExitCode"
     }
-    echo "Setting Github step output name=artifact_2::${artifact}"
-    echo "artifact_2=${artifact}" >> "$Env:GITHUB_OUTPUT"
+    Write-Output "Setting Github step output name=artifact_2::${artifact}"
+    Write-Output "artifact_2=${artifact}" >> "$Env:GITHUB_OUTPUT"
 }
 
 switch ( $Stage )
@@ -149,17 +160,19 @@ switch ( $Stage )
     "setup"
     {
         choco config set cacheLocation $ChocoCacheDir
-        Ensure-Qt
-        Ensure-jom
+        ensureQt
+        ensureJom
+
     }
     "build"
     {
-        Build-App-With-Installer
+        setupCodeSignCertificate
+        buildAppWithInstaller
     }
     "get-artifacts"
     {
-        Pass-EXE-Artifact-to-Job
-        Pass-MSIX-Artifact-to-Job
+        passExeArtifactToJob
+        passMsixArtifactToJob
     }
     default
     {

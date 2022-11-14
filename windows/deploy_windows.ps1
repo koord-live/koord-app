@@ -416,7 +416,7 @@ Function BuildInstaller
 }
 
 # Build MSIX / MSIX Package
-Function BuildAppXPackage
+Function BuildMsixPackage
 {
 
     # make sure we have valid app package manifest file named AppxManifest.xml in the content dir
@@ -438,29 +438,31 @@ Function BuildAppXPackage
 
 }
 
-Function SignAppx
-{
-    Invoke-Native-Command -Command "SignTool" `
-        -Arguments ("sign", "/a", "/f", "signingCert.pfx", `
-        "/p", "passwordhere", `
-        "/fd", "SHA256", `
-        "filepath.msix")
-}
-
 Function SignExe
 {
+    $WindowsOVCertPwd = Get-Content "C:\KoordOVCertPwd" -Raw 
+
     Invoke-Native-Command -Command "SignTool" `
-        -Arguments ("sign", "/f", "c:\path\to\codesigningcertificate.pfx", `
-        "/p", "yourpasswordhere", `
+        -Arguments ("sign", "/f", "C:\KoordOVCert.pfx", `
+        "/p", $WindowsOVCertPwd, `
         "/tr", "https://timestamp.digicert.com", `
         "/td", "SHA256", "/fd", "SHA256", `
-        "c:\path\to\Koord_installer.exe" )
+        "${DeployPath}\x86_64\Koord.exe" )
 }
+
+# Function SignMsix
+# {
+#     Invoke-Native-Command -Command "SignTool" `
+#         -Arguments ("sign", "/a", "/f", "C:\KoordOVCert.pfx", `
+#         "/p", "passwordhere", `
+#         "/fd", "SHA256", `
+#         "${DeployPath}\Koord.msix")
+# }
 
 Clean-Build-Environment
 Install-Dependencies
 BuildAppVariants
 BuildInstaller -BuildOption $BuildOption
-#SignExe
-BuildAppXPackage
-#SignAppx
+SignExe
+BuildMsixPackage
+#SignMsix
