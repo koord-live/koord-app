@@ -372,9 +372,9 @@ Function SignExe
     Invoke-Native-Command -Command "SignTool" `
         -Arguments ("sign", "/f", "C:\KoordOVCert.pfx", `
         "/p", $WindowsOVCertPwd, `
-        "/tr", "https://timestamp.digicert.com", `
+        "/tr", "http://timestamp.sectigo.com", `
         "/td", "SHA256", "/fd", "SHA256", `
-        "${DeployPath}\x86_64\Koord.exe" )
+        "Output\Koord-$APP_BUILD_VERSION.exe" )
 }
 
 # Function SignMsix
