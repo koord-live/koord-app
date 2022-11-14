@@ -1,11 +1,8 @@
 param (
+    [string] $APP_BUILD_VERSION = "1.0.0",
     # Replace default path with system Qt installation folder if necessary
     [string] $QtPath = "C:\Qt",
     [string] $QtInstallPath = "C:\Qt\6.3.2",
-
-    [string] $QtInstallPath32 = "C:\Qt\6.3.2",
-    [string] $QtInstallPath64 = "C:\Qt\6.3.2",
-    [string] $QtCompile32 = "msvc2019",
     [string] $QtCompile64 = "msvc2019_64",
     # Important:
     # - Do not update ASIO SDK without checking for license-related changes.
@@ -61,37 +58,6 @@ Function Clean-Build-Environment
     New-Item -Path $DeployPath -ItemType Directory
 }
 
-# For sourceforge links we need to get the correct mirror (especially NISIS) Thanks: https://www.powershellmagazine.com/2013/01/29/pstip-retrieve-a-redirected-url/
-Function Get-RedirectedUrl {
-    param(
-        [Parameter(Mandatory=$true)]
-        [string] $url
-    )
-
-    $numAttempts = 10
-    $sleepTime = 10
-    $maxSleepTime = 80
-    for ($attempt = 1; $attempt -le $numAttempts; $attempt++) {
-        try {
-            $request = [System.Net.WebRequest]::Create($url)
-            $request.AllowAutoRedirect=$true
-            $response=$request.GetResponse()
-            $response.ResponseUri.AbsoluteUri
-            $response.Close()
-            return
-        } catch {
-            if ($attempt -lt $numAttempts) {
-                Write-Warning "Caught error: $_"
-                Write-Warning "Get-RedirectedUrl: Fetch attempt #${attempt}/${numAttempts} for $url failed, trying again in ${sleepTime}s"
-                Start-Sleep -Seconds $sleepTime
-                $sleepTime = [Math]::Min($sleepTime * 2, $maxSleepTime)
-                continue
-            }
-            Write-Error "Get-RedirectedUrl: All ${numAttempts} fetch attempts for $url failed, failing whole call"
-            throw
-        }
-    }
-}
 
 function Initialize-Module-Here ($m) { # see https://stackoverflow.com/a/51692402
 
@@ -143,11 +109,6 @@ Function Install-Dependency
     $TempFileName = [System.IO.Path]::GetTempFileName() + ".zip"
     $TempDir = [System.IO.Path]::GetTempPath()
 
-    if ($Uri -Match "downloads.sourceforge.net")
-    {
-      $Uri = Get-RedirectedUrl -URL $Uri
-    }
-
     Invoke-WebRequest -Uri $Uri -OutFile $TempFileName
     echo $TempFileName
     Expand-Archive -Path $TempFileName -DestinationPath $TempDir -Force
@@ -156,7 +117,7 @@ Function Install-Dependency
     Remove-Item -Path $TempFileName -Force
 }
 
-# Install VSSetup (Visual Studio detection), ASIO SDK and InnoSetup
+# Install VSSetup (Visual Studio detection), ASIO SDK
 Function Install-Dependencies
 {
     if (-not (Get-PackageProvider -Name nuget).Name -eq "nuget") {
@@ -165,9 +126,6 @@ Function Install-Dependencies
     Initialize-Module-Here -m "VSSetup"
     Install-Dependency -Uri $AsioSDKUrl `
         -Name $AsioSDKName -Destination "ASIOSDK2"
-
-    # install MSIX Packaging Tool
-    # Install  bundle
     
 }
 
@@ -186,14 +144,7 @@ Function Initialize-Build-Environment
 
     if ($VsInstallPath -Eq "") { $VsInstallPath = "<N/A>" }
 
-    if ($BuildArch -Eq "x86_64")
-    {
-        $VcVarsBin = "$VsInstallPath\VC\Auxiliary\build\vcvars64.bat"
-    }
-    else
-    {
-        $VcVarsBin = "$VsInstallPath\VC\Auxiliary\build\vcvars32.bat"
-    }
+    $VcVarsBin = "$VsInstallPath\VC\Auxiliary\build\vcvars64.bat"
 
     # # Setup Qt executables paths for later calls
     # Set-Item Env:QtQmakePath "$QtMsvcSpecPath\qmake.exe"
@@ -272,8 +223,9 @@ Function BuildApp
     # $BuildConfig = "release"
     # $BuildArch = "x86_64"
 
-    # Build kdasioconfig Qt project with CMake / nmake
-    # # Build FlexASIO dlls with CMake / nmake
+    ###################################
+    ## Build KOORDASIOCONFIG
+    ###################################
     Invoke-Native-Command -Command "$Env:QtCmakePath" `
         -Arguments ("-DCMAKE_PREFIX_PATH='$QtInstallPath\$QtCompile64\lib\cmake'", `
             "-DCMAKE_BUILD_TYPE=Release", `
@@ -282,21 +234,24 @@ Function BuildApp
             "-G", "NMake Makefiles")
     Set-Location -Path "$BuildPath\$BuildConfig\kdasioconfig"
     Invoke-Native-Command -Command "nmake" #FIXME necessary??
-    
-    Set-Location -Path "$RootPath"
 
+    ###################################
+    ## Build KoordASIO dlls ... again ? Previously done in autobuild
+    ###################################
+    Set-Location -Path "$RootPath"
     # Ninja! 
     Invoke-Native-Command -Command "$Env:QtCmakePath" `
         -Arguments ("-S", "$RootPath\KoordASIO\src", `
             "-B", "$BuildPath\$BuildConfig\flexasio", `
             "-G", "Ninja", `
             "-DCMAKE_BUILD_TYPE=Release")
-
     # Build!
     Invoke-Native-Command -Command "$Env:QtCmakePath" `
         -Arguments ("--build", "$BuildPath\$BuildConfig\flexasio")
 
-    # Now build rest of koord-app
+    ###################################
+    ## Build Koord app complete
+    ###################################
     Invoke-Native-Command -Command "$Env:QtQmakePath" `
         -Arguments ("$RootPath\$AppName.pro", "CONFIG+=$BuildConfig $BuildArch $BuildOption", `
         "-o", "$BuildPath\Makefile")
@@ -317,21 +272,22 @@ Function BuildApp
         -Arguments ("--$BuildConfig", "--no-compiler-runtime", "--dir=$DeployPath\$BuildArch", `
         "--no-system-d3d-compiler",  "--no-opengl-sw", `
         "$BuildPath\$BuildConfig\kdasioconfig\KoordASIOControl.exe")
-    # collect for Koord.exe
+    
+    ## Run windeployqt for Koord.exe
     Invoke-Native-Command -Command "$Env:QtWinDeployPath" `
         -Arguments ("--$BuildConfig", "--no-compiler-runtime", "--dir=$DeployPath\$BuildArch", `
         "--no-system-d3d-compiler", "--qmldir=$RootPath\src", `
         "-webenginecore", "-webenginewidgets", "-webview", "-qml", "-quick", `
         "$BuildPath\$BuildConfig\$AppName.exe")
 
+    ###################################
+    ## Build Application Dir structure 
+    ################################### 
     Move-Item -Path "$BuildPath\$BuildConfig\$AppName.exe" -Destination "$DeployPath\$BuildArch" -Force
-
     # get visibility on deployed files
     Tree "$DeployPath\$BuildArch" /f /a
-
     # Manually copy in webengine exe
-    Copy-Item -Path "$QtInstallPath64/$QtCompile64/bin/QtWebEngineProcess.exe" -Destination "$DeployPath\$BuildArch"
-
+    Copy-Item -Path "$QtInstallPath/$QtCompile64/bin/QtWebEngineProcess.exe" -Destination "$DeployPath\$BuildArch"
     # Transfer VS dist DLLs for x64
     Copy-Item -Path "$VsDistFile64Path\*" -Destination "$DeployPath\$BuildArch"
         # Also add KoordASIO build files:
@@ -352,7 +308,6 @@ Function BuildApp
     Move-Item -Path "$RootPath\KoordASIO\src\out\install\x64-Release\bin\portaudio.dll" -Destination "$DeployPath\$BuildArch" -Force
     Move-Item -Path "$RootPath\KoordASIO\src\out\install\x64-Release\bin\PortAudioDevices.exe" -Destination "$DeployPath\$BuildArch" -Force
     Move-Item -Path "$RootPath\KoordASIO\src\out\install\x64-Release\bin\sndfile.dll" -Destination "$DeployPath\$BuildArch" -Force
-
     # move InnoSetup script to deploy dir
     Move-Item -Path "$WindowsPath\kdinstaller.iss" -Destination "$RootPath" -Force
 
@@ -361,33 +316,12 @@ Function BuildApp
     Set-Location -Path $RootPath
 }
 
-# Build and deploy Koord 64bit and 32bit variants
+# Build and deploy Koord 64bit
 function BuildAppVariants
 {
-    # foreach ($_ in ("x86_64", "x86"))
-    # foreach ($_ in ("x86_64"))
-    # {
-    #     $OriginalEnv = Get-ChildItem Env:
-    #     if ($_ -eq "x86")
-    #     {
-    #         Initialize-Build-Environment -BuildArch $_
-    #         Initialize-Qt-Build-Environment -QtInstallPath $QtInstallPath32 -QtCompile $QtCompile32
-    #     }
-    #     else
-    #     {
-    #         Initialize-Build-Environment -BuildArch $_
-    #         Initialize-Qt-Build-Environment -QtInstallPath $QtInstallPath64 -QtCompile $QtCompile64
-    #     }
-    #     Build-App -BuildConfig "release" -BuildArch $_
-    #     $OriginalEnv | % { Set-Item "Env:$($_.Name)" $_.Value }
-    # }
-
-    # $OriginalEnv = Get-ChildItem Env:
     Initialize-Build-Environment -BuildArch "x86_64"
-    Initialize-Qt-Build-Environment -QtInstallPath $QtInstallPath64 -QtCompile $QtCompile64
+    Initialize-Qt-Build-Environment -QtInstallPath $QtInstallPath -QtCompile $QtCompile64
     BuildApp -BuildConfig "release" -BuildArch "x86_64"
-    # $OriginalEnv | % { Set-Item "Env:$($_.Name)" $_.Value }
-
 }
 
 # Build Windows installer
@@ -398,14 +332,7 @@ Function BuildInstaller
         [string] $BuildOption
     )
 
-    foreach ($_ in Get-Content -Path "$RootPath\$AppName.pro")
-    {
-        if ($_ -Match "^VERSION *= *(.*)$")
-        {
-            $AppVersion = $Matches[1]
-            break
-        }
-    }
+    $AppVersion = $Env:KOORD_BUILD_VERSION
 
     Set-Location -Path "$RootPath"
 

@@ -16,10 +16,8 @@ $ErrorActionPreference = "Stop"
 
 $QtDir = 'C:\Qt'
 $ChocoCacheDir = 'C:\ChocoCache'
-$Qt32Version = "6.3.2"
 $Qt64Version = "6.3.2"
 $AqtinstallVersion = "3.0.1"
-#$Msvc32Version = "win32_msvc2019"
 $Msvc64Version = "win64_msvc2019_64"
 $JomVersion = "1.1.2"
 
@@ -82,10 +80,6 @@ Function ensureQt
 
     Write-Output "Get Qt 64 bit..."
     installQt "${Qt64Version}" "${Msvc64Version}"
-
-    # Enough with 32bit !!!
-    # Write-Output "Get Qt 32 bit..."
-    # installQt "${Qt32Version}" "${Msvc32Version}"
 }
 
 Function ensureJom
@@ -112,7 +106,8 @@ Function buildAppWithInstaller
     {
         $ExtraArgs += ("-BuildOption", $BuildOption)
     }
-    powershell ".\windows\deploy_windows.ps1" "C:\Qt\${Qt32Version}" "C:\Qt\${Qt64Version}" @ExtraArgs
+    $ExtraArgs += ("-APP_BUILD_VERSION", $KoordVersion)
+    powershell ".\windows\deploy_windows.ps1" @ExtraArgs
     if ( !$? )
     {
         throw "deploy_windows.ps1 failed with exit code $LastExitCode"
