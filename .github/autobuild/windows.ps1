@@ -90,12 +90,19 @@ Function ensureJom
 Function setupCodeSignCertificate
 {
     # write Windows OV CodeSign cert to file
+    Write-Output "Writing CodeSign cert output to file C:\KoordOVCert.pfx ..."
     $B64Cert = $Env:WINDOWS_CODESIGN_CERT
-    $WindowsOVCert = [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($B64Cert))
-    $WindowsOVCert | Out-File 'C:\KoordOVCert.pfx'
+    $WindowsOVCert = [Convert]::FromBase64String($B64Cert)
+    [IO.File]::WriteAllBytes('C:\KoordOVCert.pfx', $WindowsOVCert)
+    ls 'C:\KoordOVCert.pfx'
+    echo 'C:\KoordOVCert.pfx'
 
     # write Windows OV CodeSIgn cert password to file
-    $Env:WINDOWS_CODESIGN_PWD | Out-File 'C:\KoordOVCertPwd'
+    Write-Output "Writing CodeSign password to C:\KoordOVCertPwd ..."
+    # $Env:WINDOWS_CODESIGN_PWD | Out-File 'C:\KoordOVCertPwd'
+    [IO.File]::WriteAllBytes('C:\KoordOVCertPwd', $Env:WINDOWS_CODESIGN_PWD)
+    ls 'C:\KoordOVCertPwd'
+    echo 'C:\KoordOVCertPwd'
 }
 
 Function buildAppWithInstaller
