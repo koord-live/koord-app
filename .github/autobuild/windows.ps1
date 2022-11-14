@@ -95,7 +95,8 @@ Function setupCodeSignCertificate
     $WindowsOVCert = [Convert]::FromBase64String($B64Cert)
     [IO.File]::WriteAllBytes('C:\KoordOVCert.pfx', $WindowsOVCert)
     ls 'C:\KoordOVCert.pfx'
-    echo 'C:\KoordOVCert.pfx'
+    Write-Output "debug: CodeSign cert :"
+    cat 'C:\KoordOVCert.pfx'
 
     # write Windows OV CodeSIgn cert password to file
     Write-Output "Writing CodeSign password to C:\KoordOVCertPwd ..."
@@ -103,7 +104,8 @@ Function setupCodeSignCertificate
     # New-Item 'C:\KoordOVCertPwd'
     # Set-Content 'C:\KoordOVCertPwd' $Env:WINDOWS_CODESIGN_PWD
     ls 'C:\KoordOVCertPwd'
-    echo 'C:\KoordOVCertPwd'
+    Write-Output "debug: CodeSign password :"
+    cat 'C:\KoordOVCertPwd'
 }
 
 Function buildAppWithInstaller

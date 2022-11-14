@@ -367,7 +367,7 @@ Function BuildMsixPackage
 
 Function SignExe
 {
-    $WindowsOVCertPwd = Get-Content "C:\KoordOVCertPwd" -Raw 
+    $WindowsOVCertPwd = Get-Content "C:\KoordOVCertPwd" 
 
     Invoke-Native-Command -Command "SignTool" `
         -Arguments ("sign", "/f", "C:\KoordOVCert.pfx", `
