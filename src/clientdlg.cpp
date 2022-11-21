@@ -1335,28 +1335,38 @@ void CClientDlg::OnEventJoinConnectClicked( const QString& url )
 
 void CClientDlg::OnJoinConnectClicked()
 {
-    // process if user has entered https://koord.live/kd/?ks={hash} style url
-    QRegularExpression rx("https://[test\\.]?koord.live/kd/\\?ks=(.*)");
+    // process if user has entered [https://]koord.live/kd/?ks={hash} style url
+    QRegularExpression rx("koord.live/kd/\\?ks=(.*)");
     QRegularExpressionMatch rx_match = rx.match(joinFieldEdit->text());
     if (rx_match.hasMatch()) {
 //        QString sessHash = rx_match.captured(1);
         // look up session address from endpoint
         // call https://koord.live/kd/?ks={hash}
-        QNetworkRequest request(QUrl(joinFieldEdit->text()));
+        // MUST replace http with https to get SINGLE redirect from service
+        QNetworkRequest request(QUrl(joinFieldEdit->text().replace("http://", "https://")));
         // send request and assign reply pointer
+        qInfo() << "Gonna get url : " << joinFieldEdit->text();
+        // Note: set Network Access Manager to NOT open redirected URL, otherwise 302 redirect fails
+        qNam->setRedirectPolicy(QNetworkRequest::ManualRedirectPolicy);
         QNetworkReply *endpoint_reply = qNam->get(request);
-        // connect reply pointer with callback for finished signal
         QObject::connect(endpoint_reply, &QNetworkReply::finished, this, [=]()
             {
                 QString err = endpoint_reply->errorString();
+                int statusCode = endpoint_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                qDebug() << "statuscode: " << statusCode;
+                qDebug() << "endpoint reply: " << err;
                 QString contents = QString::fromUtf8(endpoint_reply->readAll());
-                // if reply - no error
+                qDebug() << "contents of reply: " << contents;
                 // response should be url style "koord://<host>:<port>" so assign this directly
-                strSelectedAddress = contents.toUtf8();
+                strSelectedAddress = NetworkUtil::FixAddress( contents.toUtf8() );
+                qDebug() << "strSelectedAddress: " << strSelectedAddress;
             });
+        // reset NetworkAccessManager to default behaviour - follow http[s] redirects
+        qNam->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
+    } else {
+        // clean up address
+        strSelectedAddress = NetworkUtil::FixAddress ( joinFieldEdit->text() );
     }
-
-    strSelectedAddress = NetworkUtil::FixAddress ( joinFieldEdit->text() );
 
     // update joinFieldEdit with corrected address
     joinFieldEdit->setText(strSelectedAddress);
