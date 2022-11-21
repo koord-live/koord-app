@@ -2,7 +2,7 @@ param (
     [string] $APP_BUILD_VERSION = "1.0.0",
     # Replace default path with system Qt installation folder if necessary
     [string] $QtPath = "C:\Qt",
-    [string] $QtInstallPath = "C:\Qt\6.3.2",
+    [string] $QtInstallPath = "C:\Qt\6.4.1",
     [string] $QtCompile64 = "msvc2019_64",
     # Important:
     # - Do not update ASIO SDK without checking for license-related changes.

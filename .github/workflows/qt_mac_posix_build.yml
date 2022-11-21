@@ -1,7 +1,7 @@
 name: Build Qt for Mac with IPC Posix shared mem
 
 env:
-  QT_VERSION: 6.3.2
+  QT_VERSION: 6.4.1
 
 on:
   push:

@@ -2,7 +2,7 @@
 set -eu
 
 # for x64 AppImage build
-export QT_VERSION=6.3.2
+export QT_VERSION=6.4.1
 export QT_DIR="/usr/local/opt/qt"
 export PATH="${PATH}:${QT_DIR}/${QT_VERSION}/gcc_64/bin/"
 AQTINSTALL_VERSION=2.1.0
