@@ -306,7 +306,7 @@ jobs:
         id:                         build
         run:                        ${{ matrix.config.base_command }} build
         env:
-          KOORD_BUILD_VERSION:    ${{ needs.create_release.outputs.build_version }}
+          KOORD_BUILD_VERSION:      ${{ needs.create_release.outputs.build_version }}
           MAC_ADHOC_CERT:           ${{ secrets.MAC_ADHOC_CERT}}
           MAC_ADHOC_CERT_PWD:       ${{ secrets.MAC_ADHOC_CERT_PWD }}
           MAC_ADHOC_CERT_ID:        ${{ secrets.MAC_ADHOC_CERT_ID }}
