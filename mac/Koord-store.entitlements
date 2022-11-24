@@ -16,8 +16,8 @@
 	<true/>
 	<key>com.apple.application-identifier</key>
 	<string>TXZ4FR95HG.live.koord.Koord-RT</string>
-	<key>com.apple.security.application-groups</key>
-	<string>TXZ4FR95HG.koord</string>
+	<!-- <key>com.apple.security.application-groups</key>
+	<string>TXZ4FR95HG.koord</string> -->
 	<key>com.apple.developer.team-identifier</key>
 	<string>TXZ4FR95HG</string>
 </dict>
