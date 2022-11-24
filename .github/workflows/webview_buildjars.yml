@@ -44,36 +44,36 @@ jobs:
           retention-days:           31
           if-no-files-found:        error
 
-      - name:                       Upload Artifact 2 to Job
-        uses:                       actions/upload-artifact@v2
-        with:
-          name:                     ${{ steps.get-artifacts.outputs.artifact_2 }}
-          path:                     deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
-          retention-days:           31
-          if-no-files-found:        error
+      # - name:                       Upload Artifact 2 to Job
+      #   uses:                       actions/upload-artifact@v2
+      #   with:
+      #     name:                     ${{ steps.get-artifacts.outputs.artifact_2 }}
+      #     path:                     deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
+      #     retention-days:           31
+      #     if-no-files-found:        error
 
-      - name:                       Upload Artifact 3 to Job
-        uses:                       actions/upload-artifact@v2
-        with:
-          name:                     ${{ steps.get-artifacts.outputs.artifact_3 }}
-          path:                     deploy/${{ steps.get-artifacts.outputs.artifact_3 }}
-          retention-days:           31
-          if-no-files-found:        error
+      # - name:                       Upload Artifact 3 to Job
+      #   uses:                       actions/upload-artifact@v2
+      #   with:
+      #     name:                     ${{ steps.get-artifacts.outputs.artifact_3 }}
+      #     path:                     deploy/${{ steps.get-artifacts.outputs.artifact_3 }}
+      #     retention-days:           31
+      #     if-no-files-found:        error
 
-      - name:                       Upload Artifact 4 to Job
-        uses:                       actions/upload-artifact@v2
-        with:
-          name:                     ${{ steps.get-artifacts.outputs.artifact_4 }}
-          path:                     deploy/${{ steps.get-artifacts.outputs.artifact_4 }}
-          retention-days:           31
-          if-no-files-found:        error
+      # - name:                       Upload Artifact 4 to Job
+      #   uses:                       actions/upload-artifact@v2
+      #   with:
+      #     name:                     ${{ steps.get-artifacts.outputs.artifact_4 }}
+      #     path:                     deploy/${{ steps.get-artifacts.outputs.artifact_4 }}
+      #     retention-days:           31
+      #     if-no-files-found:        error
 
       - name:                       Create Release
         id:                         create-release
         uses:                       ncipollo/release-action@v1
         with:
           tag:                      ${{ env.QT_VERSION }}
-          artifacts:                "deploy/*.jar"
+          artifacts:                "deploy/qt_android_${{ env.QT_VERSION }}.tar.gz"
           draft:                    false
           token:                    ${{ secrets.GITHUB_TOKEN }}
           name:                     Qt_Android_${{ env.QT_VERSION }}

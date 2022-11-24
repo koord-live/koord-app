@@ -74,12 +74,15 @@ build_jar() {
     # Create shadow build directory
     mkdir -p $HOME/qt6-build-${ARCH_ABI}
 
+    # Create install dir
+    mkdir -p $HOME/qt6-install
+
     # Configure build for Android
     # ALSO configure and build for: armeabi-v7a
     cd $HOME/qt6-build-${ARCH_ABI}
     ../qt5/configure \
         -platform android-clang \
-        -prefix $HOME/qt6_${ARCH_ABI} \
+        -prefix $HOME/qt6-install/android_${ARCH_ABI} \
         -android-ndk ${ANDROID_NDK_HOME} \
         -android-sdk ${ANDROID_SDK_ROOT} \
         -qt-host-path $HOME/Qt/${QT_VERSION}/gcc_64 \
@@ -93,25 +96,34 @@ build_jar() {
 
     ## Optional install to prefix dir
     cmake --install .
-    # file is now at $HOME/qt6_${ARCH_ABI}/jar/QtAndroidWebView.jar
+    # file is now at $HOME/qt6-install/android_${ARCH_ABI}/jar/QtAndroidWebView.jar
 }
 
 pass_artifacts_to_job() {
     mkdir -p ${GITHUB_WORKSPACE}/deploy
     
-    mv -v $HOME/qt6_armeabi-v7a/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_armeabi-v7a.jar
-    mv -v $HOME/qt6_arm64-v8a/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_arm64-v8a.jar
-    mv -v $HOME/qt6_x86/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_x86.jar
-    mv -v $HOME/qt6_x86_64/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_x86_64.jar
+    # mv -v $HOME/qt6_armeabi-v7a/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_armeabi-v7a.jar
+    # mv -v $HOME/qt6_arm64-v8a/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_arm64-v8a.jar
+    # mv -v $HOME/qt6_x86/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_x86.jar
+    # mv -v $HOME/qt6_x86_64/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_x86_64.jar
 
-    echo ">>> Setting output as such: name=artifact_1::QtAndroidWebView_armeabi-v7a.jar"
-    echo "artifact_1=QtAndroidWebView_armeabi-v7a.jar" >> "$GITHUB_OUTPUT"
-    echo ">>> Setting output as such: name=artifact_2::QtAndroidWebView_arm64-v8a.jar"
-    echo "artifact_2=QtAndroidWebView_arm64-v8a.jar" >> "$GITHUB_OUTPUT"
-    echo ">>> Setting output as such: name=artifact_3::QtAndroidWebView_x86.jar"
-    echo "artifact_3=QtAndroidWebView_x86.jar" >> "$GITHUB_OUTPUT"
-    echo ">>> Setting output as such: name=artifact_4::QtAndroidWebView_x86_64.jar"
-    echo "artifact_4=QtAndroidWebView_x86_64.jar" >> "$GITHUB_OUTPUT"
+    # echo ">>> Setting output as such: name=artifact_1::QtAndroidWebView_armeabi-v7a.jar"
+    # echo "artifact_1=QtAndroidWebView_armeabi-v7a.jar" >> "$GITHUB_OUTPUT"
+    # echo ">>> Setting output as such: name=artifact_2::QtAndroidWebView_arm64-v8a.jar"
+    # echo "artifact_2=QtAndroidWebView_arm64-v8a.jar" >> "$GITHUB_OUTPUT"
+    # echo ">>> Setting output as such: name=artifact_3::QtAndroidWebView_x86.jar"
+    # echo "artifact_3=QtAndroidWebView_x86.jar" >> "$GITHUB_OUTPUT"
+    # echo ">>> Setting output as such: name=artifact_4::QtAndroidWebView_x86_64.jar"
+    # echo "artifact_4=QtAndroidWebView_x86_64.jar" >> "$GITHUB_OUTPUT"
+
+    cd ${HOME}/qt6-install
+    tar cf ${HOME}/qt_android_${QT_VERSION}.tar  .
+    cd ${HOME}
+    gzip qt_android_${QT_VERSION}.tar
+
+    mv -v $HOME/qt_android_${QT_VERSION}.tar.gz ${GITHUB_WORKSPACE}/deploy/qt_android_${QT_VERSION}.tar.gz
+    echo ">>> Setting output as such: name=artifact_1::qt_android_${QT_VERSION}.tar.gz"
+    echo "artifact_1=qt_android_${QT_VERSION}.tar.gz" >> "$GITHUB_OUTPUT"
 }
 
 case "${1:-}" in
