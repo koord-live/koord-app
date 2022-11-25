@@ -147,7 +147,7 @@ build_aab() {
 
     if [ "${ARCH_ABI}" == "android_armv7" ]; then
         TARGET_ABI=armeabi-v7a
-    elif [ "${ARCH_ABI}" == "android_armv7" ]; then
+    elif [ "${ARCH_ABI}" == "android_arm64_v8a" ]; then
         TARGET_ABI=arm64-v8a
     elif [ "${ARCH_ABI}" == "android_x86" ]; then
         TARGET_ABI=x86
