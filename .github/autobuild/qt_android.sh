@@ -19,6 +19,9 @@ set -eu
     #     @Override public void onPermissionRequest(PermissionRequest request) { request.grant(request.getResources()); }
     # - copy built jar QtAndroidWebView.jar to Qt installation to rebuild
 
+## UPDATE Nov 2022: 
+# We now build the whole of Qt for all ABIs as aqt is not installing armv7 and armv8a reliably any more 
+
 ## REQUIREMENTS (provided by Github ubuntu 2004 build image):
 # - gradle 7.2+
 # - android cli tools (sdkmanager)
@@ -68,7 +71,7 @@ setup() {
 
 }
 
-build_jar() {
+build_qt() {
     local ARCH_ABI="${1}"
 
     # Create shadow build directory
@@ -91,12 +94,10 @@ build_jar() {
     # Build Qt for Android
     cmake --build . --parallel
 
-    # Archive resultant jar here:
-    ls -al ./qtbase/jar/QtAndroidWebView.jar # <-- file to substitute
-
     ## Optional install to prefix dir
     cmake --install .
-    # file is now at $HOME/qt6-install/android_${ARCH_ABI}/jar/QtAndroidWebView.jar
+    # qt build is now at $HOME/qt6-install/
+        # - android_${ARCH_ABI}/jar/QtAndroidWebView.jar
 }
 
 pass_artifacts_to_job() {
@@ -117,6 +118,12 @@ pass_artifacts_to_job() {
     # echo "artifact_4=QtAndroidWebView_x86_64.jar" >> "$GITHUB_OUTPUT"
 
     cd ${HOME}/qt6-install
+    # update armv7 dirname to expected path
+    mv android_armeabi-v7a android_armv7
+    # mv android_arm64_v8a   android_arm64_v8a
+    # mv android_x86 android_x86
+    # mv android_x86_64 android_x86_64
+
     tar cf ${HOME}/qt_android_${QT_VERSION}.tar  .
     cd ${HOME}
     gzip qt_android_${QT_VERSION}.tar
@@ -129,10 +136,10 @@ pass_artifacts_to_job() {
 case "${1:-}" in
     build)
         setup
-        build_jar "armeabi-v7a"
-        build_jar "arm64-v8a"
-        build_jar "x86"
-        build_jar "x86_64"
+        build_qt "armeabi-v7a"
+        build_qt "arm64-v8a"
+        build_qt "x86"
+        build_qt "x86_64"
         ;;
     get-artifacts)
         pass_artifacts_to_job

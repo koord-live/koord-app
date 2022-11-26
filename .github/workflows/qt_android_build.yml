@@ -1,4 +1,4 @@
-name: Build Android custom webview jars
+name: Build Android with patched webview 
 
 env:
   QT_VERSION: 6.4.1
@@ -6,12 +6,12 @@ env:
 on:
   push:
     tags:
-      - "webviewjars*"
+      - "qt_android*"
     branches:
-      - webviewjars
+      - qt_android
 
 jobs:
-  buildjars:
+  build_qt_android:
     runs-on: ubuntu-latest
     steps:
       - name:                       Checkout code
@@ -25,16 +25,16 @@ jobs:
       - name:                       Echo git shorthash
         run:                        echo ${{ steps.vars.outputs.sha_short }}
 
-      - name:                       Build Webview jars
-        id:                         webviewjar
-        run:                        ./.github/autobuild/webview_jars.sh build
+      - name:                       Build Qt Android
+        id:                         qtandroid
+        run:                        ./.github/autobuild/qt_android.sh build
         env:
           GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
           QT_VERSION:               ${{ env.QT_VERSION }}
         
-      - name:                       Post-Build for jar build
+      - name:                       Post-Build for Qt Android build
         id:                         get-artifacts
-        run:                        ./.github/autobuild/webview_jars.sh get-artifacts
+        run:                        ./.github/autobuild/qt_android.sh get-artifacts
 
       - name:                       Upload Artifact 1 to Job
         uses:                       actions/upload-artifact@v2
@@ -72,7 +72,7 @@ jobs:
         id:                         create-release
         uses:                       ncipollo/release-action@v1
         with:
-          tag:                      ${{ env.QT_VERSION }}
+          tag:                      Qt_Android_${{ env.QT_VERSION }}
           artifacts:                "deploy/qt_android_${{ env.QT_VERSION }}.tar.gz"
           draft:                    false
           token:                    ${{ secrets.GITHUB_TOKEN }}
