@@ -54,7 +54,7 @@ build_qt() {
     git clone git://code.qt.io/qt/qt5.git  # maybe add:  --depth 1 --shallow-submodules --no-single-branch
     cd qt5
     git checkout ${QT_VERSION}
-    perl init-repository --module-subset=qtbase,qtwebview,qtshadertools,qtdeclarative # get submodule source code
+    perl init-repository --module-subset=qtbase,qtwebview,qtshadertools,qtdeclarative,qtsvg # get submodule source code
 
     ## Configure Qt
     ## to build Qt with POSIX shared memory, instead of System V shared memory:
