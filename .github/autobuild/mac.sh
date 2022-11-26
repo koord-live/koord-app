@@ -2,7 +2,7 @@
 set -eu
 
 QT_DIR=/usr/local/opt/qt
-# QT_POSIX_DIR=/usr/local/opt/qt_posix
+QT_POSIX_DIR=/usr/local/opt/qt_posix
 
 # The following version pinnings are semi-automatically checked for
 # updates. Verify .github/workflows/bump-dependencies.yaml when changing those manually:
@@ -34,21 +34,21 @@ setup() {
             --archives qtbase qtdeclarative qtsvg qttools \
             --modules qtwebview
 
-        # ## POSIX QT - for AppStore and SingleApplication compatibility (not working)
-        # # Install Qt from POSIX build release
-        # wget -q https://github.com/koord-live/koord-app/releases/download/macqt_${QT_VERSION}/qt_mac_${QT_VERSION}_posix.tar.gz \
-        #     -O /tmp/qt_mac_${QT_VERSION}_posix.tar.gz
-        # echo "Creating QT_POSIX_DIR : ${QT_POSIX_DIR} ... "
-        # mkdir ${QT_POSIX_DIR}
-        # tar xf /tmp/qt_mac_${QT_VERSION}_posix.tar.gz -C ${QT_POSIX_DIR}
-        # rm /tmp/qt_mac_${QT_VERSION}_posix.tar.gz
-        # # qt now installed in QT_POSIX_DIR
+        ## POSIX QT - for AppStore and SingleApplication compatibility
+        # Install Qt from POSIX build release
+        wget -q https://github.com/koord-live/koord-app/releases/download/macqt_${QT_VERSION}/qt_mac_${QT_VERSION}_posix.tar.gz \
+            -O /tmp/qt_mac_${QT_VERSION}_posix.tar.gz
+        echo "Creating QT_POSIX_DIR : ${QT_POSIX_DIR} ... "
+        mkdir ${QT_POSIX_DIR}
+        tar xf /tmp/qt_mac_${QT_VERSION}_posix.tar.gz -C ${QT_POSIX_DIR}
+        rm /tmp/qt_mac_${QT_VERSION}_posix.tar.gz
+        # qt now installed in QT_POSIX_DIR
 
-        # echo "Patching SingleApplication for POSIX/AppStore compliance ..."
-        # # note: patch made as per:
-        # #    diff -Naur singleapplication_p_orig.cpp singleapplication_p.cpp > macOS_posix.patch
-        # patch -u ${GITHUB_WORKSPACE}/singleapplication/singleapplication_p.cpp \
-        #     -i ${GITHUB_WORKSPACE}/mac/macOS_posix.patch
+        echo "Patching SingleApplication for POSIX/AppStore compliance ..."
+        # note: patch made as per:
+        #    diff -Naur singleapplication_p_orig.cpp singleapplication_p.cpp > macOS_posix.patch
+        patch -u ${GITHUB_WORKSPACE}/singleapplication/singleapplication_p.cpp \
+            -i ${GITHUB_WORKSPACE}/mac/macOS_posix.patch
 
 
         ###################################
@@ -117,7 +117,8 @@ prepare_signing() {
 build_app_and_packages() {
     # Add the qt binaries to the PATH.
     ## For normal Qt:
-    export PATH="${QT_DIR}/${QT_VERSION}/macos/bin:${PATH}"
+    NORMAL_PATH="${QT_DIR}/${QT_VERSION}/macos/bin:${PATH}"
+    POSIX_PATH="${QT_POSIX_DIR}/bin:${PATH}"
     ## For POSIX Qt:
     # export PATH="${QT_POSIX_DIR}/bin:${PATH}"
 
@@ -127,7 +128,16 @@ build_app_and_packages() {
         BUILD_ARGS=("-s" "${MAC_ADHOC_CERT_ID}" "-a" "${MACAPP_CERT_ID}" \
             "-i" "${MACAPP_INST_CERT_ID}")
     fi
-    TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}"
+    
+    # Build for normal mode
+    export PATH=${NORMAL_PATH}
+    echo "Path set to ${PATH}, building normal ..."
+    TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m normal
+
+    # Now build for posix mode
+    export PATH=${POSIX_PATH}
+    echo "Path set to ${PATH}, building posix ...."
+    TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m posix
 }
 
 pass_artifact_to_job() {

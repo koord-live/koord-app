@@ -11,8 +11,9 @@ deploypkg_path="${root_path}/deploypkg"
 macadhoc_cert_name=""
 macapp_cert_name=""
 macinst_cert_name=""
+build_mode="normal"
 
-while getopts 'hs:a:i:' flag; do
+while getopts 'hs:a:i:m:' flag; do
     case "${flag}" in
         s)
             macadhoc_cert_name=$OPTARG
@@ -30,6 +31,12 @@ while getopts 'hs:a:i:' flag; do
             macinst_cert_name=$OPTARG
             if [[ -z "$macinst_cert_name" ]]; then
                 echo "Please add the name of the installer signing certificate to use: -i \"<name>\""
+            fi
+            ;;
+        m)
+            build_mode=$OPTARG
+            if [[ -z "$build_mode" ]]; then
+                echo "Please add the build_mode to use, eg normal or posix: -m \"<mode>\""
             fi
             ;;
         h)
@@ -147,7 +154,7 @@ build_app_package()
     # we do this here for signed / notarized dmg
     echo ">>> Doing macdeployqt for notarization ..."
     # Note: "-appstore-compliant" does NOT do any sandbox-enforcing or anything
-    # it just skips certain plugins/modules - useful not to include all of WebEngine!
+    # it just skips certain plugins/modules - useful to not include all of WebEngine!
     macdeployqt "${build_path}/${client_target_name}.app" \
         -verbose=2 \
         -always-overwrite \
@@ -289,33 +296,36 @@ cleanup
 ## optionally set client_target_name like this
 # client_target_name=$(sed -nE 's/^QMAKE_TARGET *= *(.*)$/\1/p' "${build_path}/Makefile")
 
-## Build app for DMG Installer
-# compile code
-build_app_compile_universal dmgdist
-# build .app/ structure
-build_app_package 
-# create versioned DMG installer image  
-build_disk_image
+if [ "${build_mode}" == "normal "]; then
+    ## Build app for DMG Installer
+    # compile code
+    build_app_compile_universal dmgdist
+    # build .app/ structure
+    build_app_package 
+    # create versioned DMG installer image  
+    build_disk_image
 
-# Cleanup - make clean
-echo ">>> DOING distclean ..."
-make -f "${build_path}/Makefile" -C "${build_path}" distclean
-# Clean deploy dir of app bundle dir - leave dmg build
-echo ">>> DELETING ${deploy_path}/${client_target_name}.app/"
-ls -al  "${deploy_path}/"
-rm -fr "${deploy_path}/${client_target_name}.app"
+    # Cleanup - make clean
+    echo ">>> DOING distclean ..."
+    make -f "${build_path}/Makefile" -C "${build_path}" distclean
+    # Clean deploy dir of app bundle dir - leave dmg build
+    echo ">>> DELETING ${deploy_path}/${client_target_name}.app/"
+    ls -al  "${deploy_path}/"
+    rm -fr "${deploy_path}/${client_target_name}.app"
 
-##FIXME - only necessary due to SingleApplication / Posix problems 
-## Now build for App Store:
-# use a special preprocessor DEFINE for build-time flagging - avoid SingleApplication if for App Store!
-#   DEFINES+=APPSTORE
-# rebuild code again
-build_app_compile_universal appstore
-# rebuild .app/ structure
-build_app_package 
-# now build pkg for App store upload
-build_installer_pkg
+elif [ "${build_mode}" == "posix"]; then
+    ##FIXME - only necessary due to SingleApplication / Posix problems 
+    ## Now build for App Store:
+    # use a special preprocessor DEFINE for build-time flagging - avoid SingleApplication if for App Store!
+    #   DEFINES+=APPSTORE
+    # rebuild code again
+    build_app_compile_universal appstore
+    # rebuild .app/ structure
+    build_app_package 
+    # now build pkg for App store upload
+    build_installer_pkg
 
-# make clean
-make -f "${build_path}/Makefile" -C "${build_path}" distclean
+    # make clean
+    make -f "${build_path}/Makefile" -C "${build_path}" distclean
 
+fi

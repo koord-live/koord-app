@@ -19,22 +19,22 @@ set -eu
 # - cmake 
 
 build_qt() {
-    echo "DOING a DF..."
-    df -h
-    echo
+    # echo "DOING a DF..."
+    # df -h
+    # echo
 
-    echo "DOING DU of /Applications"
-    du -sh /Applications/*
-    du -sh /usr/local/*
-    du -sh /Users/runner/*
+    # echo "DOING DU of /Applications"
+    # du -sh /Applications/*
+    # du -sh /usr/local/*
+    # du -sh /Users/runner/*
 
-    rm -fr /Users/runner/Library/Android/
-    rm -fr "/Applications/Visual Studio 2019.app"
-    rm -fr "/Applications/Visual Studio.app"
+    # rm -fr /Users/runner/Library/Android/
+    # rm -fr "/Applications/Visual Studio 2019.app"
+    # rm -fr "/Applications/Visual Studio.app"
 
-    echo "DOING ANOTHER DF..."
-    df -h
-    echo
+    # echo "DOING ANOTHER DF..."
+    # df -h
+    # echo
 
 
     ## Get Qt source -
