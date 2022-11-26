@@ -20,8 +20,7 @@ set -eu
 ANDROID_PLATFORM=android-33
 AQTINSTALL_VERSION=3.0.1
 QT_VERSION=6.4.1
-# QT_BASEDIR="/opt/Qt"
-QT_BASEDIR="/home/runner/Qt"
+QT_BASEDIR="/opt/Qt"
 BUILD_DIR=build
 ANDROID_NDK_HOST="linux-x86_64"
 # Only variables which are really needed by sub-commands are exported.
@@ -48,11 +47,13 @@ setup_qt() {
         echo "Using Qt installation from previous run (actions/cache)"
     else
         echo "Installing Qt..."
-        python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
-        # icu needs explicit installation 
-        # otherwise: "qmake: error while loading shared libraries: libicui18n.so.56: cannot open shared object file: No such file or directory"
-        python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux desktop "${QT_VERSION}" \
-            --archives qtbase qtdeclarative qtsvg qttools icu
+        # python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
+        # # icu needs explicit installation 
+        # # otherwise: "qmake: error while loading shared libraries: libicui18n.so.56: cannot open shared object file: No such file or directory"
+        # python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux desktop "${QT_VERSION}" \
+        #     --archives qtbase qtdeclarative qtsvg qttools icu
+
+        mkdir -p ${QT_BASEDIR}/${QT_VERSION}
 
         # # Install Qt from Android build release
         wget -q https://github.com/koord-live/koord-app/releases/download/androidqt_${QT_VERSION}/qt_android_${QT_VERSION}.tar.gz \
@@ -115,25 +116,30 @@ build_app() {
 
     # Override ANDROID_ABIS according to build target 
     # note: seems ANDROID_ABIS can be set here at cmdline, but ANDROID_VERSION_CODE cannot - must be in qmake file
-    if [ "${ARCH_ABI}" == "android_armv7" ]; then
-        echo ">>> Running qmake --version"
-        ANDROID_ABIS=armeabi-v7a "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" --version
-        echo ">>> Running qmake with ANDROID_ABIS=armeabi-v7a ..."
-        ANDROID_ABIS=armeabi-v7a \
-            "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
-    elif [ "${ARCH_ABI}" == "android_arm64_v8a" ]; then
-        echo ">>> Running qmake with ANDROID_ABIS=arm64-v8a ..."
-        ANDROID_ABIS=arm64-v8a \
-            "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
-    elif [ "${ARCH_ABI}" == "android_x86" ]; then
-        echo ">>> Running qmake with ANDROID_ABIS=arm64-v8a ..."
-        ANDROID_ABIS=x86 \
-            "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
-    elif [ "${ARCH_ABI}" == "android_x86_64" ]; then
-        echo ">>> Running qmake with ANDROID_ABIS=arm64-v8a ..."
-        ANDROID_ABIS=x86_64 \
-            "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
-    fi
+    # if [ "${ARCH_ABI}" == "android_armv7" ]; then
+    #     echo ">>> Running qmake --version"
+    #     ANDROID_ABIS=armeabi-v7a "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" --version
+    #     echo ">>> Running qmake with ANDROID_ABIS=armeabi-v7a ..."
+    #     ANDROID_ABIS=armeabi-v7a \
+    #         "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
+    # elif [ "${ARCH_ABI}" == "android_arm64_v8a" ]; then
+    #     echo ">>> Running qmake with ANDROID_ABIS=arm64-v8a ..."
+    #     ANDROID_ABIS=arm64-v8a \
+    #         "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
+    # elif [ "${ARCH_ABI}" == "android_x86" ]; then
+    #     echo ">>> Running qmake with ANDROID_ABIS=arm64-v8a ..."
+    #     ANDROID_ABIS=x86 \
+    #         "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
+    # elif [ "${ARCH_ABI}" == "android_x86_64" ]; then
+    #     echo ">>> Running qmake with ANDROID_ABIS=arm64-v8a ..."
+    #     ANDROID_ABIS=x86_64 \
+    #         "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
+    # fi
+
+    "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -version
+
+    ANDROID_ABIS=${ARCH_ABI} "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
+
     "${MAKE}" -j "$(nproc)"
     "${MAKE}" INSTALL_ROOT="${BUILD_DIR}_${ARCH_ABI}" -f Makefile install
 }
@@ -148,18 +154,19 @@ build_make_clean() {
 build_aab() {
     local ARCH_ABI="${1}"
 
-    if [ "${ARCH_ABI}" == "android_armv7" ]; then
-        TARGET_ABI=armeabi-v7a
-    elif [ "${ARCH_ABI}" == "android_arm64_v8a" ]; then
-        TARGET_ABI=arm64-v8a
-    elif [ "${ARCH_ABI}" == "android_x86" ]; then
-        TARGET_ABI=x86
-    elif [ "${ARCH_ABI}" == "android_x86_64" ]; then
-        TARGET_ABI=x86_64
-    fi
+    # if [ "${ARCH_ABI}" == "android_armv7" ]; then
+    #     TARGET_ABI=armeabi-v7a
+    # elif [ "${ARCH_ABI}" == "android_arm64_v8a" ]; then
+    #     TARGET_ABI=arm64-v8a
+    # elif [ "${ARCH_ABI}" == "android_x86" ]; then
+    #     TARGET_ABI=x86
+    # elif [ "${ARCH_ABI}" == "android_x86_64" ]; then
+    #     TARGET_ABI=x86_64
+    # fi
+    # TARGET_ABI=${ARCH_ABI}
     echo ">>> Building .aab file for ${TARGET_ABI}...."
 
-    ANDROID_ABIS=${TARGET_ABI} ${QT_BASEDIR}/${QT_VERSION}/gcc_64/bin/androiddeployqt --input android-Koord-deployment-settings.json \
+    ANDROID_ABIS=${ARCH_ABI} ${QT_BASEDIR}/${QT_VERSION}/gcc_64/bin/androiddeployqt --input android-Koord-deployment-settings.json \
         --verbose \
         --output "${BUILD_DIR}_${ARCH_ABI}" \
         --aab \
@@ -175,16 +182,16 @@ pass_artifact_to_job() {
     local ARCH_ABI="${1}"
     echo ">>> Deploying .aab file for ${ARCH_ABI}...."
 
-    if [ "${ARCH_ABI}" == "android_armv7" ]; then
+    if [ "${ARCH_ABI}" == "armeabi-v7a" ]; then
         NUM="1"
         BUILDNAME="arm"
-    elif [ "${ARCH_ABI}" == "android_arm64_v8a" ]; then
+    elif [ "${ARCH_ABI}" == "arm64_v8a" ]; then
         NUM="2"
         BUILDNAME="arm64"
-    elif [ "${ARCH_ABI}" == "android_x86" ]; then
+    elif [ "${ARCH_ABI}" == "x86" ]; then
         NUM="3"
         BUILDNAME="x86"
-    elif [ "${ARCH_ABI}" == "android_x86_64" ]; then
+    elif [ "${ARCH_ABI}" == "x86_64" ]; then
         NUM="4"
         BUILDNAME="x86_64"
     fi
@@ -210,23 +217,23 @@ case "${1:-}" in
         ;;
     build)
         # Build all targets in sequence
-        build_app "android_armv7"
-        build_aab "android_armv7"
+        build_app "armeabi-v7a"
+        build_aab "armeabi-v7a"
         build_make_clean
-        build_app "android_arm64_v8a"
-        build_aab "android_arm64_v8a"
+        build_app "arm64_v8a"
+        build_aab "arm64_v8a"
         build_make_clean
-        build_app "android_x86"
-        build_aab "android_x86"
+        build_app "x86"
+        build_aab "x86"
         build_make_clean
-        build_app "android_x86_64"
-        build_aab "android_x86_64"
+        build_app "x86_64"
+        build_aab "x86_64"
         ;;
     get-artifacts)
-        pass_artifact_to_job "android_armv7"
-        pass_artifact_to_job "android_arm64_v8a"
-        pass_artifact_to_job "android_x86"
-        pass_artifact_to_job "android_x86_64"
+        pass_artifact_to_job "armeabi-v7a"
+        pass_artifact_to_job "arm64_v8a"
+        pass_artifact_to_job "x86"
+        pass_artifact_to_job "x86_64"
         ;;
     *)
         echo "Unknown stage '${1:-}'"

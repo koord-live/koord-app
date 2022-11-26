@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eu
 
+QT_BASEDIR="/opt/Qt"
+
 # QT_VERSION=${QT_VER}
 # export QT_VERSION
 
@@ -46,7 +48,8 @@ setup() {
     # Install Qt 
     mkdir $HOME/Qt
     cd $HOME/Qt
-    aqt install-qt linux desktop ${QT_VERSION} -m qtshadertools
+    aqt install-qt --outputdir "${QT_BASEDIR}" linux desktop ${QT_VERSION} \
+        --archives qtbase qtdeclarative qtsvg qttools icu
 
     # Set path env vars for build
     # export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
@@ -61,7 +64,7 @@ setup() {
     git clone git://code.qt.io/qt/qt5.git  # maybe add:  --depth 1 --shallow-submodules --no-single-branch
     cd qt5
     git checkout ${QT_VERSION}
-    perl init-repository --module-subset=qtbase,qtwebview,qtshadertools,qtdeclarative # get submodule source code
+    perl init-repository --module-subset=qtbase,qtwebview,qtdeclarative # get submodule source code
 
     # Patch the QtAndroidWebViewController
     # note: patch made as per:
@@ -78,17 +81,18 @@ build_qt() {
     mkdir -p $HOME/qt6-build-${ARCH_ABI}
 
     # Create install dir
-    mkdir -p $HOME/qt6-install
+    # mkdir -p $HOME/qt6-install
+    mkdir -p /opt/Qt/${QT_VERSION}
 
     # Configure build for Android
     # ALSO configure and build for: armeabi-v7a
     cd $HOME/qt6-build-${ARCH_ABI}
     ../qt5/configure \
         -platform android-clang \
-        -prefix $HOME/qt6-install/android_${ARCH_ABI} \
+        -prefix /opt/Qt/${QT_VERSION}/${ARCH_ABI} \
         -android-ndk ${ANDROID_NDK_HOME} \
         -android-sdk ${ANDROID_SDK_ROOT} \
-        -qt-host-path $HOME/Qt/${QT_VERSION}/gcc_64 \
+        -qt-host-path /opt/Qt/${QT_VERSION}/gcc_64 \
         -android-abis ${ARCH_ABI}
 
     # Build Qt for Android
@@ -117,9 +121,9 @@ pass_artifacts_to_job() {
     # echo ">>> Setting output as such: name=artifact_4::QtAndroidWebView_x86_64.jar"
     # echo "artifact_4=QtAndroidWebView_x86_64.jar" >> "$GITHUB_OUTPUT"
 
-    cd ${HOME}/qt6-install
+    cd /opt/Qt/${QT_VERSION}
     # update armv7 dirname to expected path
-    mv android_armeabi-v7a android_armv7
+    # mv android_armeabi-v7a android_armv7
     # mv android_arm64_v8a   android_arm64_v8a
     # mv android_x86 android_x86
     # mv android_x86_64 android_x86_64
