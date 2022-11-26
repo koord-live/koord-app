@@ -1113,21 +1113,22 @@ QCheckBox::indicator {
              <bool>false</bool>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
-             <property name="spacing">
-              <number>6</number>
-             </property>
-             <property name="leftMargin">
-              <number>3</number>
-             </property>
-             <property name="topMargin">
-              <number>3</number>
-             </property>
-             <property name="rightMargin">
-              <number>3</number>
-             </property>
-             <property name="bottomMargin">
-              <number>3</number>
-             </property>
+             <item>
+              <layout class="QVBoxLayout" name="regionCheckLayout">
+               <item>
+                <widget class="QComboBox" name="cbxDirectoryServer"/>
+               </item>
+               <item>
+                <widget class="QTreeWidget" name="lvwServers">
+                 <column>
+                  <property name="text">
+                   <string notr="true">1</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+              </layout>
+             </item>
              <item>
               <widget class="QWidget" name="sessionJoinWidget" native="true">
                <property name="enabled">
@@ -1314,10 +1315,13 @@ QCheckBox::indicator {
                       <property name="sizeHint" stdset="0">
                        <size>
                         <width>20</width>
-                        <height>0</height>
+                        <height>13</height>
                        </size>
                       </property>
                      </spacer>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_10"/>
                     </item>
                    </layout>
                   </item>
@@ -2368,30 +2372,6 @@ QCheckBox::indicator {
            <property name="alignment">
             <set>Qt::AlignCenter</set>
            </property>
-          </widget>
-          <widget class="QWidget" name="layoutWidget">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>258</width>
-             <height>229</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="regionCheckLayout">
-            <item>
-             <widget class="QComboBox" name="cbxDirectoryServer"/>
-            </item>
-            <item>
-             <widget class="QTreeWidget" name="lvwServers">
-              <column>
-               <property name="text">
-                <string notr="true">1</string>
-               </property>
-              </column>
-             </widget>
-            </item>
-           </layout>
           </widget>
           <widget class="QPushButton" name="downloadLinkButton">
            <property name="enabled">
