@@ -173,12 +173,12 @@ jobs:
         # Think of this like a foreach loop. Basically runs the steps with every combination of
         # the contents of this.
         config:
-          - config_name:            Android 10+ - Play Store
-            target_os:              android
-            building_on_os:         ubuntu-22.04
-            base_command:           ./.github/autobuild/android.sh
-            run_codeql:             false
-            is_main_build_target:   true
+          # - config_name:            Android 10+ - Play Store
+          #   target_os:              android
+          #   building_on_os:         ubuntu-22.04
+          #   base_command:           ./.github/autobuild/android.sh
+          #   run_codeql:             false
+          #   is_main_build_target:   true
 
           # # Qt6 requires Ubuntu 20.04+ for build, but apt packages only in 22.04+ 
           # # Can install Qt using aqtinstall on 20.04 - thus needs glibc>=2.31 
