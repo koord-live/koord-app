@@ -20,7 +20,8 @@ set -eu
 ANDROID_PLATFORM=android-33
 AQTINSTALL_VERSION=3.0.1
 QT_VERSION=6.4.1
-QT_BASEDIR="/opt/Qt"
+# QT_BASEDIR="/opt/Qt"
+QT_BASEDIR="/home/runner/Qt"
 BUILD_DIR=build
 ANDROID_NDK_HOST="linux-x86_64"
 # Only variables which are really needed by sub-commands are exported.
