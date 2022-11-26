@@ -72,7 +72,7 @@ jobs:
         id:                         create-release
         uses:                       ncipollo/release-action@v1
         with:
-          tag:                      Qt_Android_${{ env.QT_VERSION }}
+          tag:                      androidqt_${{ env.QT_VERSION }}
           artifacts:                "deploy/qt_android_${{ env.QT_VERSION }}.tar.gz"
           draft:                    false
           token:                    ${{ secrets.GITHUB_TOKEN }}

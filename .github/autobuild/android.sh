@@ -54,7 +54,7 @@ setup_qt() {
             --archives qtbase qtdeclarative qtsvg qttools icu
 
         # # Install Qt from Android build release
-        wget -q https://github.com/koord-live/koord-app/releases/download/Qt_Android_${QT_VERSION}/qt_android_${QT_VERSION}.tar.gz \
+        wget -q https://github.com/koord-live/koord-app/releases/download/androidqt_${QT_VERSION}/qt_android_${QT_VERSION}.tar.gz \
             -O /tmp/qt_android_${QT_VERSION}.tar.gz
         tar xf /tmp/qt_android_${QT_VERSION}.tar.gz -C ${QT_BASEDIR}/${QT_VERSION}
         rm /tmp/qt_android_${QT_VERSION}.tar.gz
