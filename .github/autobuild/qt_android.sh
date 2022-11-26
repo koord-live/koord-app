@@ -49,7 +49,8 @@ setup() {
     mkdir $HOME/Qt
     cd $HOME/Qt
     aqt install-qt --outputdir "${QT_BASEDIR}" linux desktop ${QT_VERSION} \
-        --archives qtbase qtdeclarative qtsvg qttools icu
+        --archives qtbase qtdeclarative qtsvg qttools icu \
+        --modules qtshadertools
 
     # Set path env vars for build
     # export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
@@ -64,7 +65,7 @@ setup() {
     git clone git://code.qt.io/qt/qt5.git  # maybe add:  --depth 1 --shallow-submodules --no-single-branch
     cd qt5
     git checkout ${QT_VERSION}
-    perl init-repository --module-subset=qtbase,qtwebview,qtdeclarative # get submodule source code
+    perl init-repository --module-subset=qtbase,qtwebview,qtshadertools,qtdeclarative # get submodule source code
 
     # Patch the QtAndroidWebViewController
     # note: patch made as per:
