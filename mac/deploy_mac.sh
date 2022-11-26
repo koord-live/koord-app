@@ -296,7 +296,7 @@ cleanup
 ## optionally set client_target_name like this
 # client_target_name=$(sed -nE 's/^QMAKE_TARGET *= *(.*)$/\1/p' "${build_path}/Makefile")
 
-if [ "${build_mode}" == "normal "]; then
+if [[ "${build_mode}" == "normal "]]; then
     ## Build app for DMG Installer
     # compile code
     build_app_compile_universal dmgdist
@@ -313,7 +313,7 @@ if [ "${build_mode}" == "normal "]; then
     ls -al  "${deploy_path}/"
     rm -fr "${deploy_path}/${client_target_name}.app"
 
-elif [ "${build_mode}" == "posix"]; then
+elif [[ "${build_mode}" == "posix"]]; then
     ##FIXME - only necessary due to SingleApplication / Posix problems 
     ## Now build for App Store:
     # use a special preprocessor DEFINE for build-time flagging - avoid SingleApplication if for App Store!
