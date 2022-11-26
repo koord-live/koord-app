@@ -106,7 +106,7 @@ install_android_openssl() {
 build_app() {
     local ARCH_ABI="${1}"
 
-    local QT_DIR="${QT_BASEDIR}/${QT_VERSION}/android"
+    # local QT_DIR="${QT_BASEDIR}/${QT_VERSION}/android"
     local MAKE="${ANDROID_NDK_ROOT}/prebuilt/${ANDROID_NDK_HOST}/bin/make"
 
     echo "${GOOGLE_RELEASE_KEYSTORE}" | base64 --decode > android/android_release.keystore
@@ -116,6 +116,8 @@ build_app() {
     # Override ANDROID_ABIS according to build target 
     # note: seems ANDROID_ABIS can be set here at cmdline, but ANDROID_VERSION_CODE cannot - must be in qmake file
     if [ "${ARCH_ABI}" == "android_armv7" ]; then
+        echo ">>> Running qmake --version"
+        ANDROID_ABIS=armeabi-v7a "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" --version
         echo ">>> Running qmake with ANDROID_ABIS=armeabi-v7a ..."
         ANDROID_ABIS=armeabi-v7a \
             "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
