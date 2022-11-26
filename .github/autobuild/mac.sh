@@ -143,13 +143,13 @@ build_app_and_packages() {
 pass_artifact_to_job() {
     artifact="Koord_${KOORD_BUILD_VERSION}.dmg"
     echo "Moving build artifact to deploy/${artifact}"
-    mv ./deploypkg/Koord-*installer-mac.dmg "./deploy/${artifact}"
+    mv -v ./deploypkg/Koord-${KOORD_BUILD_VERSION}-installer-mac.dmg "./deploy/${artifact}"
     echo "artifact_1=${artifact}" >> "$GITHUB_OUTPUT"
 
     artifact2="Koord_${KOORD_BUILD_VERSION}_mac_storesign.pkg"
     if [ -f ./deploypkg/Koord*.pkg ]; then
         echo "Moving build artifact2 to deploy/${artifact2}"
-        mv ./deploypkg/Koord*.pkg "./deploy/${artifact2}"
+        mv -v ./deploypkg/Koord*.pkg "./deploy/${artifact2}"
         echo "artifact_2=${artifact2}" >> "$GITHUB_OUTPUT"
     fi
 }

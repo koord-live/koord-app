@@ -49,11 +49,11 @@ while getopts 'hs:a:i:m:' flag; do
     esac
 done
 
-cleanup() {
+setup_dirs() {
     # Clean up previous deployments
-    rm -rf "${build_path}"
-    rm -rf "${deploy_path}"
-    rm -rf "${deploypkg_path}"
+    # rm -rf "${build_path}"
+    # rm -rf "${deploy_path}"
+    # rm -rf "${deploypkg_path}"
     mkdir -p "${build_path}"
     mkdir -p "${deploy_path}"
     mkdir -p "${deploypkg_path}"
@@ -230,7 +230,7 @@ build_installer_pkg()
         "${build_path}_storesign/Koord_${KOORD_BUILD_VERSION}.pkg"  
 
     # move created pkg file to prep for download
-    mv "${build_path}_storesign/Koord_${KOORD_BUILD_VERSION}.pkg" "${deploypkg_path}"
+    mv -v "${build_path}_storesign/Koord_${KOORD_BUILD_VERSION}.pkg" "${deploypkg_path}"
 }
 
 build_disk_image()
@@ -290,13 +290,14 @@ if [[ ! -f "${project_path}" ]]; then
     exit 1
 fi
 
-# Cleanup previous deployments
-cleanup
+# Setup the dirs we need
+setup_dirs
 
 ## optionally set client_target_name like this
 # client_target_name=$(sed -nE 's/^QMAKE_TARGET *= *(.*)$/\1/p' "${build_path}/Makefile")
 
 if [[ "${build_mode}" == "normal" ]]; then
+
     ## Build app for DMG Installer
     # compile code
     build_app_compile_universal dmgdist
@@ -313,6 +314,9 @@ if [[ "${build_mode}" == "normal" ]]; then
     ls -al  "${deploy_path}/"
     rm -fr "${deploy_path}/${client_target_name}.app"
 
+    echo "Listing Deploypkg path"
+    ls -al  "${deploypkg_path}/"
+
 elif [[ "${build_mode}" == "posix" ]]; then
     ##FIXME - only necessary due to SingleApplication / Posix problems 
     ## Now build for App Store:
@@ -327,5 +331,8 @@ elif [[ "${build_mode}" == "posix" ]]; then
 
     # make clean
     make -f "${build_path}/Makefile" -C "${build_path}" distclean
+
+    echo "Listing Deploypkg path"
+    ls -al  "${deploypkg_path}/"
 
 fi
