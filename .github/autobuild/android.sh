@@ -186,7 +186,7 @@ pass_artifact_to_job() {
     if [ "${ARCH_ABI}" == "armeabi-v7a" ]; then
         NUM="1"
         BUILDNAME="arm"
-    elif [ "${ARCH_ABI}" == "arm64_v8a" ]; then
+    elif [ "${ARCH_ABI}" == "arm64-v8a" ]; then
         NUM="2"
         BUILDNAME="arm64"
     elif [ "${ARCH_ABI}" == "x86" ]; then
@@ -221,8 +221,8 @@ case "${1:-}" in
         build_app "armeabi-v7a"
         build_aab "armeabi-v7a"
         build_make_clean
-        build_app "arm64_v8a"
-        build_aab "arm64_v8a"
+        build_app "arm64-v8a"
+        build_aab "arm64-v8a"
         build_make_clean
         build_app "x86"
         build_aab "x86"
@@ -232,7 +232,7 @@ case "${1:-}" in
         ;;
     get-artifacts)
         pass_artifact_to_job "armeabi-v7a"
-        pass_artifact_to_job "arm64_v8a"
+        pass_artifact_to_job "arm64-v8a"
         pass_artifact_to_job "x86"
         pass_artifact_to_job "x86_64"
         ;;
