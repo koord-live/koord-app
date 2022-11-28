@@ -62,38 +62,6 @@ setup_qt() {
         tar xf /tmp/qt_android_${QT_VERSION}.tar.gz -C ${QT_BASEDIR}/${QT_VERSION}
         rm /tmp/qt_android_${QT_VERSION}.tar.gz
         # qt android now installed in QT_BASEDIR/
-
-        # # Install Qt for target and patch in hacked Webview jars
-        # python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_x86 \
-        #     --archives qtbase qtdeclarative qtsvg qttools \
-        #     --modules qtwebview 
-        # ##FIXME - HACK - SUBSTITUTE webview jar
-        # wget https://github.com/koord-live/koord-app/releases/download/${QT_VERSION}/QtAndroidWebView_x86.jar -O \
-        #     "${QT_BASEDIR}/${QT_VERSION}/android_x86/jar/QtAndroidWebView.jar"
-        
-        # python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_x86_64 \
-        #     --archives qtbase qtdeclarative qtsvg qttools \
-        #     --modules qtwebview 
-        # ##FIXME - HACK - SUBSTITUTE webview jar
-        # wget https://github.com/koord-live/koord-app/releases/download/${QT_VERSION}/QtAndroidWebView_x86_64.jar -O \
-        #     "${QT_BASEDIR}/${QT_VERSION}/android_x86_64/jar/QtAndroidWebView.jar"
-
-        # # - 64bit required for Play Store
-        # python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_arm64_v8a \
-        #     --archives qtbase qtdeclarative qtsvg qttools \
-        #     --modules qtwebview 
-        # ##FIXME - HACK - SUBSTITUTE webview jar
-        # wget https://github.com/koord-live/koord-app/releases/download/${QT_VERSION}/QtAndroidWebView_arm64-v8a.jar -O \
-        #     "${QT_BASEDIR}/${QT_VERSION}/android_arm64_v8a/jar/QtAndroidWebView.jar"
-
-        # # Also install for arm_v7 to build for 32bit devices
-        # python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_armv7 \
-        #     --archives qtbase qtdeclarative qtsvg qttools \
-        #     --modules qtwebview 
-        # ##FIXME - HACK - SUBSTITUTE webview jar
-        # wget https://github.com/koord-live/koord-app/releases/download/${QT_VERSION}/QtAndroidWebView_armeabi-v7a.jar -O \
-        #     "${QT_BASEDIR}/${QT_VERSION}/android_armv7/jar/QtAndroidWebView.jar"
-
     fi
 }
 
@@ -114,29 +82,6 @@ build_app() {
     echo "${GOOGLE_RELEASE_KEYSTORE}" | base64 --decode > android/android_release.keystore
 
     echo ">>> Compiling for ${ARCH_ABI} ..."
-
-    # Override ANDROID_ABIS according to build target 
-    # note: seems ANDROID_ABIS can be set here at cmdline, but ANDROID_VERSION_CODE cannot - must be in qmake file
-    # if [ "${ARCH_ABI}" == "android_armv7" ]; then
-    #     echo ">>> Running qmake --version"
-    #     ANDROID_ABIS=armeabi-v7a "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" --version
-    #     echo ">>> Running qmake with ANDROID_ABIS=armeabi-v7a ..."
-    #     ANDROID_ABIS=armeabi-v7a \
-    #         "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
-    # elif [ "${ARCH_ABI}" == "android_arm64_v8a" ]; then
-    #     echo ">>> Running qmake with ANDROID_ABIS=arm64-v8a ..."
-    #     ANDROID_ABIS=arm64-v8a \
-    #         "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
-    # elif [ "${ARCH_ABI}" == "android_x86" ]; then
-    #     echo ">>> Running qmake with ANDROID_ABIS=arm64-v8a ..."
-    #     ANDROID_ABIS=x86 \
-    #         "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
-    # elif [ "${ARCH_ABI}" == "android_x86_64" ]; then
-    #     echo ">>> Running qmake with ANDROID_ABIS=arm64-v8a ..."
-    #     ANDROID_ABIS=x86_64 \
-    #         "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
-    # fi
-
     "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -version
 
     ANDROID_ABIS=${ARCH_ABI} "${QT_BASEDIR}/${QT_VERSION}/${ARCH_ABI}/bin/qmake" -spec android-clang
@@ -154,17 +99,6 @@ build_make_clean() {
 
 build_aab() {
     local ARCH_ABI="${1}"
-
-    # if [ "${ARCH_ABI}" == "android_armv7" ]; then
-    #     TARGET_ABI=armeabi-v7a
-    # elif [ "${ARCH_ABI}" == "android_arm64_v8a" ]; then
-    #     TARGET_ABI=arm64-v8a
-    # elif [ "${ARCH_ABI}" == "android_x86" ]; then
-    #     TARGET_ABI=x86
-    # elif [ "${ARCH_ABI}" == "android_x86_64" ]; then
-    #     TARGET_ABI=x86_64
-    # fi
-    # TARGET_ABI=${ARCH_ABI}
     echo ">>> Building .aab file for ${ARCH_ABI}...."
 
     ANDROID_ABIS=${ARCH_ABI} ${QT_BASEDIR}/${QT_VERSION}/gcc_64/bin/androiddeployqt --input android-Koord-deployment-settings.json \
