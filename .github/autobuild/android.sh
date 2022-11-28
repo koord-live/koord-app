@@ -165,7 +165,7 @@ build_aab() {
     #     TARGET_ABI=x86_64
     # fi
     # TARGET_ABI=${ARCH_ABI}
-    echo ">>> Building .aab file for ${TARGET_ABI}...."
+    echo ">>> Building .aab file for ${ARCH_ABI}...."
 
     ANDROID_ABIS=${ARCH_ABI} ${QT_BASEDIR}/${QT_VERSION}/gcc_64/bin/androiddeployqt --input android-Koord-deployment-settings.json \
         --verbose \
