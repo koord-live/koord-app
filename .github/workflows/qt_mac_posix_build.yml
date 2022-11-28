@@ -50,7 +50,7 @@ jobs:
         with:
           tag:                      macqt_${{ env.QT_VERSION }}
           artifacts:                "deploy/*.tar.gz"
-          draft:                    false
+          draft:                    true
           token:                    ${{ secrets.GITHUB_TOKEN }}
           name:                     Qt_macOS_${{ env.QT_VERSION }}_POSIX
       

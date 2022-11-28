@@ -74,7 +74,7 @@ jobs:
         with:
           tag:                      androidqt_${{ env.QT_VERSION }}
           artifacts:                "deploy/qt_android_${{ env.QT_VERSION }}.tar.gz"
-          draft:                    false
+          draft:                    true
           token:                    ${{ secrets.GITHUB_TOKEN }}
           name:                     Qt_Android_${{ env.QT_VERSION }}
       
