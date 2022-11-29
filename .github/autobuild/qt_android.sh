@@ -3,8 +3,10 @@ set -eu
 
 QT_BASEDIR="/opt/Qt"
 
-# QT_VERSION=${QT_VER}
-# export QT_VERSION
+## REQUIREMENTS (provided by Github ubuntu 2004 build image):
+# - gradle 7.2+
+# - android cli tools (sdkmanager)
+# - cmake 
 
 ## Utility to build Qt for Android, on Linux (Ubuntu 2004 or 2204)
 # References:
@@ -23,11 +25,6 @@ QT_BASEDIR="/opt/Qt"
 
 ## UPDATE Nov 2022: 
 # We now build the whole of Qt for all ABIs as aqt is not installing armv7 and armv8a reliably any more 
-
-## REQUIREMENTS (provided by Github ubuntu 2004 build image):
-# - gradle 7.2+
-# - android cli tools (sdkmanager)
-# - cmake 
 
 setup() {
     # Install build deps from apt
@@ -83,11 +80,9 @@ build_qt() {
     mkdir -p $HOME/qt6-build-${ARCH_ABI}
 
     # Create install dir
-    # mkdir -p $HOME/qt6-install
     mkdir -p /opt/Qt/${QT_VERSION}
 
     # Configure build for Android
-    # ALSO configure and build for: armeabi-v7a
     cd $HOME/qt6-build-${ARCH_ABI}
     ../qt5/configure \
         -platform android-clang \
@@ -100,36 +95,15 @@ build_qt() {
     # Build Qt for Android
     cmake --build . --parallel
 
-    ## Optional install to prefix dir
+    ## Install to prefix dir
     cmake --install .
-    # qt build is now at $HOME/qt6-install/
-        # - android_${ARCH_ABI}/jar/QtAndroidWebView.jar
+
 }
 
 pass_artifacts_to_job() {
     mkdir -p ${GITHUB_WORKSPACE}/deploy
     
-    # mv -v $HOME/qt6_armeabi-v7a/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_armeabi-v7a.jar
-    # mv -v $HOME/qt6_arm64-v8a/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_arm64-v8a.jar
-    # mv -v $HOME/qt6_x86/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_x86.jar
-    # mv -v $HOME/qt6_x86_64/jar/QtAndroidWebView.jar ${GITHUB_WORKSPACE}/deploy/QtAndroidWebView_x86_64.jar
-
-    # echo ">>> Setting output as such: name=artifact_1::QtAndroidWebView_armeabi-v7a.jar"
-    # echo "artifact_1=QtAndroidWebView_armeabi-v7a.jar" >> "$GITHUB_OUTPUT"
-    # echo ">>> Setting output as such: name=artifact_2::QtAndroidWebView_arm64-v8a.jar"
-    # echo "artifact_2=QtAndroidWebView_arm64-v8a.jar" >> "$GITHUB_OUTPUT"
-    # echo ">>> Setting output as such: name=artifact_3::QtAndroidWebView_x86.jar"
-    # echo "artifact_3=QtAndroidWebView_x86.jar" >> "$GITHUB_OUTPUT"
-    # echo ">>> Setting output as such: name=artifact_4::QtAndroidWebView_x86_64.jar"
-    # echo "artifact_4=QtAndroidWebView_x86_64.jar" >> "$GITHUB_OUTPUT"
-
     cd /opt/Qt/${QT_VERSION}
-    # update armv7 dirname to expected path
-    # mv android_armeabi-v7a android_armv7
-    # mv android_arm64_v8a   android_arm64_v8a
-    # mv android_x86 android_x86
-    # mv android_x86_64 android_x86_64
-
     tar cf ${HOME}/qt_android_${QT_VERSION}.tar  .
     cd ${HOME}
     gzip qt_android_${QT_VERSION}.tar
