@@ -339,7 +339,7 @@ jobs:
       - name:                       Upload Artifact 1 to Job
         # builds such as iOS with signing produce no artifact to upload
         if:                         steps.get-artifacts.outputs.artifact_1
-        uses:                       actions/upload-artifact@v2
+        uses:                       actions/upload-artifact@v3
         with:
           name:                     ${{ steps.get-artifacts.outputs.artifact_1 }}
           path:                     deploy/${{ steps.get-artifacts.outputs.artifact_1 }}

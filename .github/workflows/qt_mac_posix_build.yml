@@ -37,7 +37,7 @@ jobs:
         run:                        ./.github/autobuild/qt_macos_posix.sh get-artifacts
 
       - name:                       Upload Artifact 1 to Job
-        uses:                       actions/upload-artifact@v2
+        uses:                       actions/upload-artifact@v3
         with:
           name:                     ${{ steps.get-artifacts.outputs.artifact_1 }}
           path:                     deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
