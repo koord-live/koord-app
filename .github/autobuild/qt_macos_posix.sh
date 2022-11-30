@@ -75,21 +75,21 @@ build_qt() {
     # Create archive
     echo ">>> Archiving QT installation..."
     cd /usr/local/Qt-${QT_VERSION}
-    tar cf ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_posix.tar  .
+    tar cf ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_appstore.tar  .
     cd ${GITHUB_WORKSPACE}
-    gzip qt_mac_${QT_VERSION}_posix.tar
+    gzip qt_mac_${QT_VERSION}_appstore.tar
 
-    # Output: ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_posix.tar.gz
+    # Output: ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_appstore.tar.gz
 
 }
 
 pass_artifacts_to_job() {
     mkdir -p ${GITHUB_WORKSPACE}/deploy
     
-    mv -v ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_posix.tar.gz ${GITHUB_WORKSPACE}/deploy/qt_mac_${QT_VERSION}_posix.tar.gz
+    mv -v ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_appstore.tar.gz ${GITHUB_WORKSPACE}/deploy/qt_mac_${QT_VERSION}_appstore.tar.gz
 
-    echo ">>> Setting output as such: name=artifact_1::qt_mac_${QT_VERSION}_posix.tar.gz"
-    echo "artifact_1=qt_mac_${QT_VERSION}_posix.tar.gz" >> "$GITHUB_OUTPUT"
+    echo ">>> Setting output as such: name=artifact_1::qt_mac_${QT_VERSION}_appstore.tar.gz"
+    echo "artifact_1=qt_mac_${QT_VERSION}_appstore.tar.gz" >> "$GITHUB_OUTPUT"
 
 }
 

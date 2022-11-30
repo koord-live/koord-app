@@ -3,7 +3,7 @@ set -eu
 
 QT_DIR=/usr/local/opt/qt
 QT_POSIX_DIR=/usr/local/opt/qt_posix
-QT_POSIX_VER=6.3.2
+QT_POSIX_VER=6.4.1
 
 # The following version pinnings are semi-automatically checked for
 # updates. Verify .github/workflows/bump-dependencies.yaml when changing those manually:
@@ -37,7 +37,7 @@ setup() {
 
         ## POSIX QT - for AppStore and SingleApplication compatibility
         # Install Qt from POSIX build release
-        wget -q https://github.com/koord-live/koord-app/releases/download/macqt_${QT_POSIX_VER}/qt_mac_${QT_POSIX_VER}_posix.tar.gz \
+        wget -q https://github.com/koord-live/koord-app/releases/download/macqt_${QT_POSIX_VER}/qt_mac_${QT_POSIX_VER}_appstore.tar.gz \
             -O /tmp/qt_mac_${QT_POSIX_VER}_posix.tar.gz
         echo "Creating QT_POSIX_DIR : ${QT_POSIX_DIR} ... "
         mkdir ${QT_POSIX_DIR}
