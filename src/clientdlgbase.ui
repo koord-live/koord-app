@@ -1114,22 +1114,6 @@ QCheckBox::indicator {
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <layout class="QVBoxLayout" name="regionCheckLayout">
-               <item>
-                <widget class="QComboBox" name="cbxDirectoryServer"/>
-               </item>
-               <item>
-                <widget class="QTreeWidget" name="lvwServers">
-                 <column>
-                  <property name="text">
-                   <string notr="true">1</string>
-                  </property>
-                 </column>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
               <widget class="QWidget" name="sessionJoinWidget" native="true">
                <property name="enabled">
                 <bool>true</bool>
@@ -2430,6 +2414,31 @@ QCheckBox::indicator {
            <property name="icon">
             <iconset resource="resources.qrc">
              <normaloff>:/svg/main/res/update.svg</normaloff>:/svg/main/res/update.svg</iconset>
+           </property>
+          </widget>
+          <widget class="QTreeWidget" name="lvwServers">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>516</width>
+             <height>85</height>
+            </rect>
+           </property>
+           <column>
+            <property name="text">
+             <string notr="true">1</string>
+            </property>
+           </column>
+          </widget>
+          <widget class="QComboBox" name="cbxDirectoryServer">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>516</width>
+             <height>28</height>
+            </rect>
            </property>
           </widget>
          </widget>
