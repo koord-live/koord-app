@@ -64,7 +64,7 @@ build_qt() {
     # By default, Qt is configured for installation in the /usr/local/Qt-${QT_VERSION} directory,
     # but this can be changed by using the -prefix option.
     # also need  -feature-appstore-compliant for ... App Store compliance
-    ./configure -feature-ipc_posix -feature-appstore-compliant -- -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+    ./configure -feature-ipc_posix -feature-appstore-compliant -nomake examples -nomake tests -- -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
 
     # build:
     cmake --build . --parallel
