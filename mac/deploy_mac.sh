@@ -76,7 +76,7 @@ setup_dirs() {
 
 build_app_compile_universal()
 {
-    local app_mode="${1}"
+    # local app_mode="${1}"
     # # DEFINES+=APPSTORE - for switch in main.cpp
     # # CONFIG+=appstore - for switch in qmake proj - entitlements file
     # if [[ ${app_mode} == "appstore" ]]; then
