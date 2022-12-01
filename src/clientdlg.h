@@ -26,6 +26,7 @@
 
 #include "qnetworkaccessmanager.h"
 #include "qnetworkreply.h"
+#include "qtreewidget.h"
 //#include "urlhandler.h"
 #include <QLabel>
 #include <QString>

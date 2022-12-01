@@ -58,6 +58,7 @@
         <file>res/Settings.png</file>
         <file>res/Video04.png</file>
         <file>res/MainSession.png</file>
+        <file>res/logo_land.png</file>
     </qresource>
     <qresource prefix="/">
         <file>webview.qml</file>

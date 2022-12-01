@@ -63,6 +63,7 @@ extern void qt_set_sequence_auto_mnemonic ( bool bEnable );
 #include "kdapplication.h"
 #include "kdsingleapplication.h"
 #include "messagereceiver.h"
+//#include <QSplashScreen>
 
 // Implementation **************************************************************
 
@@ -80,6 +81,8 @@ int main ( int argc, char** argv )
     QList<QString> CommandLineOptions;
     QList<QString> ServerOnlyOptions;
     QList<QString> ClientOnlyOptions;
+
+//    QSplashScreen splash;
 
     // initialize all flags and string which might be changed by command line
     // arguments
@@ -854,11 +857,17 @@ int main ( int argc, char** argv )
 
     // Make main application object
     // Note: SingleApplication not needed or desired on mobile ie iOS and Android (also ChromeOS)
-    // Also: SingleApplication problematic on appstore macOS builds (posix)
-#if defined (Q_OS_IOS) || defined (Q_OS_ANDROID) || (defined (Q_OS_MACOS) && defined (APPSTORE))
+//#if defined (Q_OS_IOS) || defined (Q_OS_ANDROID) || (defined (Q_OS_MACOS) && defined (APPSTORE))
+#if defined (Q_OS_IOS) || defined (Q_OS_ANDROID)
     KdApplication* pApp = new KdApplication ( argc, argv );
-#elif defined (Q_OS_WINDOWS) || defined (Q_OS_LINUX) || (defined (Q_OS_MACOS) && !defined (APPSTORE))
+//#elif defined (Q_OS_WINDOWS) || defined (Q_OS_LINUX) || (defined (Q_OS_MACOS) && !defined (APPSTORE))
+#elif defined (Q_OS_WINDOWS) || defined (Q_OS_LINUX) || defined (Q_OS_MACOS)
     KdSingleApplication* pApp = new KdSingleApplication (argc, argv);
+
+//    QPixmap pixmap(":/png/main/res/logo_land.png");
+//    splash.setPixmap(pixmap);
+//    // Show splash screen
+//    splash.show();
 
     if( pApp->isSecondary() ) {
         // pApp->sendMessage( pApp->arguments().join(' ').toUtf8() );
@@ -1053,6 +1062,7 @@ int main ( int argc, char** argv )
 //                ClientDlg.setWindowFlag(Qt::MaximizeUsingFullscreenGeometryHint, true);
                 // show dialog
                 ClientDlg.show();
+//                splash.finish(&ClientDlg);
                 // In main client mode - so call run() rather than exec() to setup url handler stuff
                 pApp->run();
             }
@@ -1061,7 +1071,6 @@ int main ( int argc, char** argv )
             {
                 // only start application without using the GUI
                 qInfo() << qUtf8Printable ( GetVersionAndNameStr ( false ) );
-
                 pApp->exec();
             }
         }
