@@ -131,7 +131,8 @@ build_app_and_packages() {
     fi
     
     # Build for normal mode
-    export PATH=${NORMAL_PATH}
+    # export PATH=${NORMAL_PATH}
+    export PATH=${POSIX_PATH}
     echo "Path set to ${PATH}, building normal ..."
     TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m normal
 

@@ -84,15 +84,15 @@ setup_dirs() {
 build_app_compile_universal()
 {
     local app_mode="${1}"
-    # DEFINES+=APPSTORE - for switch in main.cpp
-    # CONFIG+=appstore - for switch in qmake proj - entitlements file
-    if [[ ${app_mode} == "appstore" ]]; then
-        EXTRADEFINES="DEFINES+=APPSTORE"
-        EXTRACONFIGS="CONFIG+=appstore"
-    else
-        EXTRADEFINES=
-        EXTRACONFIGS=
-    fi
+    # # DEFINES+=APPSTORE - for switch in main.cpp
+    # # CONFIG+=appstore - for switch in qmake proj - entitlements file
+    # if [[ ${app_mode} == "appstore" ]]; then
+    #     EXTRADEFINES="DEFINES+=APPSTORE"
+    #     EXTRACONFIGS="CONFIG+=appstore"
+    # else
+    #     EXTRADEFINES=
+    #     EXTRACONFIGS=
+    # fi
 
     # We need this in build environment otherwise defaults to webengine!!?
     # bug is here: https://code.qt.io/cgit/qt/qtwebview.git/tree/src/webview/qwebviewfactory.cpp?h=6.3.1#n51
@@ -115,7 +115,7 @@ build_app_compile_universal()
             make -f "${build_path}/Makefile" -C "${build_path}" distclean
         fi
         qmake "${project_path}" -o "${build_path}/Makefile" \
-            "CONFIG+=release" ${EXTRACONFIGS} ${EXTRADEFINES} \
+            "CONFIG+=release" \
             "QMAKE_APPLE_DEVICE_ARCHS=${target_arch}" "QT_ARCH=${target_arch}" \
             "${@:2}"
         make -f "${build_path}/Makefile" -C "${build_path}" -j "${job_count}"
@@ -148,7 +148,8 @@ build_app_package()
 
     # copy in provisioning profile - BEFORE codesigning with macdeployqt
     echo ">>> Adding embedded.provisionprofile to ${build_path}/${client_target_name}.app/Contents/"
-    cp ~/embedded.provisionprofile_adhoc ${build_path}/${client_target_name}.app/Contents/embedded.provisionprofile
+    # use same profile as for store
+    cp ~/embedded.provisionprofile_store ${build_path}/${client_target_name}.app/Contents/embedded.provisionprofile
 
     # Add Qt deployment dependencies
     # we do this here for signed / notarized dmg
@@ -318,21 +319,21 @@ if [[ "${build_mode}" == "normal" ]]; then
     ls -al  "${deploypkg_path}/"
 
 elif [[ "${build_mode}" == "posix" ]]; then
-    ##FIXME - only necessary due to SingleApplication / Posix problems 
-    ## Now build for App Store:
-    # use a special preprocessor DEFINE for build-time flagging - avoid SingleApplication if for App Store!
-    #   DEFINES+=APPSTORE
-    # rebuild code again
-    build_app_compile_universal appstore
-    # rebuild .app/ structure
-    build_app_package 
-    # now build pkg for App store upload
-    build_installer_pkg
+    # ##FIXME - only necessary due to SingleApplication / Posix problems 
+    # ## Now build for App Store:
+    # # use a special preprocessor DEFINE for build-time flagging - avoid SingleApplication if for App Store!
+    # #   DEFINES+=APPSTORE
+    # # rebuild code again
+    # build_app_compile_universal appstore
+    # # rebuild .app/ structure
+    # build_app_package 
+    # # now build pkg for App store upload
+    # build_installer_pkg
 
-    # make clean
-    make -f "${build_path}/Makefile" -C "${build_path}" distclean
+    # # make clean
+    # make -f "${build_path}/Makefile" -C "${build_path}" distclean
 
     echo "Listing Deploypkg path"
-    ls -al  "${deploypkg_path}/"
+    # ls -al  "${deploypkg_path}/"
 
 fi
