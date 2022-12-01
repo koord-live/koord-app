@@ -148,8 +148,7 @@ build_app_package()
 
     # copy in provisioning profile - BEFORE codesigning with macdeployqt
     echo ">>> Adding embedded.provisionprofile to ${build_path}/${client_target_name}.app/Contents/"
-    # use same profile as for store
-    cp ~/embedded.provisionprofile_store ${build_path}/${client_target_name}.app/Contents/embedded.provisionprofile
+    cp ~/embedded.provisionprofile_adhoc ${build_path}/${client_target_name}.app/Contents/embedded.provisionprofile
 
     # Add Qt deployment dependencies
     # we do this here for signed / notarized dmg
