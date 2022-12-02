@@ -1,13 +1,13 @@
 #!/bin/bash
 set -eu
 
-QT_DIR=/usr/local/opt/qt
+# QT_DIR=/usr/local/opt/qt
 QT_POSIX_DIR=/usr/local/opt/qt_posix
-QT_POSIX_VER=6.4.1
+# QT_POSIX_VER=6.4.1
 
 # The following version pinnings are semi-automatically checked for
 # updates. Verify .github/workflows/bump-dependencies.yaml when changing those manually:
-AQTINSTALL_VERSION=3.0.1
+# AQTINSTALL_VERSION=3.0.1
 
 TARGET_ARCHS="${TARGET_ARCHS:-}"
 
@@ -21,28 +21,28 @@ if [[ ! ${KOORD_BUILD_VERSION:-} =~ [0-9]+\.[0-9]+\.[0-9]+ ]]; then
 fi
 
 setup() {
-    if [[ -d "${QT_DIR}" ]]; then
+    if [[ -d "${QT_POSIX_DIR}" ]]; then
         echo "Using Qt installation from previous run (actions/cache)"
     else
         ###############################
         ## Setup Qt
         ###############################
         echo "Installing Qt..."
-        ## NORMAL QT - which we like
-        python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
-        # no need for webengine in Mac! At all! Like iOS
-        python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
-            --archives qtbase qtdeclarative qtsvg qttools \
-            --modules qtwebview
+        # ## NORMAL QT - which we like
+        # python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
+        # # no need for webengine in Mac! At all! Like iOS
+        # python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
+        #     --archives qtbase qtdeclarative qtsvg qttools \
+        #     --modules qtwebview
 
         ## POSIX QT - for AppStore and SingleApplication compatibility
         # Install Qt from POSIX build release
-        wget -q https://github.com/koord-live/koord-app/releases/download/macqt_${QT_POSIX_VER}/qt_mac_${QT_POSIX_VER}_appstore.tar.gz \
-            -O /tmp/qt_mac_${QT_POSIX_VER}_posix.tar.gz
+        wget -q https://github.com/koord-live/koord-app/releases/download/macqt_${QT_VERSION}/qt_mac_${QT_VERSION}_appstore.tar.gz \
+            -O /tmp/qt_mac_${QT_VERSION}_posix.tar.gz
         echo "Creating QT_POSIX_DIR : ${QT_POSIX_DIR} ... "
         mkdir ${QT_POSIX_DIR}
-        tar xf /tmp/qt_mac_${QT_POSIX_VER}_posix.tar.gz -C ${QT_POSIX_DIR}
-        rm /tmp/qt_mac_${QT_POSIX_VER}_posix.tar.gz
+        tar xf /tmp/qt_mac_${QT_VERSION}_posix.tar.gz -C ${QT_POSIX_DIR}
+        rm /tmp/qt_mac_${QT_VERSION}_posix.tar.gz
         # qt now installed in QT_POSIX_DIR
 
         echo "Patching SingleApplication for POSIX/AppStore compliance ..."
@@ -50,7 +50,6 @@ setup() {
         #    diff -Naur singleapplication_p_orig.cpp singleapplication_p.cpp > macOS_posix.patch
         patch -u ${GITHUB_WORKSPACE}/singleapplication/singleapplication_p.cpp \
             -i ${GITHUB_WORKSPACE}/mac/macOS_posix.patch
-
 
         ###################################
         ## Install other deps eg OpenSSL
@@ -118,7 +117,7 @@ prepare_signing() {
 build_app_and_packages() {
     # Add the qt binaries to the PATH.
     ## For normal Qt:
-    NORMAL_PATH="${QT_DIR}/${QT_VERSION}/macos/bin:${PATH}"
+    # NORMAL_PATH="${QT_DIR}/${QT_VERSION}/macos/bin:${PATH}"
     POSIX_PATH="${QT_POSIX_DIR}/bin:${PATH}"
     ## For POSIX Qt:
     # export PATH="${QT_POSIX_DIR}/bin:${PATH}"
@@ -131,14 +130,15 @@ build_app_and_packages() {
     fi
     
     # Build for normal mode
-    export PATH=${NORMAL_PATH}
-    echo "Path set to ${PATH}, building normal ..."
-    TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m normal
-
-    # Now build for posix mode
+    # export PATH=${NORMAL_PATH}
     export PATH=${POSIX_PATH}
-    echo "Path set to ${PATH}, building posix ...."
-    TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m posix
+    echo "Path set to ${PATH}, building ..."
+    TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}"
+
+    # # Now build for posix mode
+    # export PATH=${POSIX_PATH}
+    # echo "Path set to ${PATH}, building posix ...."
+    # TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m posix
 }
 
 pass_artifact_to_job() {

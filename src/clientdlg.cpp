@@ -99,7 +99,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 //    lvwServers->setColumnWidth ( 2, 70 );
 //    lvwServers->setColumnWidth ( 3, 220 );
 //#endif
-//    lvwServers->clear();
+    lvwServers->clear();
 
 //    // make sure we do not get a too long horizontal scroll bar
 //    lvwServers->header()->setStretchLastSection ( false );
@@ -112,15 +112,15 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 //    // 3: location
 //    // 4: minimum ping time (invisible)
 //    // 5: maximum number of clients (invisible)
-//    lvwServers->setColumnCount ( 6 );
+    lvwServers->setColumnCount ( 2 );
 //    lvwServers->hideColumn ( 4 );
 //    lvwServers->hideColumn ( 5 );
 
 //    // per default the root shall not be decorated (to save space)
-//    lvwServers->setRootIsDecorated ( false );
+    lvwServers->setRootIsDecorated ( false );
 
 //    // setup timers
-//    TimerInitialSort.setSingleShot ( true ); // only once after list request
+    TimerInitialSort.setSingleShot ( true ); // only once after list request
 
 
 

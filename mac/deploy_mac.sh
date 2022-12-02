@@ -11,9 +11,8 @@ deploypkg_path="${root_path}/deploypkg"
 macadhoc_cert_name=""
 macapp_cert_name=""
 macinst_cert_name=""
-build_mode="normal"
 
-while getopts 'hs:a:i:m:' flag; do
+while getopts 'hs:a:i:' flag; do
     case "${flag}" in
         s)
             macadhoc_cert_name=$OPTARG
@@ -31,12 +30,6 @@ while getopts 'hs:a:i:m:' flag; do
             macinst_cert_name=$OPTARG
             if [[ -z "$macinst_cert_name" ]]; then
                 echo "Please add the name of the installer signing certificate to use: -i \"<name>\""
-            fi
-            ;;
-        m)
-            build_mode=$OPTARG
-            if [[ -z "$build_mode" ]]; then
-                echo "Please add the build_mode to use, eg normal or posix: -m \"<mode>\""
             fi
             ;;
         h)
@@ -83,16 +76,16 @@ setup_dirs() {
 
 build_app_compile_universal()
 {
-    local app_mode="${1}"
-    # DEFINES+=APPSTORE - for switch in main.cpp
-    # CONFIG+=appstore - for switch in qmake proj - entitlements file
-    if [[ ${app_mode} == "appstore" ]]; then
-        EXTRADEFINES="DEFINES+=APPSTORE"
-        EXTRACONFIGS="CONFIG+=appstore"
-    else
-        EXTRADEFINES=
-        EXTRACONFIGS=
-    fi
+    # local app_mode="${1}"
+    # # DEFINES+=APPSTORE - for switch in main.cpp
+    # # CONFIG+=appstore - for switch in qmake proj - entitlements file
+    # if [[ ${app_mode} == "appstore" ]]; then
+    #     EXTRADEFINES="DEFINES+=APPSTORE"
+    #     EXTRACONFIGS="CONFIG+=appstore"
+    # else
+    #     EXTRADEFINES=
+    #     EXTRACONFIGS=
+    # fi
 
     # We need this in build environment otherwise defaults to webengine!!?
     # bug is here: https://code.qt.io/cgit/qt/qtwebview.git/tree/src/webview/qwebviewfactory.cpp?h=6.3.1#n51
@@ -115,7 +108,7 @@ build_app_compile_universal()
             make -f "${build_path}/Makefile" -C "${build_path}" distclean
         fi
         qmake "${project_path}" -o "${build_path}/Makefile" \
-            "CONFIG+=release" ${EXTRACONFIGS} ${EXTRADEFINES} \
+            "CONFIG+=release" \
             "QMAKE_APPLE_DEVICE_ARCHS=${target_arch}" "QT_ARCH=${target_arch}" \
             "${@:2}"
         make -f "${build_path}/Makefile" -C "${build_path}" -j "${job_count}"
@@ -296,43 +289,43 @@ setup_dirs
 ## optionally set client_target_name like this
 # client_target_name=$(sed -nE 's/^QMAKE_TARGET *= *(.*)$/\1/p' "${build_path}/Makefile")
 
-if [[ "${build_mode}" == "normal" ]]; then
+# if [[ "${build_mode}" == "normal" ]]; then
 
-    ## Build app for DMG Installer
-    # compile code
-    build_app_compile_universal dmgdist
-    # build .app/ structure
-    build_app_package 
-    # create versioned DMG installer image  
-    build_disk_image
+# compile code
+build_app_compile_universal
+# build .app/ structure
+build_app_package 
+# create versioned DMG installer image  
+build_disk_image
 
-    # Cleanup - make clean
-    echo ">>> DOING distclean ..."
-    make -f "${build_path}/Makefile" -C "${build_path}" distclean
-    # Clean deploy dir of app bundle dir - leave dmg build
-    echo ">>> DELETING ${deploy_path}/${client_target_name}.app/"
-    ls -al  "${deploy_path}/"
-    rm -fr "${deploy_path}/${client_target_name}.app"
+# # Cleanup - make clean
+# echo ">>> DOING distclean ..."
+# make -f "${build_path}/Makefile" -C "${build_path}" distclean
+# # Clean deploy dir of app bundle dir - leave dmg build
+# echo ">>> DELETING ${deploy_path}/${client_target_name}.app/"
+# ls -al  "${deploy_path}/"
+# rm -fr "${deploy_path}/${client_target_name}.app"
 
-    echo "Listing Deploypkg path"
-    ls -al  "${deploypkg_path}/"
+echo "Listing Deploypkg path"
+ls -al  "${deploypkg_path}/"
 
-elif [[ "${build_mode}" == "posix" ]]; then
-    ##FIXME - only necessary due to SingleApplication / Posix problems 
-    ## Now build for App Store:
-    # use a special preprocessor DEFINE for build-time flagging - avoid SingleApplication if for App Store!
-    #   DEFINES+=APPSTORE
-    # rebuild code again
-    build_app_compile_universal appstore
-    # rebuild .app/ structure
-    build_app_package 
-    # now build pkg for App store upload
-    build_installer_pkg
+# # elif [[ "${build_mode}" == "posix" ]]; then
+#     ##FIXME - only necessary due to SingleApplication / Posix problems 
+#     ## Now build for App Store:
+#     # use a special preprocessor DEFINE for build-time flagging - avoid SingleApplication if for App Store!
+#     #   DEFINES+=APPSTORE
+#     # rebuild code again
+#     build_app_compile_universal appstore
+#     # rebuild .app/ structure
+#     build_app_package 
 
-    # make clean
-    make -f "${build_path}/Makefile" -C "${build_path}" distclean
+# now build pkg for App store upload
+build_installer_pkg
 
-    echo "Listing Deploypkg path"
-    ls -al  "${deploypkg_path}/"
+# # make clean
+# make -f "${build_path}/Makefile" -C "${build_path}" distclean
 
-fi
+echo "Listing Deploypkg path"
+ls -al  "${deploypkg_path}/"
+
+# fi

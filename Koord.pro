@@ -1,4 +1,4 @@
-VERSION = 4.0.36
+VERSION = 4.0.38
 
 # use target name which does not use a capital letter at the beginning
 contains(CONFIG, "noupcasename") {
@@ -120,22 +120,12 @@ win32 {
 
     QMAKE_INFO_PLIST = mac/Info-xcode.plist
 
-    # handle differing entitlements - switch for dmg and Store builds
-    contains(CONFIG, "appstore") {
-        OSX_ENTITLEMENTS.files = mac/Koord-store.entitlements
-        OSX_ENTITLEMENTS.path = Contents/Resources
-        QMAKE_BUNDLE_DATA += OSX_ENTITLEMENTS
-        XCODE_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
-        XCODE_ENTITLEMENTS.value = mac/Koord-store.entitlements
-        QMAKE_MAC_XCODE_SETTINGS += XCODE_ENTITLEMENTS
-    } else {
-        OSX_ENTITLEMENTS.files = mac/Koord-dmg.entitlements
-        OSX_ENTITLEMENTS.path = Contents/Resources
-        QMAKE_BUNDLE_DATA += OSX_ENTITLEMENTS
-        XCODE_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
-        XCODE_ENTITLEMENTS.value = mac/Koord-dmg.entitlements
-        QMAKE_MAC_XCODE_SETTINGS += XCODE_ENTITLEMENTS
-    }
+    OSX_ENTITLEMENTS.files = mac/Koord.entitlements
+    OSX_ENTITLEMENTS.path = Contents/Resources
+    QMAKE_BUNDLE_DATA += OSX_ENTITLEMENTS
+    XCODE_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
+    XCODE_ENTITLEMENTS.value = mac/Koord.entitlements
+    QMAKE_MAC_XCODE_SETTINGS += XCODE_ENTITLEMENTS
 
     MACOSX_BUNDLE_ICON.path = Contents/Resources
     QMAKE_BUNDLE_DATA += MACOSX_BUNDLE_ICON
