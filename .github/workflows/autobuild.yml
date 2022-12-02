@@ -189,13 +189,13 @@ jobs:
             run_codeql:             false
             is_main_build_target:   true
 
-          # Qt6 from apt - crossbuild for armhf eg rPi
-          # Disable for now: likely no Qt6 on rPi anyway. AppImage preferable
-          - config_name:            Linux .deb armhf (artifacts)
-            target_os:              linux
-            building_on_os:         ubuntu-22.04
-            base_command:           TARGET_ARCH=armhf ./.github/autobuild/linux.sh
-            run_codeql:             false
+          # # Qt6 from apt - crossbuild for armhf eg rPi
+          # # Disable for now: likely no Qt6 on rPi anyway. AppImage preferable
+          # - config_name:            Linux .deb armhf (artifacts)
+          #   target_os:              linux
+          #   building_on_os:         ubuntu-22.04
+          #   base_command:           TARGET_ARCH=armhf ./.github/autobuild/linux.sh
+          #   run_codeql:             false
 
           - config_name:            MacOS 10.15 - dmg+AppStore
             target_os:              macos
