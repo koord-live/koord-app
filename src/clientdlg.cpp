@@ -3344,6 +3344,7 @@ void CClientDlg::OnRegionTimerPing()
                                                  haServerAddress,
                                                  bEnableIPv6 ) )
         {
+            qDebug() << "lvwServer listing: " + lvwServers->topLevelItem ( iIdx )->data ( 0, Qt::UserRole ).toString();
             // if address is valid, send ping message using a new thread
             QFuture<void> f = QtConcurrent::run ( &CClientDlg::EmitCLServerListPingMes, this, haServerAddress );
             Q_UNUSED ( f );

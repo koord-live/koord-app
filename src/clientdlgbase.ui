@@ -1315,6 +1315,26 @@ QCheckBox::indicator {
               </widget>
              </item>
              <item>
+              <layout class="QVBoxLayout" name="regionCheckLayout">
+               <item>
+                <widget class="QPushButton" name="RegionChecker">
+                 <property name="text">
+                  <string>PushButton</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTreeWidget" name="lvwServers">
+                 <column>
+                  <property name="text">
+                   <string notr="true">1</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
               <widget class="QWidget" name="defaultButtonWidget" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -2416,7 +2436,7 @@ QCheckBox::indicator {
              <normaloff>:/svg/main/res/update.svg</normaloff>:/svg/main/res/update.svg</iconset>
            </property>
           </widget>
-          <widget class="QTreeWidget" name="lvwServers">
+          <widget class="QTreeWidget" name="lvwServers_old">
            <property name="geometry">
             <rect>
              <x>0</x>
