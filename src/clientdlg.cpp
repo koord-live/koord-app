@@ -1005,6 +1005,8 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
     QObject::connect ( &TimerPing, &QTimer::timeout, this, &CClientDlg::OnTimerPing );
 
+    QObject::connect ( &RegionTimerPing, &QTimer::timeout, this, &CClientDlg::OnRegionTimerPing );
+
     QObject::connect ( &TimerReRequestServList, &QTimer::timeout, this, &CClientDlg::OnTimerReRequestServList );
 
     QObject::connect ( &TimerCheckAudioDeviceOk, &QTimer::timeout, this, &CClientDlg::OnTimerCheckAudioDeviceOk );
@@ -1077,6 +1079,20 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
     QObject::connect ( sessionCancelButton, &QPushButton::clicked, this, &CClientDlg::OnJoinCancelClicked );
     QObject::connect ( sessionConnectButton, &QPushButton::clicked, this, &CClientDlg::OnJoinConnectClicked );
+
+    // note that this connection must be a queued connection, otherwise the server list ping
+    // times are not accurate and the client list may not be retrieved for all servers listed
+    // (it seems the sendto() function needs to be called from different threads to fire the
+    // packet immediately and do not collect packets before transmitting)
+    QObject::connect ( this, &CClientDlg::CreateCLServerListPingMes, this, &CClientDlg::OnCreateCLServerListPingMes, Qt::QueuedConnection );
+
+    QObject::connect ( this, &CClientDlg::CreateCLServerListReqVerAndOSMes, this, &CClientDlg::OnCreateCLServerListReqVerAndOSMes );
+
+    QObject::connect ( this,
+                       &CClientDlg::CreateCLServerListReqConnClientsListMes,
+                       this,
+                       &CClientDlg::OnCreateCLServerListReqConnClientsListMes );
+
 
     // ==================================================================================================
     // SETTINGS SLOTS ========
