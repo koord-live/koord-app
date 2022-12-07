@@ -191,7 +191,11 @@ case "${1:-}" in
         pass_artifact_to_job
         ;;
     validate_and_upload)
-        valid8_n_upload
+        if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
+            valid8_n_upload
+        else
+            echo "Legacy build, not uploading to store ..."
+        fi
         ;;
     *)
         echo "Unknown stage '${1:-}'"

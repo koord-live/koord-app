@@ -197,7 +197,7 @@ jobs:
           # #   base_command:           TARGET_ARCH=armhf ./.github/autobuild/linux.sh
           # #   run_codeql:             false
 
-          # - config_name:            MacOS 10.15 - dmg+AppStore
+          # - config_name:            macOS 11+ - dmg+AppStore
           #   target_os:              macos
           #   building_on_os:         macos-12
           #   base_command:           QT_VERSION=6.4.1 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64 arm64" ./.github/autobuild/mac.sh
@@ -206,7 +206,7 @@ jobs:
           #   is_main_build_target:   true
           #   xcode_version:          14.0.1
 
-          - config_name:            MacOS 10.14 - dmg
+          - config_name:            macOS 10.14 legacy - dmg
             target_os:              macos
             building_on_os:         macos-12
             base_command:           QT_VERSION=6.4.1 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64" ./.github/autobuild/mac.sh
