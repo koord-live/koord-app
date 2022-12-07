@@ -319,8 +319,10 @@ ls -al  "${deploypkg_path}/"
 #     # rebuild .app/ structure
 #     build_app_package 
 
-# now build pkg for App store upload
-build_installer_pkg
+# if we are doing Universal build, now build pkg for App store upload
+if [ ${TARGET_ARCHS} == "x86_64 arm64" ]; then
+    build_installer_pkg
+fi
 
 # # make clean
 # make -f "${build_path}/Makefile" -C "${build_path}" distclean
