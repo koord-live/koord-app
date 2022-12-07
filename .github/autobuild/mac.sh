@@ -142,7 +142,12 @@ build_app_and_packages() {
 }
 
 pass_artifact_to_job() {
-    artifact="Koord_${KOORD_BUILD_VERSION}.dmg"
+    # hack: if we are building x86_64 only, assume it is the legacy build
+    if [ "${TARGET_ARCHS}" == "x86_64" ]; then
+        artifact="Koord_${KOORD_BUILD_VERSION}_legacy.dmg"    
+    else
+        artifact="Koord_${KOORD_BUILD_VERSION}.dmg"
+    fi
     echo "Moving build artifact to deploy/${artifact}"
     mv -v ./deploypkg/Koord-${KOORD_BUILD_VERSION}-installer-mac.dmg "./deploy/${artifact}"
     echo "artifact_1=${artifact}" >> "$GITHUB_OUTPUT"
