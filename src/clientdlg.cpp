@@ -3364,7 +3364,7 @@ void CClientDlg::OnRegionTimerPing()
                                                  haServerAddress,
                                                  bEnableIPv6 ) )
         {
-            qDebug() << "lvwServer listing: " + lvwServers->topLevelItem ( iIdx )->data ( 0, Qt::UserRole ).toString();
+//            qDebug() << "lvwServer listing: " + lvwServers->topLevelItem ( iIdx )->data ( 0, Qt::UserRole ).toString();
             // if address is valid, send ping message using a new thread
             QFuture<void> f = QtConcurrent::run ( &CClientDlg::EmitCLServerListPingMes, this, haServerAddress );
             Q_UNUSED ( f );
@@ -3485,10 +3485,15 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         // could lead to connecting an incorrect server) the sorting is disabled
         // as long as the mouse is over the list (but it is not disabled for the
         // initial timer of about 2s, see TimerInitialSort) (#293).
-        if ( bDoSorting && !bShowCompleteRegList &&
-             ( TimerInitialSort.isActive() || !lvwServers->underMouse() ) ) // do not sort if "show all servers"
+//        if ( bDoSorting && !bShowCompleteRegList &&
+//             ( TimerInitialSort.isActive() || !lvwServers->underMouse() ) ) // do not sort if "show all servers"
+//        {
+//            lvwServers->sortByColumn ( 2, Qt::AscendingOrder );
+//        }
+
+        if ( bDoSorting && TimerInitialSort.isActive() ) // do not sort if "show all servers"
         {
-            lvwServers->sortByColumn ( 2, Qt::AscendingOrder );
+            lvwServers->sortByColumn ( 1, Qt::AscendingOrder );
         }
     }
 

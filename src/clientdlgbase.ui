@@ -1500,12 +1500,40 @@ QCheckBox::indicator {
               </widget>
              </item>
              <item>
+              <spacer name="verticalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
               <layout class="QVBoxLayout" name="regionCheckLayout">
+               <property name="leftMargin">
+                <number>11</number>
+               </property>
+               <property name="rightMargin">
+                <number>11</number>
+               </property>
                <item>
                 <widget class="QTreeWidget" name="lvwServers">
+                 <property name="sortingEnabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="columnCount">
                   <number>2</number>
                  </property>
+                 <attribute name="headerShowSortIndicator" stdset="0">
+                  <bool>false</bool>
+                 </attribute>
                  <column>
                   <property name="text">
                    <string notr="true">Region</string>
@@ -1519,6 +1547,22 @@ QCheckBox::indicator {
                 </widget>
                </item>
               </layout>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
              </item>
              <item>
               <widget class="CAudioMixerBoard" name="MainMixerBoard" native="true">
