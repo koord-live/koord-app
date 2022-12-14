@@ -1315,26 +1315,6 @@ QCheckBox::indicator {
               </widget>
              </item>
              <item>
-              <layout class="QVBoxLayout" name="regionCheckLayout">
-               <item>
-                <widget class="QPushButton" name="RegionChecker">
-                 <property name="text">
-                  <string>PushButton</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QTreeWidget" name="lvwServers">
-                 <column>
-                  <property name="text">
-                   <string notr="true">1</string>
-                  </property>
-                 </column>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
               <widget class="QWidget" name="defaultButtonWidget" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1518,6 +1498,27 @@ QCheckBox::indicator {
                 </item>
                </layout>
               </widget>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="regionCheckLayout">
+               <item>
+                <widget class="QTreeWidget" name="lvwServers">
+                 <property name="columnCount">
+                  <number>2</number>
+                 </property>
+                 <column>
+                  <property name="text">
+                   <string notr="true">Region</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string notr="true">Delay</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
               <widget class="CAudioMixerBoard" name="MainMixerBoard" native="true">

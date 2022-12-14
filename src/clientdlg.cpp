@@ -88,17 +88,17 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 //    // setup dir servers
 //    // set up list view for connected clients (note that the last column size
 //    // must not be specified since this column takes all the remaining space)
-//#ifdef (Q_OS_ANDROID)
-//    // for Android we need larger numbers because of the default font size
-//    lvwServers->setColumnWidth ( 0, 200 );
-//    lvwServers->setColumnWidth ( 1, 130 );
-//    lvwServers->setColumnWidth ( 2, 100 );
-//#else
-//    lvwServers->setColumnWidth ( 0, 180 );
-//    lvwServers->setColumnWidth ( 1, 75 );
-//    lvwServers->setColumnWidth ( 2, 70 );
-//    lvwServers->setColumnWidth ( 3, 220 );
-//#endif
+#if defined(Q_OS_ANDROID)
+    // for Android we need larger numbers because of the default font size
+    lvwServers->setColumnWidth ( 0, 200 );
+    lvwServers->setColumnWidth ( 1, 130 );
+    lvwServers->setColumnWidth ( 2, 100 );
+#else
+    lvwServers->setColumnWidth ( 0, 180 );
+    lvwServers->setColumnWidth ( 1, 75 );
+    lvwServers->setColumnWidth ( 2, 70 );
+    lvwServers->setColumnWidth ( 3, 220 );
+#endif
     lvwServers->clear();
 
 //    // make sure we do not get a too long horizontal scroll bar
@@ -112,7 +112,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 //    // 3: location
 //    // 4: minimum ping time (invisible)
 //    // 5: maximum number of clients (invisible)
-    lvwServers->setColumnCount ( 2 );
+//    lvwServers->setColumnCount ( 3 );
 //    lvwServers->hideColumn ( 4 );
 //    lvwServers->hideColumn ( 5 );
 
@@ -1903,6 +1903,8 @@ void CClientDlg::Connect ( const QString& strSelectedAddress, const QString& str
         inviteComboBox->addItem(QIcon(":/svg/main/res/whatsapp.svg"), "Share via Whatsapp");
         butNewStart->setVisible(false);
         defaultButtonWidget->setMaximumHeight(30);
+        // hide regionchecker
+        lvwServers->setVisible(false);
 
 //        // enable chat widgets
 //        butSend->setEnabled(true);
@@ -2019,6 +2021,8 @@ void CClientDlg::Disconnect()
     inviteComboBox->setVisible(false);
     inviteComboBox->clear();
     butConnect->setText ( tr ( "Join..." ) );
+    // show RegionChecker again
+    lvwServers->setVisible(true);
 
 //    // disable chat widgets
 //    butSend->setEnabled(false);
@@ -3484,7 +3488,7 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         if ( bDoSorting && !bShowCompleteRegList &&
              ( TimerInitialSort.isActive() || !lvwServers->underMouse() ) ) // do not sort if "show all servers"
         {
-            lvwServers->sortByColumn ( 4, Qt::AscendingOrder );
+            lvwServers->sortByColumn ( 2, Qt::AscendingOrder );
         }
     }
 
