@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>583</width>
-    <height>389</height>
+    <height>416</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1529,7 +1529,7 @@ QCheckBox::indicator {
                   <bool>false</bool>
                  </property>
                  <property name="columnCount">
-                  <number>2</number>
+                  <number>3</number>
                  </property>
                  <attribute name="headerShowSortIndicator" stdset="0">
                   <bool>false</bool>
@@ -1542,6 +1542,11 @@ QCheckBox::indicator {
                  <column>
                   <property name="text">
                    <string notr="true">Delay</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Happiness</string>
                   </property>
                  </column>
                 </widget>

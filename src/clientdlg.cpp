@@ -2979,6 +2979,11 @@ void CClientDlg::SetServerList ( const CHostAddress& InetAddr, const CVector<CSe
         {
             pNewListViewItem->setHidden ( true );
         }
+        // if this is Directory Server, don't show it
+        if ( iIdx == 0 )
+        {
+            pNewListViewItem->setHidden( true );
+        }
 
         // server name (if empty, show host address instead)
         if ( !vecServerInfo[iIdx].strName.isEmpty() )
@@ -3003,10 +3008,10 @@ void CClientDlg::SetServerList ( const CHostAddress& InetAddr, const CVector<CSe
         }
 
         // in case of all servers shown, add the registration number at the beginning
-        if ( bShowCompleteRegList )
-        {
-            pNewListViewItem->setText ( 0, QString ( "%1: " ).arg ( 1 + iIdx, 3 ) + pNewListViewItem->text ( 0 ) );
-        }
+//        if ( bShowCompleteRegList )
+//        {
+//            pNewListViewItem->setText ( 0, QString ( "%1: " ).arg ( 1 + iIdx, 3 ) + pNewListViewItem->text ( 0 ) );
+//        }
 
         // show server name in bold font if it is a permanent server
         QFont CurServerNameFont = pNewListViewItem->font ( 0 );
@@ -3017,6 +3022,9 @@ void CClientDlg::SetServerList ( const CHostAddress& InetAddr, const CVector<CSe
         QFont CurPingTimeFont = pNewListViewItem->font ( 1 );
         CurPingTimeFont.setBold ( true );
         pNewListViewItem->setFont ( 1, CurPingTimeFont );
+
+        // happiness level in emoji font
+        pNewListViewItem->setFont ( 2, QFont("Segoe UI Emoji") );
 
         // server location (city and country)
         QString strLocation = vecServerInfo[iIdx].strCity;
@@ -3425,16 +3433,20 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         if ( iMinPingTime <= 25 )
         {
             pCurListViewItem->setForeground ( 1, Qt::darkGreen );
+            pCurListViewItem->setText ( 2, "" );
+            pCurListViewItem->setText ( 2, "😃" );
         }
         else
         {
             if ( iMinPingTime <= 50 )
             {
                 pCurListViewItem->setForeground ( 1, Qt::darkYellow );
+                pCurListViewItem->setText ( 2, "😑" );
             }
             else
             {
                 pCurListViewItem->setForeground ( 1, Qt::red );
+                pCurListViewItem->setText ( 2, "😡" );
             }
         }
 
@@ -3443,6 +3455,7 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         if ( iMinPingTime > 500 )
         {
             pCurListViewItem->setText ( 1, ">500 ms" );
+            pCurListViewItem->setText ( 2, "🤬" );
         }
         else
         {
@@ -3451,20 +3464,20 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
             pCurListViewItem->setText ( 1, QString ( "%1 ms" ).arg ( iMinPingTime, 4, 10, QLatin1Char ( ' ' ) ) );
         }
 
-        // update number of clients text
-        if ( pCurListViewItem->text ( 5 ).toInt() == 0 )
-        {
-            // special case: reduced server list
-            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) );
-        }
-        else if ( iNumClients >= pCurListViewItem->text ( 5 ).toInt() )
-        {
-            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) + " (full)" );
-        }
-        else
-        {
-            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) + "/" + pCurListViewItem->text ( 5 ) );
-        }
+//        // update number of clients text
+//        if ( pCurListViewItem->text ( 5 ).toInt() == 0 )
+//        {
+//            // special case: reduced server list
+//            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) );
+//        }
+//        else if ( iNumClients >= pCurListViewItem->text ( 5 ).toInt() )
+//        {
+//            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) + " (full)" );
+//        }
+//        else
+//        {
+//            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) + "/" + pCurListViewItem->text ( 5 ) );
+//        }
 
         // check if the number of child list items matches the number of
         // connected clients, if not then request the client names
@@ -3474,7 +3487,8 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         }
 
         // this is the first time a ping time was received, set item to visible
-        if ( bIsFirstPing )
+        // UNLESS it is Directory Server, in which case keep it hidden
+        if ( bIsFirstPing && !pCurListViewItem->text ( 0 ).contains("Directory"))
         {
             pCurListViewItem->setHidden ( false );
         }
@@ -3491,10 +3505,11 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
 //            lvwServers->sortByColumn ( 2, Qt::AscendingOrder );
 //        }
 
-        if ( bDoSorting && TimerInitialSort.isActive() ) // do not sort if "show all servers"
-        {
-            lvwServers->sortByColumn ( 1, Qt::AscendingOrder );
-        }
+//        if ( bDoSorting && TimerInitialSort.isActive() ) // do not sort if "show all servers"
+//        {
+//            lvwServers->sortByColumn ( 1, Qt::AscendingOrder );
+//        }
+        lvwServers->sortByColumn ( 1, Qt::AscendingOrder );
     }
 
     // if no server item has children, do not show decoration
