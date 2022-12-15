@@ -1525,6 +1525,12 @@ QCheckBox::indicator {
                </property>
                <item>
                 <widget class="QTreeWidget" name="lvwServers">
+                 <property name="font">
+                  <font>
+                   <family>Rubik</family>
+                   <bold>true</bold>
+                  </font>
+                 </property>
                  <property name="sortingEnabled">
                   <bool>false</bool>
                  </property>
@@ -1536,17 +1542,17 @@ QCheckBox::indicator {
                  </attribute>
                  <column>
                   <property name="text">
-                   <string notr="true">Region</string>
+                   <string notr="true">REGION</string>
                   </property>
                  </column>
                  <column>
                   <property name="text">
-                   <string notr="true">Delay (in milliseconds)</string>
+                   <string notr="true">DELAY (ms)</string>
                   </property>
                  </column>
                  <column>
                   <property name="text">
-                   <string>Happiness</string>
+                   <string>JOY RATING</string>
                   </property>
                  </column>
                 </widget>
