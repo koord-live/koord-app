@@ -1541,7 +1541,7 @@ QCheckBox::indicator {
                  </column>
                  <column>
                   <property name="text">
-                   <string notr="true">Delay</string>
+                   <string notr="true">Delay (in milliseconds)</string>
                   </property>
                  </column>
                  <column>

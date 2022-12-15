@@ -3014,9 +3014,9 @@ void CClientDlg::SetServerList ( const CHostAddress& InetAddr, const CVector<CSe
 //        }
 
         // show server name in bold font if it is a permanent server
-        QFont CurServerNameFont = pNewListViewItem->font ( 0 );
-        CurServerNameFont.setBold ( vecServerInfo[iIdx].bPermanentOnline );
-        pNewListViewItem->setFont ( 0, CurServerNameFont );
+//        QFont CurServerNameFont = pNewListViewItem->font ( 0 );
+//        CurServerNameFont.setBold ( vecServerInfo[iIdx].bPermanentOnline );
+//        pNewListViewItem->setFont ( 0, CurServerNameFont );
 
         // the ping time shall be shown in bold font
         QFont CurPingTimeFont = pNewListViewItem->font ( 1 );
@@ -3430,7 +3430,8 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         // Only show minimum ping time in the list since this is the important
         // value. Temporary bad ping measurements are of no interest.
         // Color definition: <= 25 ms green, <= 50 ms yellow, otherwise red
-        if ( iMinPingTime <= 25 )
+//        if ( iMinPingTime <= 25 )
+        if ( iMinPingTime <= 80 )
         {
             pCurListViewItem->setForeground ( 1, Qt::darkGreen );
             pCurListViewItem->setText ( 2, "" );
@@ -3438,7 +3439,8 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         }
         else
         {
-            if ( iMinPingTime <= 50 )
+//            if ( iMinPingTime <= 50 )
+            if ( iMinPingTime <= 100 )
             {
                 pCurListViewItem->setForeground ( 1, Qt::darkYellow );
                 pCurListViewItem->setText ( 2, "😑" );
@@ -3454,14 +3456,14 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         // certain value
         if ( iMinPingTime > 500 )
         {
-            pCurListViewItem->setText ( 1, ">500 ms" );
+            pCurListViewItem->setText ( 1, ">500" );
             pCurListViewItem->setText ( 2, "🤬" );
         }
         else
         {
             // prepend spaces so that we can sort correctly (fieldWidth of
             // 4 is sufficient since the maximum width is ">500") (#201)
-            pCurListViewItem->setText ( 1, QString ( "%1 ms" ).arg ( iMinPingTime, 4, 10, QLatin1Char ( ' ' ) ) );
+            pCurListViewItem->setText ( 1, QString ( "%1" ).arg ( iMinPingTime, 4, 10, QLatin1Char ( ' ' ) ) );
         }
 
 //        // update number of clients text
