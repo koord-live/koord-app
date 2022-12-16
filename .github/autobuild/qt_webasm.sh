@@ -78,7 +78,7 @@ setup() {
 build_qt() {
     
     cd $HOME/qt5
-    ./configure -qt-host-path ~/Qt/6.4.1/gcc_64 -skip qtdoc -skip qttranslations -platform wasm-emscripten -prefix $PWD/qtbase
+    ./configure -qt-host-path "${QT_BASEDIR}/6.4.1/gcc_64" -skip qtdoc -skip qttranslations -platform wasm-emscripten -prefix $PWD/qtbase
 
     cmake --build . --parallel -t qtbase -t qtdeclarative -t qtsvg
 
