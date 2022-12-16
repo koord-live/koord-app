@@ -38,6 +38,14 @@ setup() {
     #     nodejs
     # openjdk-11-jdk \
 
+    # Install emscripten
+    cd $HOME
+    git clone https://github.com/emscripten-core/emsdk.git
+    cd emsdk
+    ./emsdk install 3.1.14
+    ./emsdk activate 3.1.14
+    source ./emsdk_env.sh
+
     # Python deps for build
     # sudo pip install html5lib
     sudo pip install aqtinstall
@@ -72,7 +80,7 @@ build_qt() {
     cd $HOME/qt5
     ./configure -qt-host-path ~/Qt/6.4.1/gcc_64 -skip qtdoc -skip qttranslations -platform wasm-emscripten -prefix $PWD/qtbase
 
-    cmake --build . -t qtbase -t qtdeclarative -t qtsvg
+    cmake --build . --parallel -t qtbase -t qtdeclarative -t qtsvg
 
     # Build Qt for Android
     # cmake --build . --parallel
