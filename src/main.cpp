@@ -29,52 +29,32 @@
 #include "global.h"
 #ifndef HEADLESS
 #    include <QApplication>
-#    include <QtWebView>
-#    include <QQuickWindow>
 #    include <QMessageBox>
 //#    include "serverdlg.h"
 #    ifndef SERVER_ONLY
 #        include "clientdlg.h"
 #    endif
 #endif
-#include "settings.h"
-#ifndef SERVER_ONLY
-#    include "testbench.h"
-#endif
+//#include "settings.h"
+//#ifndef SERVER_ONLY
+//#    include "testbench.h"
+//#endif
 #include "util.h"
-#if defined (Q_OS_ANDROID)
-//#    include <QtAndroidExtras/QtAndroid>
-#    include <QtCore/private/qandroidextras_p.h>
-#endif
-#if defined( Q_OS_MACOS )
-#    include "mac/activity.h"
-extern void qt_set_sequence_auto_mnemonic ( bool bEnable );
-#   include "mac/activity.h"
-#   include <QFileOpenEvent>
-#endif
 #include <memory>
-#ifndef NO_JSON_RPC
-#    include "rpcserver.h"
-#    include "serverrpc.h"
-#    ifndef SERVER_ONLY
-#        include "clientrpc.h"
-#    endif
-#endif
+//#ifndef NO_JSON_RPC
+//#    include "rpcserver.h"
+//#    include "serverrpc.h"
+//#    ifndef SERVER_ONLY
+//#        include "clientrpc.h"
+//#    endif
+//#endif
 #include "kdapplication.h"
-#include "kdsingleapplication.h"
-#include "messagereceiver.h"
-//#include <QSplashScreen>
+//#include "messagereceiver.h"
 
 // Implementation **************************************************************
 
 int main ( int argc, char** argv )
 {
-
-#if defined( Q_OS_MACOS )
-    // Mnemonic keys are default disabled in Qt for MacOS. The following function enables them.
-    // Qt will not show these with underline characters in the GUI on MacOS. (#1873)
-    qt_set_sequence_auto_mnemonic ( true );
-#endif
 
     QString        strArgument;
     double         rDbleArgument;
@@ -82,17 +62,10 @@ int main ( int argc, char** argv )
     QList<QString> ServerOnlyOptions;
     QList<QString> ClientOnlyOptions;
 
-//    QSplashScreen splash;
-
     // initialize all flags and string which might be changed by command line
     // arguments
-#if ( defined( SERVER_BUNDLE ) && defined( Q_OS_MACOS ) ) || defined( SERVER_ONLY )
-    // if we are on MacOS and we are building a server bundle or requested build with serveronly, start Jamulus in server mode
-    bool bIsClient = false;
-    qInfo() << "- Starting in server mode by default (due to compile time option)";
-#else
-    bool bIsClient = true;
-#endif
+
+    bool         bIsClient                   = true;
     bool         bUseGUI                     = true;
     bool         bStartMinimized             = false;
     bool         bShowComplRegConnList       = false;
@@ -128,8 +101,7 @@ int main ( int argc, char** argv )
     QString      strWelcomeMessage           = "";
     QString      strClientName               = "";
     QString      strJsonRpcSecretFileName    = "";
-    // handle primary / secondary instances
-    MessageReceiver msgReceiver;
+
 
 #if defined( HEADLESS ) || defined( SERVER_ONLY )
     Q_UNUSED ( bStartMinimized )
@@ -840,49 +812,8 @@ int main ( int argc, char** argv )
 
     // Application/GUI setup ---------------------------------------------------
     // Application object
-#ifdef HEADLESS
-    QCoreApplication* pApp = new QCoreApplication ( argc, argv );
-#else
-//#    if defined( Q_OS_IOS )
-//    bUseGUI        = true;
-//    bIsClient      = true; // Client only - TODO: maybe a switch in interface to change to server?
 
-//    // bUseMultithreading = true;
-//    KdApplication* pApp = new KdApplication ( argc, argv );
-//#    else
-
-    // need this before new QApplication created
-    // AND before QPlatformOpenGLContext is created - https://doc.qt.io/qt-6/qtwebview-index.html#prerequisites
-    QtWebView::initialize();
-
-    // Make main application object
-    // Note: SingleApplication not needed or desired on mobile ie iOS and Android (also ChromeOS)
-    // Also: SingleApplication problematic on appstore macOS builds (posix)
-#if defined (Q_OS_IOS) || defined (Q_OS_ANDROID)
     KdApplication* pApp = new KdApplication ( argc, argv );
-#elif defined (Q_OS_WINDOWS) || defined (Q_OS_LINUX) || defined (Q_OS_MACOS)
-    KdSingleApplication* pApp = new KdSingleApplication (argc, argv);
-
-//    QPixmap pixmap(":/png/main/res/logo_land.png");
-//    splash.setPixmap(pixmap);
-//    // Show splash screen
-//    splash.show();
-
-    if( pApp->isSecondary() ) {
-        // pApp->sendMessage( pApp->arguments().join(' ').toUtf8() );
-        //FIXME - arguments() list is all args including executable ie "Koord.exe koord://<host>:<port>"
-        // so we take arguments().last() as that SHOULD be the URL in typical circumstances
-        pApp->sendMessage( pApp->arguments().last().toUtf8() );
-        return 0;
-    } else {
-        QObject::connect(
-            pApp,
-            &SingleApplication::receivedMessage,
-            &msgReceiver,
-            &MessageReceiver::receivedMessage
-        );
-    }
-#endif
 
     if (bUseGUI == true)
     {
@@ -905,56 +836,6 @@ int main ( int argc, char** argv )
         palette.setColor(QPalette::HighlightedText, Qt::black);
         pApp->setPalette(palette);
     }
-
-//#    endif
-#endif
-
-#if defined( Q_OS_ANDROID )
-    // special Android code needed for record audio permission handling
-    auto recaudio_check = QtAndroidPrivate::checkPermission( QString ("android.permission.RECORD_AUDIO"));
-
-    if ( recaudio_check.result() == QtAndroidPrivate::PermissionResult::Denied)
-    {
-        auto recaudio_reqPermRes = QtAndroidPrivate::requestPermission( "android.permission.RECORD_AUDIO" );
-
-        if ( recaudio_reqPermRes.result() == QtAndroidPrivate::PermissionResult::Denied)
-        {
-            return 0;
-        }
-    }
-
-    // and for camera permission handling
-    auto camera_check = QtAndroidPrivate::checkPermission( QString ("android.permission.CAMERA"));
-
-    if ( camera_check.result() == QtAndroidPrivate::PermissionResult::Denied)
-    {
-        auto camera_reqPermRes = QtAndroidPrivate::requestPermission( "android.permission.CAMERA" );
-
-        if ( camera_reqPermRes.result() == QtAndroidPrivate::PermissionResult::Denied)
-        {
-            return 0;
-        }
-    }
-#endif
-
-#ifdef _WIN32
-    // set application priority class -> high priority
-    SetPriorityClass ( GetCurrentProcess(), HIGH_PRIORITY_CLASS );
-
-    // For accessible support we need to add a plugin to qt. The plugin has to
-    // be located in the install directory of the software by the installer.
-    // Here, we set the path to our application path.
-    QDir ApplDir ( QApplication::applicationDirPath() );
-    pApp->addLibraryPath ( QString ( ApplDir.absolutePath() ) );
-#endif
-
-#if defined( Q_OS_MACOS )
-    // On OSX we need to declare an activity to ensure the process doesn't get
-    // throttled by OS level Nap, Sleep, and Thread Priority systems.
-    CActivity activity;
-
-    activity.BeginActivity();
-#endif
 
     // init resources
     Q_INIT_RESOURCE ( resources );
@@ -1012,140 +893,28 @@ int main ( int argc, char** argv )
 
     try
     {
-#ifndef SERVER_ONLY
-        if ( bIsClient )
-        {
-            // Client:
-            // actual client object
-            CClient Client ( iPortNumber,
-                             iQosNumber,
-                             strConnOnStartupAddress,
-                             strMIDISetup,
-                             bNoAutoJackConnect,
-                             strClientName,
-                             bEnableIPv6,
-                             bMuteMeInPersonalMix );
+        // Client:
+        // actual client object
+        CClient Client ( iPortNumber,
+                         iQosNumber,
+                         strConnOnStartupAddress,
+                         strMIDISetup,
+                         bNoAutoJackConnect,
+                         strClientName,
+                         bEnableIPv6,
+                         bMuteMeInPersonalMix );
 
-            // load settings from init-file (command line options override)
-            CClientSettings Settings ( &Client, strIniFileName );
-            Settings.Load ( CommandLineOptions );
-
-            // load translation
-            if ( bUseGUI && bUseTranslation )
-            {
-                CLocale::LoadTranslation ( Settings.strLanguage, pApp );
-                CInstPictures::UpdateTableOnLanguageChange();
-            }
-
-#    ifndef NO_JSON_RPC
-            if ( pRpcServer )
-            {
-                new CClientRpc ( &Client, pRpcServer, pRpcServer );
-            }
-#    endif
-
-#    ifndef HEADLESS
-            if ( bUseGUI )
-            {
-                // GUI object
-                CClientDlg ClientDlg ( &Client,
-                                       &Settings,
-                                       strConnOnStartupAddress,
-                                       strMIDISetup,
-                                       bShowComplRegConnList,
-                                       bShowAnalyzerConsole,
-                                       bMuteStream,
-                                       bEnableIPv6,
-                                       nullptr );
-                //FIXME - for iOS only really
-//                ClientDlg.setWindowFlag(Qt::MaximizeUsingFullscreenGeometryHint, true);
-                // show dialog
-                ClientDlg.show();
-//                splash.finish(&ClientDlg);
-                // In main client mode - so call run() rather than exec() to setup url handler stuff
-                pApp->run();
-            }
-            else
-#    endif
-            {
-                // only start application without using the GUI
-                qInfo() << qUtf8Printable ( GetVersionAndNameStr ( false ) );
-                pApp->exec();
-            }
-        }
-        else
-#endif
-        {
-            // Server:
-            // actual server object
-            CServer Server ( iNumServerChannels,
-                             strLoggingFileName,
-                             strServerBindIP,
-                             iPortNumber,
-                             iQosNumber,
-                             strHTMLStatusFileName,
-                             strDirectoryServer,
-                             strServerListFileName,
-                             strServerInfo,
-                             strServerPublicIP,
-                             strServerListFilter,
-                             strWelcomeMessage,
-                             strRecordingDirName,
-                             bDisconnectAllClientsOnQuit,
-                             bUseDoubleSystemFrameSize,
-                             bUseMultithreading,
-                             bDisableRecording,
-                             bDelayPan,
-                             bEnableIPv6,
-                             eLicenceType );
-
-#ifndef NO_JSON_RPC
-            if ( pRpcServer )
-            {
-                new CServerRpc ( &Server, pRpcServer, pRpcServer );
-            }
-#endif
-
-#ifndef HEADLESS
-            if ( bUseGUI )
-            {
-                // load settings from init-file (command line options override)
-                CServerSettings Settings ( &Server, strIniFileName );
-                Settings.Load ( CommandLineOptions );
-
-                // load translation
-                if ( bUseGUI && bUseTranslation )
-                {
-                    CLocale::LoadTranslation ( Settings.strLanguage, pApp );
-                }
-
-                // GUI object for the server
-//                CServerDlg ServerDlg ( &Server, &Settings, bStartMinimized, nullptr );
-
-//                // show dialog (if not the minimized flag is set)
-//                if ( !bStartMinimized )
-//                {
-//                    ServerDlg.show();
-//                }
-
-                pApp->exec();
-            }
-            else
-#endif
-            {
-                // only start application without using the GUI
-                qInfo() << qUtf8Printable ( GetVersionAndNameStr ( false ) );
-
-                // CServerListManager defaults to AT_NONE, so need to switch if
-                // strDirectoryServer is wanted
-                if ( !strDirectoryServer.isEmpty() )
-                {
-                    Server.SetDirectoryType ( AT_CUSTOM );
-                }
-
-                pApp->exec();
-            }
-        }
+        // GUI object
+        CClientDlg ClientDlg ( &Client,
+                               strConnOnStartupAddress,
+                               strMIDISetup,
+                               bShowComplRegConnList,
+                               bShowAnalyzerConsole,
+                               bMuteStream,
+                               bEnableIPv6,
+                               nullptr );
+        ClientDlg.show();
+        pApp->run();
     }
 
     catch ( const CGenErr& generr )
@@ -1163,10 +932,6 @@ int main ( int argc, char** argv )
             exit ( 1 );
         }
     }
-
-#if defined( Q_OS_MACOS )
-    activity.EndActivity();
-#endif
 
     return 0;
 }

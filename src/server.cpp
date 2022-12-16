@@ -79,49 +79,49 @@ CServer::CServer ( const int          iNewMaxNumChan,
     // create OPUS encoder/decoder for each channel (must be done before
     // enabling the channels), create a mono and stereo encoder/decoder
     // for each channel
-    for ( i = 0; i < iMaxNumChannels; i++ )
-    {
-        // init OPUS -----------------------------------------------------------
-        OpusMode[i] = opus_custom_mode_create ( SYSTEM_SAMPLE_RATE_HZ, DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES, &iOpusError );
+//    for ( i = 0; i < iMaxNumChannels; i++ )
+//    {
+//        // init OPUS -----------------------------------------------------------
+//        OpusMode[i] = opus_custom_mode_create ( SYSTEM_SAMPLE_RATE_HZ, DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES, &iOpusError );
 
-        Opus64Mode[i] = opus_custom_mode_create ( SYSTEM_SAMPLE_RATE_HZ, SYSTEM_FRAME_SIZE_SAMPLES, &iOpusError );
+//        Opus64Mode[i] = opus_custom_mode_create ( SYSTEM_SAMPLE_RATE_HZ, SYSTEM_FRAME_SIZE_SAMPLES, &iOpusError );
 
-        // init audio encoders and decoders
-        OpusEncoderMono[i]     = opus_custom_encoder_create ( OpusMode[i], 1, &iOpusError );   // mono encoder legacy
-        OpusDecoderMono[i]     = opus_custom_decoder_create ( OpusMode[i], 1, &iOpusError );   // mono decoder legacy
-        OpusEncoderStereo[i]   = opus_custom_encoder_create ( OpusMode[i], 2, &iOpusError );   // stereo encoder legacy
-        OpusDecoderStereo[i]   = opus_custom_decoder_create ( OpusMode[i], 2, &iOpusError );   // stereo decoder legacy
-        Opus64EncoderMono[i]   = opus_custom_encoder_create ( Opus64Mode[i], 1, &iOpusError ); // mono encoder OPUS64
-        Opus64DecoderMono[i]   = opus_custom_decoder_create ( Opus64Mode[i], 1, &iOpusError ); // mono decoder OPUS64
-        Opus64EncoderStereo[i] = opus_custom_encoder_create ( Opus64Mode[i], 2, &iOpusError ); // stereo encoder OPUS64
-        Opus64DecoderStereo[i] = opus_custom_decoder_create ( Opus64Mode[i], 2, &iOpusError ); // stereo decoder OPUS64
+//        // init audio encoders and decoders
+//        OpusEncoderMono[i]     = opus_custom_encoder_create ( OpusMode[i], 1, &iOpusError );   // mono encoder legacy
+//        OpusDecoderMono[i]     = opus_custom_decoder_create ( OpusMode[i], 1, &iOpusError );   // mono decoder legacy
+//        OpusEncoderStereo[i]   = opus_custom_encoder_create ( OpusMode[i], 2, &iOpusError );   // stereo encoder legacy
+//        OpusDecoderStereo[i]   = opus_custom_decoder_create ( OpusMode[i], 2, &iOpusError );   // stereo decoder legacy
+//        Opus64EncoderMono[i]   = opus_custom_encoder_create ( Opus64Mode[i], 1, &iOpusError ); // mono encoder OPUS64
+//        Opus64DecoderMono[i]   = opus_custom_decoder_create ( Opus64Mode[i], 1, &iOpusError ); // mono decoder OPUS64
+//        Opus64EncoderStereo[i] = opus_custom_encoder_create ( Opus64Mode[i], 2, &iOpusError ); // stereo encoder OPUS64
+//        Opus64DecoderStereo[i] = opus_custom_decoder_create ( Opus64Mode[i], 2, &iOpusError ); // stereo decoder OPUS64
 
-        // we require a constant bit rate
-        opus_custom_encoder_ctl ( OpusEncoderMono[i], OPUS_SET_VBR ( 0 ) );
-        opus_custom_encoder_ctl ( OpusEncoderStereo[i], OPUS_SET_VBR ( 0 ) );
-        opus_custom_encoder_ctl ( Opus64EncoderMono[i], OPUS_SET_VBR ( 0 ) );
-        opus_custom_encoder_ctl ( Opus64EncoderStereo[i], OPUS_SET_VBR ( 0 ) );
+//        // we require a constant bit rate
+//        opus_custom_encoder_ctl ( OpusEncoderMono[i], OPUS_SET_VBR ( 0 ) );
+//        opus_custom_encoder_ctl ( OpusEncoderStereo[i], OPUS_SET_VBR ( 0 ) );
+//        opus_custom_encoder_ctl ( Opus64EncoderMono[i], OPUS_SET_VBR ( 0 ) );
+//        opus_custom_encoder_ctl ( Opus64EncoderStereo[i], OPUS_SET_VBR ( 0 ) );
 
-        // for 64 samples frame size we have to adjust the PLC behavior to avoid loud artifacts
-        opus_custom_encoder_ctl ( Opus64EncoderMono[i], OPUS_SET_PACKET_LOSS_PERC ( 35 ) );
-        opus_custom_encoder_ctl ( Opus64EncoderStereo[i], OPUS_SET_PACKET_LOSS_PERC ( 35 ) );
+//        // for 64 samples frame size we have to adjust the PLC behavior to avoid loud artifacts
+//        opus_custom_encoder_ctl ( Opus64EncoderMono[i], OPUS_SET_PACKET_LOSS_PERC ( 35 ) );
+//        opus_custom_encoder_ctl ( Opus64EncoderStereo[i], OPUS_SET_PACKET_LOSS_PERC ( 35 ) );
 
-        // we want as low delay as possible
-        opus_custom_encoder_ctl ( OpusEncoderMono[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
-        opus_custom_encoder_ctl ( OpusEncoderStereo[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
-        opus_custom_encoder_ctl ( Opus64EncoderMono[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
-        opus_custom_encoder_ctl ( Opus64EncoderStereo[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
+//        // we want as low delay as possible
+//        opus_custom_encoder_ctl ( OpusEncoderMono[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
+//        opus_custom_encoder_ctl ( OpusEncoderStereo[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
+//        opus_custom_encoder_ctl ( Opus64EncoderMono[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
+//        opus_custom_encoder_ctl ( Opus64EncoderStereo[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
 
-        // set encoder low complexity for legacy 128 samples frame size
-        opus_custom_encoder_ctl ( OpusEncoderMono[i], OPUS_SET_COMPLEXITY ( 1 ) );
-        opus_custom_encoder_ctl ( OpusEncoderStereo[i], OPUS_SET_COMPLEXITY ( 1 ) );
+//        // set encoder low complexity for legacy 128 samples frame size
+//        opus_custom_encoder_ctl ( OpusEncoderMono[i], OPUS_SET_COMPLEXITY ( 1 ) );
+//        opus_custom_encoder_ctl ( OpusEncoderStereo[i], OPUS_SET_COMPLEXITY ( 1 ) );
 
-        // init double-to-normal frame size conversion buffers -----------------
-        // use worst case memory initialization to avoid allocating memory in
-        // the time-critical thread
-        DoubleFrameSizeConvBufIn[i].Init ( 2 /* stereo */ * DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES /* worst case buffer size */ );
-        DoubleFrameSizeConvBufOut[i].Init ( 2 /* stereo */ * DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES /* worst case buffer size */ );
-    }
+//        // init double-to-normal frame size conversion buffers -----------------
+//        // use worst case memory initialization to avoid allocating memory in
+//        // the time-critical thread
+//        DoubleFrameSizeConvBufIn[i].Init ( 2 /* stereo */ * DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES /* worst case buffer size */ );
+//        DoubleFrameSizeConvBufOut[i].Init ( 2 /* stereo */ * DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES /* worst case buffer size */ );
+//    }
 
     // define colors for chat window identifiers
     vstrChatColors.Init ( 6 );
@@ -350,22 +350,22 @@ void CServer::CreateAndSendJitBufMessage ( const int iCurChanID, const int iNNum
 
 CServer::~CServer()
 {
-    for ( int i = 0; i < iMaxNumChannels; i++ )
-    {
-        // free audio encoders and decoders
-        opus_custom_encoder_destroy ( OpusEncoderMono[i] );
-        opus_custom_decoder_destroy ( OpusDecoderMono[i] );
-        opus_custom_encoder_destroy ( OpusEncoderStereo[i] );
-        opus_custom_decoder_destroy ( OpusDecoderStereo[i] );
-        opus_custom_encoder_destroy ( Opus64EncoderMono[i] );
-        opus_custom_decoder_destroy ( Opus64DecoderMono[i] );
-        opus_custom_encoder_destroy ( Opus64EncoderStereo[i] );
-        opus_custom_decoder_destroy ( Opus64DecoderStereo[i] );
+//    for ( int i = 0; i < iMaxNumChannels; i++ )
+//    {
+//        // free audio encoders and decoders
+//        opus_custom_encoder_destroy ( OpusEncoderMono[i] );
+//        opus_custom_decoder_destroy ( OpusDecoderMono[i] );
+//        opus_custom_encoder_destroy ( OpusEncoderStereo[i] );
+//        opus_custom_decoder_destroy ( OpusDecoderStereo[i] );
+//        opus_custom_encoder_destroy ( Opus64EncoderMono[i] );
+//        opus_custom_decoder_destroy ( Opus64DecoderMono[i] );
+//        opus_custom_encoder_destroy ( Opus64EncoderStereo[i] );
+//        opus_custom_decoder_destroy ( Opus64DecoderStereo[i] );
 
-        // free audio modes
-        opus_custom_mode_destroy ( OpusMode[i] );
-        opus_custom_mode_destroy ( Opus64Mode[i] );
-    }
+//        // free audio modes
+//        opus_custom_mode_destroy ( OpusMode[i] );
+//        opus_custom_mode_destroy ( Opus64Mode[i] );
+//    }
 }
 
 void CServer::SendProtMessage ( int iChID, CVector<uint8_t> vecMessage )
@@ -749,439 +749,439 @@ void CServer::MixEncodeTransmitDataBlocks ( CServer* pServer, const int iStartCh
     }
 }
 
-void CServer::DecodeReceiveData ( const int iChanCnt, const int iNumClients )
-{
-    int                iUnused;
-    int                iClientFrameSizeSamples = 0; // initialize to avoid a compiler warning
-    OpusCustomDecoder* CurOpusDecoder;
-    unsigned char*     pCurCodedData;
+//void CServer::DecodeReceiveData ( const int iChanCnt, const int iNumClients )
+//{
+//    int                iUnused;
+//    int                iClientFrameSizeSamples = 0; // initialize to avoid a compiler warning
+//    OpusCustomDecoder* CurOpusDecoder;
+//    unsigned char*     pCurCodedData;
 
-    // get actual ID of current channel
-    const int iCurChanID = vecChanIDsCurConChan[iChanCnt];
+//    // get actual ID of current channel
+//    const int iCurChanID = vecChanIDsCurConChan[iChanCnt];
 
-    // get and store number of audio channels and compression type
-    vecNumAudioChannels[iChanCnt] = vecChannels[iCurChanID].GetNumAudioChannels();
-    vecAudioComprType[iChanCnt]   = vecChannels[iCurChanID].GetAudioCompressionType();
+//    // get and store number of audio channels and compression type
+//    vecNumAudioChannels[iChanCnt] = vecChannels[iCurChanID].GetNumAudioChannels();
+//    vecAudioComprType[iChanCnt]   = vecChannels[iCurChanID].GetAudioCompressionType();
 
-    // get info about required frame size conversion properties
-    vecUseDoubleSysFraSizeConvBuf[iChanCnt] = ( !bUseDoubleSystemFrameSize && ( vecAudioComprType[iChanCnt] == CT_OPUS ) );
+//    // get info about required frame size conversion properties
+//    vecUseDoubleSysFraSizeConvBuf[iChanCnt] = ( !bUseDoubleSystemFrameSize && ( vecAudioComprType[iChanCnt] == CT_OPUS ) );
 
-    if ( bUseDoubleSystemFrameSize && ( vecAudioComprType[iChanCnt] == CT_OPUS64 ) )
-    {
-        vecNumFrameSizeConvBlocks[iChanCnt] = 2;
-    }
-    else
-    {
-        vecNumFrameSizeConvBlocks[iChanCnt] = 1;
-    }
+//    if ( bUseDoubleSystemFrameSize && ( vecAudioComprType[iChanCnt] == CT_OPUS64 ) )
+//    {
+//        vecNumFrameSizeConvBlocks[iChanCnt] = 2;
+//    }
+//    else
+//    {
+//        vecNumFrameSizeConvBlocks[iChanCnt] = 1;
+//    }
 
-    // update conversion buffer size (nothing will happen if the size stays the same)
-    if ( vecUseDoubleSysFraSizeConvBuf[iChanCnt] )
-    {
-        DoubleFrameSizeConvBufIn[iCurChanID].SetBufferSize ( DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] );
-        DoubleFrameSizeConvBufOut[iCurChanID].SetBufferSize ( DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] );
-    }
+//    // update conversion buffer size (nothing will happen if the size stays the same)
+//    if ( vecUseDoubleSysFraSizeConvBuf[iChanCnt] )
+//    {
+//        DoubleFrameSizeConvBufIn[iCurChanID].SetBufferSize ( DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] );
+//        DoubleFrameSizeConvBufOut[iCurChanID].SetBufferSize ( DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] );
+//    }
 
-    // select the opus decoder and raw audio frame length
-    if ( vecAudioComprType[iChanCnt] == CT_OPUS )
-    {
-        iClientFrameSizeSamples = DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES;
+//    // select the opus decoder and raw audio frame length
+//    if ( vecAudioComprType[iChanCnt] == CT_OPUS )
+//    {
+//        iClientFrameSizeSamples = DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES;
 
-        if ( vecNumAudioChannels[iChanCnt] == 1 )
-        {
-            CurOpusDecoder = OpusDecoderMono[iCurChanID];
-        }
-        else
-        {
-            CurOpusDecoder = OpusDecoderStereo[iCurChanID];
-        }
-    }
-    else if ( vecAudioComprType[iChanCnt] == CT_OPUS64 )
-    {
-        iClientFrameSizeSamples = SYSTEM_FRAME_SIZE_SAMPLES;
+//        if ( vecNumAudioChannels[iChanCnt] == 1 )
+//        {
+//            CurOpusDecoder = OpusDecoderMono[iCurChanID];
+//        }
+//        else
+//        {
+//            CurOpusDecoder = OpusDecoderStereo[iCurChanID];
+//        }
+//    }
+//    else if ( vecAudioComprType[iChanCnt] == CT_OPUS64 )
+//    {
+//        iClientFrameSizeSamples = SYSTEM_FRAME_SIZE_SAMPLES;
 
-        if ( vecNumAudioChannels[iChanCnt] == 1 )
-        {
-            CurOpusDecoder = Opus64DecoderMono[iCurChanID];
-        }
-        else
-        {
-            CurOpusDecoder = Opus64DecoderStereo[iCurChanID];
-        }
-    }
-    else
-    {
-        CurOpusDecoder = nullptr;
-    }
+//        if ( vecNumAudioChannels[iChanCnt] == 1 )
+//        {
+//            CurOpusDecoder = Opus64DecoderMono[iCurChanID];
+//        }
+//        else
+//        {
+//            CurOpusDecoder = Opus64DecoderStereo[iCurChanID];
+//        }
+//    }
+//    else
+//    {
+//        CurOpusDecoder = nullptr;
+//    }
 
-    // get gains of all connected channels
-    for ( int j = 0; j < iNumClients; j++ )
-    {
-        // The second index of "vecvecdGains" does not represent
-        // the channel ID! Therefore we have to use
-        // "vecChanIDsCurConChan" to query the IDs of the currently
-        // connected channels
-        vecvecfGains[iChanCnt][j] = vecChannels[iCurChanID].GetGain ( vecChanIDsCurConChan[j] );
+//    // get gains of all connected channels
+//    for ( int j = 0; j < iNumClients; j++ )
+//    {
+//        // The second index of "vecvecdGains" does not represent
+//        // the channel ID! Therefore we have to use
+//        // "vecChanIDsCurConChan" to query the IDs of the currently
+//        // connected channels
+//        vecvecfGains[iChanCnt][j] = vecChannels[iCurChanID].GetGain ( vecChanIDsCurConChan[j] );
 
-        // consider audio fade-in
-        vecvecfGains[iChanCnt][j] *= vecChannels[vecChanIDsCurConChan[j]].GetFadeInGain();
+//        // consider audio fade-in
+//        vecvecfGains[iChanCnt][j] *= vecChannels[vecChanIDsCurConChan[j]].GetFadeInGain();
 
-        // use the fade in of the current channel for all other connected clients
-        // as well to avoid the client volumes are at 100% when joining a server (#628)
-        if ( j != iChanCnt )
-        {
-            vecvecfGains[iChanCnt][j] *= vecChannels[iCurChanID].GetFadeInGain();
-        }
+//        // use the fade in of the current channel for all other connected clients
+//        // as well to avoid the client volumes are at 100% when joining a server (#628)
+//        if ( j != iChanCnt )
+//        {
+//            vecvecfGains[iChanCnt][j] *= vecChannels[iCurChanID].GetFadeInGain();
+//        }
 
-        // panning
-        vecvecfPannings[iChanCnt][j] = vecChannels[iCurChanID].GetPan ( vecChanIDsCurConChan[j] );
-    }
+//        // panning
+//        vecvecfPannings[iChanCnt][j] = vecChannels[iCurChanID].GetPan ( vecChanIDsCurConChan[j] );
+//    }
 
-    // If the server frame size is smaller than the received OPUS frame size, we need a conversion
-    // buffer which stores the large buffer.
-    // Note that we have a shortcut here. If the conversion buffer is not needed, the boolean flag
-    // is false and the Get() function is not called at all. Therefore if the buffer is not needed
-    // we do not spend any time in the function but go directly inside the if condition.
-    if ( ( vecUseDoubleSysFraSizeConvBuf[iChanCnt] == 0 ) ||
-         !DoubleFrameSizeConvBufIn[iCurChanID].Get ( vecvecsData[iChanCnt], SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] ) )
-    {
-        // get current number of OPUS coded bytes
-        const int iCeltNumCodedBytes = vecChannels[iCurChanID].GetCeltNumCodedBytes();
+//    // If the server frame size is smaller than the received OPUS frame size, we need a conversion
+//    // buffer which stores the large buffer.
+//    // Note that we have a shortcut here. If the conversion buffer is not needed, the boolean flag
+//    // is false and the Get() function is not called at all. Therefore if the buffer is not needed
+//    // we do not spend any time in the function but go directly inside the if condition.
+//    if ( ( vecUseDoubleSysFraSizeConvBuf[iChanCnt] == 0 ) ||
+//         !DoubleFrameSizeConvBufIn[iCurChanID].Get ( vecvecsData[iChanCnt], SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] ) )
+//    {
+//        // get current number of OPUS coded bytes
+//        const int iCeltNumCodedBytes = vecChannels[iCurChanID].GetCeltNumCodedBytes();
 
-        for ( int iB = 0; iB < vecNumFrameSizeConvBlocks[iChanCnt]; iB++ )
-        {
-            // get data
-            const EGetDataStat eGetStat = vecChannels[iCurChanID].GetData ( vecvecbyCodedData[iChanCnt], iCeltNumCodedBytes );
+//        for ( int iB = 0; iB < vecNumFrameSizeConvBlocks[iChanCnt]; iB++ )
+//        {
+//            // get data
+//            const EGetDataStat eGetStat = vecChannels[iCurChanID].GetData ( vecvecbyCodedData[iChanCnt], iCeltNumCodedBytes );
 
-            // if channel was just disconnected, set flag that connected
-            // client list is sent to all other clients
-            // and emit the client disconnected signal
-            if ( eGetStat == GS_CHAN_NOW_DISCONNECTED )
-            {
-                if ( JamController.GetRecordingEnabled() )
-                {
-                    emit ClientDisconnected ( iCurChanID ); // TODO do this outside the mutex lock?
-                }
+//            // if channel was just disconnected, set flag that connected
+//            // client list is sent to all other clients
+//            // and emit the client disconnected signal
+//            if ( eGetStat == GS_CHAN_NOW_DISCONNECTED )
+//            {
+//                if ( JamController.GetRecordingEnabled() )
+//                {
+//                    emit ClientDisconnected ( iCurChanID ); // TODO do this outside the mutex lock?
+//                }
 
-                FreeChannel ( iCurChanID ); // note that the channel is now not in use
+//                FreeChannel ( iCurChanID ); // note that the channel is now not in use
 
-                // note that no mutex is needed for this shared resource since it is not a
-                // read-modify-write operation but an atomic write and also each thread can
-                // only set it to true and never to false
-                bChannelIsNowDisconnected = true;
+//                // note that no mutex is needed for this shared resource since it is not a
+//                // read-modify-write operation but an atomic write and also each thread can
+//                // only set it to true and never to false
+//                bChannelIsNowDisconnected = true;
 
-                // since the channel is no longer in use, we should return
-                return;
-            }
+//                // since the channel is no longer in use, we should return
+//                return;
+//            }
 
-            // get pointer to coded data
-            if ( eGetStat == GS_BUFFER_OK )
-            {
-                pCurCodedData = &vecvecbyCodedData[iChanCnt][0];
-            }
-            else
-            {
-                // for lost packets use null pointer as coded input data
-                pCurCodedData = nullptr;
-            }
+//            // get pointer to coded data
+//            if ( eGetStat == GS_BUFFER_OK )
+//            {
+//                pCurCodedData = &vecvecbyCodedData[iChanCnt][0];
+//            }
+//            else
+//            {
+//                // for lost packets use null pointer as coded input data
+//                pCurCodedData = nullptr;
+//            }
 
-            // OPUS decode received data stream
-            if ( CurOpusDecoder != nullptr )
-            {
-                const int iOffset = iB * SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt];
+//            // OPUS decode received data stream
+//            if ( CurOpusDecoder != nullptr )
+//            {
+//                const int iOffset = iB * SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt];
 
-                iUnused = opus_custom_decode ( CurOpusDecoder,
-                                               pCurCodedData,
-                                               iCeltNumCodedBytes,
-                                               &vecvecsData[iChanCnt][iOffset],
-                                               iClientFrameSizeSamples );
-            }
-        }
+//                iUnused = opus_custom_decode ( CurOpusDecoder,
+//                                               pCurCodedData,
+//                                               iCeltNumCodedBytes,
+//                                               &vecvecsData[iChanCnt][iOffset],
+//                                               iClientFrameSizeSamples );
+//            }
+//        }
 
-        // a new large frame is ready, if the conversion buffer is required, put it in the buffer
-        // and read out the small frame size immediately for further processing
-        if ( vecUseDoubleSysFraSizeConvBuf[iChanCnt] != 0 )
-        {
-            DoubleFrameSizeConvBufIn[iCurChanID].PutAll ( vecvecsData[iChanCnt] );
-            DoubleFrameSizeConvBufIn[iCurChanID].Get ( vecvecsData[iChanCnt], SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] );
-        }
-    }
+//        // a new large frame is ready, if the conversion buffer is required, put it in the buffer
+//        // and read out the small frame size immediately for further processing
+//        if ( vecUseDoubleSysFraSizeConvBuf[iChanCnt] != 0 )
+//        {
+//            DoubleFrameSizeConvBufIn[iCurChanID].PutAll ( vecvecsData[iChanCnt] );
+//            DoubleFrameSizeConvBufIn[iCurChanID].Get ( vecvecsData[iChanCnt], SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] );
+//        }
+//    }
 
-    Q_UNUSED ( iUnused )
-}
+//    Q_UNUSED ( iUnused )
+//}
 
-/// @brief Mix all audio data from all clients together, encode and transmit
-void CServer::MixEncodeTransmitData ( const int iChanCnt, const int iNumClients )
-{
-    int               i, j, k, iUnused;
-    CVector<float>&   vecfIntermProcBuf = vecvecfIntermediateProcBuf[iChanCnt]; // use reference for faster access
-    CVector<int16_t>& vecsSendData      = vecvecsSendData[iChanCnt];            // use reference for faster access
+///// @brief Mix all audio data from all clients together, encode and transmit
+//void CServer::MixEncodeTransmitData ( const int iChanCnt, const int iNumClients )
+//{
+//    int               i, j, k, iUnused;
+//    CVector<float>&   vecfIntermProcBuf = vecvecfIntermediateProcBuf[iChanCnt]; // use reference for faster access
+//    CVector<int16_t>& vecsSendData      = vecvecsSendData[iChanCnt];            // use reference for faster access
 
-    // get actual ID of current channel
-    const int iCurChanID = vecChanIDsCurConChan[iChanCnt];
+//    // get actual ID of current channel
+//    const int iCurChanID = vecChanIDsCurConChan[iChanCnt];
 
-    // init intermediate processing vector with zeros since we mix all channels on that vector
-    vecfIntermProcBuf.Reset ( 0 );
+//    // init intermediate processing vector with zeros since we mix all channels on that vector
+//    vecfIntermProcBuf.Reset ( 0 );
 
-    // distinguish between stereo and mono mode
-    if ( vecNumAudioChannels[iChanCnt] == 1 )
-    {
-        // Mono target channel -------------------------------------------------
-        for ( j = 0; j < iNumClients; j++ )
-        {
-            // get a reference to the audio data and gain of the current client
-            const CVector<int16_t>& vecsData = vecvecsData[j];
-            const float             fGain    = vecvecfGains[iChanCnt][j];
+//    // distinguish between stereo and mono mode
+//    if ( vecNumAudioChannels[iChanCnt] == 1 )
+//    {
+//        // Mono target channel -------------------------------------------------
+//        for ( j = 0; j < iNumClients; j++ )
+//        {
+//            // get a reference to the audio data and gain of the current client
+//            const CVector<int16_t>& vecsData = vecvecsData[j];
+//            const float             fGain    = vecvecfGains[iChanCnt][j];
 
-            // if channel gain is 1, avoid multiplication for speed optimization
-            if ( fGain == 1.0f )
-            {
-                if ( vecNumAudioChannels[j] == 1 )
-                {
-                    // mono
-                    for ( i = 0; i < iServerFrameSizeSamples; i++ )
-                    {
-                        vecfIntermProcBuf[i] += vecsData[i];
-                    }
-                }
-                else
-                {
-                    // stereo: apply stereo-to-mono attenuation
-                    for ( i = 0, k = 0; i < iServerFrameSizeSamples; i++, k += 2 )
-                    {
-                        vecfIntermProcBuf[i] += ( static_cast<float> ( vecsData[k] ) + vecsData[k + 1] ) / 2;
-                    }
-                }
-            }
-            else
-            {
-                if ( vecNumAudioChannels[j] == 1 )
-                {
-                    // mono
-                    for ( i = 0; i < iServerFrameSizeSamples; i++ )
-                    {
-                        vecfIntermProcBuf[i] += vecsData[i] * fGain;
-                    }
-                }
-                else
-                {
-                    // stereo: apply stereo-to-mono attenuation
-                    for ( i = 0, k = 0; i < iServerFrameSizeSamples; i++, k += 2 )
-                    {
-                        vecfIntermProcBuf[i] += fGain * ( static_cast<float> ( vecsData[k] ) + vecsData[k + 1] ) / 2;
-                    }
-                }
-            }
-        }
+//            // if channel gain is 1, avoid multiplication for speed optimization
+//            if ( fGain == 1.0f )
+//            {
+//                if ( vecNumAudioChannels[j] == 1 )
+//                {
+//                    // mono
+//                    for ( i = 0; i < iServerFrameSizeSamples; i++ )
+//                    {
+//                        vecfIntermProcBuf[i] += vecsData[i];
+//                    }
+//                }
+//                else
+//                {
+//                    // stereo: apply stereo-to-mono attenuation
+//                    for ( i = 0, k = 0; i < iServerFrameSizeSamples; i++, k += 2 )
+//                    {
+//                        vecfIntermProcBuf[i] += ( static_cast<float> ( vecsData[k] ) + vecsData[k + 1] ) / 2;
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                if ( vecNumAudioChannels[j] == 1 )
+//                {
+//                    // mono
+//                    for ( i = 0; i < iServerFrameSizeSamples; i++ )
+//                    {
+//                        vecfIntermProcBuf[i] += vecsData[i] * fGain;
+//                    }
+//                }
+//                else
+//                {
+//                    // stereo: apply stereo-to-mono attenuation
+//                    for ( i = 0, k = 0; i < iServerFrameSizeSamples; i++, k += 2 )
+//                    {
+//                        vecfIntermProcBuf[i] += fGain * ( static_cast<float> ( vecsData[k] ) + vecsData[k + 1] ) / 2;
+//                    }
+//                }
+//            }
+//        }
 
-        // convert from double to short with clipping
-        for ( i = 0; i < iServerFrameSizeSamples; i++ )
-        {
-            vecsSendData[i] = Float2Short ( vecfIntermProcBuf[i] );
-        }
-    }
-    else
-    {
-        // Stereo target channel -----------------------------------------------
+//        // convert from double to short with clipping
+//        for ( i = 0; i < iServerFrameSizeSamples; i++ )
+//        {
+//            vecsSendData[i] = Float2Short ( vecfIntermProcBuf[i] );
+//        }
+//    }
+//    else
+//    {
+//        // Stereo target channel -----------------------------------------------
 
-        const int maxPanDelay = MAX_DELAY_PANNING_SAMPLES;
+//        const int maxPanDelay = MAX_DELAY_PANNING_SAMPLES;
 
-        int iPanDelL = 0, iPanDelR = 0, iPanDel;
-        int iLpan, iRpan, iPan;
+//        int iPanDelL = 0, iPanDelR = 0, iPanDel;
+//        int iLpan, iRpan, iPan;
 
-        for ( j = 0; j < iNumClients; j++ )
-        {
-            // get a reference to the audio data and gain/pan of the current client
-            const CVector<int16_t>& vecsData  = vecvecsData[j];
-            const CVector<int16_t>& vecsData2 = vecvecsData2[j];
+//        for ( j = 0; j < iNumClients; j++ )
+//        {
+//            // get a reference to the audio data and gain/pan of the current client
+//            const CVector<int16_t>& vecsData  = vecvecsData[j];
+//            const CVector<int16_t>& vecsData2 = vecvecsData2[j];
 
-            const float fGain = vecvecfGains[iChanCnt][j];
-            const float fPan  = bDelayPan ? 0.5f : vecvecfPannings[iChanCnt][j];
+//            const float fGain = vecvecfGains[iChanCnt][j];
+//            const float fPan  = bDelayPan ? 0.5f : vecvecfPannings[iChanCnt][j];
 
-            // calculate combined gain/pan for each stereo channel where we define
-            // the panning that center equals full gain for both channels
-            const float fGainL = MathUtils::GetLeftPan ( fPan, false ) * fGain;
-            const float fGainR = MathUtils::GetRightPan ( fPan, false ) * fGain;
+//            // calculate combined gain/pan for each stereo channel where we define
+//            // the panning that center equals full gain for both channels
+//            const float fGainL = MathUtils::GetLeftPan ( fPan, false ) * fGain;
+//            const float fGainR = MathUtils::GetRightPan ( fPan, false ) * fGain;
 
-            if ( bDelayPan )
-            {
-                iPanDel  = lround ( (float) ( 2 * maxPanDelay - 2 ) * ( vecvecfPannings[iChanCnt][j] - 0.5f ) );
-                iPanDelL = ( iPanDel > 0 ) ? iPanDel : 0;
-                iPanDelR = ( iPanDel < 0 ) ? -iPanDel : 0;
-            }
+//            if ( bDelayPan )
+//            {
+//                iPanDel  = lround ( (float) ( 2 * maxPanDelay - 2 ) * ( vecvecfPannings[iChanCnt][j] - 0.5f ) );
+//                iPanDelL = ( iPanDel > 0 ) ? iPanDel : 0;
+//                iPanDelR = ( iPanDel < 0 ) ? -iPanDel : 0;
+//            }
 
-            if ( vecNumAudioChannels[j] == 1 )
-            {
-                // mono: copy same mono data in both out stereo audio channels
-                for ( i = 0, k = 0; i < iServerFrameSizeSamples; i++, k += 2 )
-                {
-                    // left/right channel
-                    if ( bDelayPan )
-                    {
-                        // pan address shift
+//            if ( vecNumAudioChannels[j] == 1 )
+//            {
+//                // mono: copy same mono data in both out stereo audio channels
+//                for ( i = 0, k = 0; i < iServerFrameSizeSamples; i++, k += 2 )
+//                {
+//                    // left/right channel
+//                    if ( bDelayPan )
+//                    {
+//                        // pan address shift
 
-                        // left channel
-                        iLpan = i - iPanDelL;
-                        if ( iLpan < 0 )
-                        {
-                            // get from second
-                            iLpan = iLpan + iServerFrameSizeSamples;
-                            vecfIntermProcBuf[k] += vecsData2[iLpan] * fGainL;
-                        }
-                        else
-                        {
-                            vecfIntermProcBuf[k] += vecsData[iLpan] * fGainL;
-                        }
+//                        // left channel
+//                        iLpan = i - iPanDelL;
+//                        if ( iLpan < 0 )
+//                        {
+//                            // get from second
+//                            iLpan = iLpan + iServerFrameSizeSamples;
+//                            vecfIntermProcBuf[k] += vecsData2[iLpan] * fGainL;
+//                        }
+//                        else
+//                        {
+//                            vecfIntermProcBuf[k] += vecsData[iLpan] * fGainL;
+//                        }
 
-                        // right channel
-                        iRpan = i - iPanDelR;
-                        if ( iRpan < 0 )
-                        {
-                            // get from second
-                            iRpan = iRpan + iServerFrameSizeSamples;
-                            vecfIntermProcBuf[k + 1] += vecsData2[iRpan] * fGainR;
-                        }
-                        else
-                        {
-                            vecfIntermProcBuf[k + 1] += vecsData[iRpan] * fGainR;
-                        }
-                    }
-                    else
-                    {
-                        vecfIntermProcBuf[k] += vecsData[i] * fGainL;
-                        vecfIntermProcBuf[k + 1] += vecsData[i] * fGainR;
-                    }
-                }
-            }
-            else
-            {
-                // stereo
-                for ( i = 0; i < ( 2 * iServerFrameSizeSamples ); i++ )
-                {
-                    // left/right channel
-                    if ( bDelayPan )
-                    {
-                        // pan address shift
-                        if ( ( i & 1 ) == 0 )
-                        {
-                            iPan = i - 2 * iPanDelL; // if even : left channel
-                        }
-                        else
-                        {
-                            iPan = i - 2 * iPanDelR; // if odd  : right channel
-                        }
-                        // interleaved channels
-                        if ( iPan < 0 )
-                        {
-                            // get from second
-                            iPan = iPan + 2 * iServerFrameSizeSamples;
-                            vecfIntermProcBuf[i] += vecsData2[iPan] * fGain;
-                        }
-                        else
-                        {
-                            vecfIntermProcBuf[i] += vecsData[iPan] * fGain;
-                        }
-                    }
-                    else
-                    {
-                        if ( ( i & 1 ) == 0 )
-                        {
-                            // if even : left channel
-                            vecfIntermProcBuf[i] += vecsData[i] * fGainL;
-                        }
-                        else
-                        {
-                            // if odd  : right channel
-                            vecfIntermProcBuf[i] += vecsData[i] * fGainR;
-                        }
-                    }
-                }
-            }
-        }
+//                        // right channel
+//                        iRpan = i - iPanDelR;
+//                        if ( iRpan < 0 )
+//                        {
+//                            // get from second
+//                            iRpan = iRpan + iServerFrameSizeSamples;
+//                            vecfIntermProcBuf[k + 1] += vecsData2[iRpan] * fGainR;
+//                        }
+//                        else
+//                        {
+//                            vecfIntermProcBuf[k + 1] += vecsData[iRpan] * fGainR;
+//                        }
+//                    }
+//                    else
+//                    {
+//                        vecfIntermProcBuf[k] += vecsData[i] * fGainL;
+//                        vecfIntermProcBuf[k + 1] += vecsData[i] * fGainR;
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                // stereo
+//                for ( i = 0; i < ( 2 * iServerFrameSizeSamples ); i++ )
+//                {
+//                    // left/right channel
+//                    if ( bDelayPan )
+//                    {
+//                        // pan address shift
+//                        if ( ( i & 1 ) == 0 )
+//                        {
+//                            iPan = i - 2 * iPanDelL; // if even : left channel
+//                        }
+//                        else
+//                        {
+//                            iPan = i - 2 * iPanDelR; // if odd  : right channel
+//                        }
+//                        // interleaved channels
+//                        if ( iPan < 0 )
+//                        {
+//                            // get from second
+//                            iPan = iPan + 2 * iServerFrameSizeSamples;
+//                            vecfIntermProcBuf[i] += vecsData2[iPan] * fGain;
+//                        }
+//                        else
+//                        {
+//                            vecfIntermProcBuf[i] += vecsData[iPan] * fGain;
+//                        }
+//                    }
+//                    else
+//                    {
+//                        if ( ( i & 1 ) == 0 )
+//                        {
+//                            // if even : left channel
+//                            vecfIntermProcBuf[i] += vecsData[i] * fGainL;
+//                        }
+//                        else
+//                        {
+//                            // if odd  : right channel
+//                            vecfIntermProcBuf[i] += vecsData[i] * fGainR;
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
-        // convert from double to short with clipping
-        for ( i = 0; i < ( 2 * iServerFrameSizeSamples ); i++ )
-        {
-            vecsSendData[i] = Float2Short ( vecfIntermProcBuf[i] );
-        }
-    }
+//        // convert from double to short with clipping
+//        for ( i = 0; i < ( 2 * iServerFrameSizeSamples ); i++ )
+//        {
+//            vecsSendData[i] = Float2Short ( vecfIntermProcBuf[i] );
+//        }
+//    }
 
-    int                iClientFrameSizeSamples = 0; // initialize to avoid a compiler warning
-    OpusCustomEncoder* pCurOpusEncoder         = nullptr;
+//    int                iClientFrameSizeSamples = 0; // initialize to avoid a compiler warning
+//    OpusCustomEncoder* pCurOpusEncoder         = nullptr;
 
-    // get current number of CELT coded bytes
-    const int iCeltNumCodedBytes = vecChannels[iCurChanID].GetCeltNumCodedBytes();
+//    // get current number of CELT coded bytes
+//    const int iCeltNumCodedBytes = vecChannels[iCurChanID].GetCeltNumCodedBytes();
 
-    // select the opus encoder and raw audio frame length
-    if ( vecAudioComprType[iChanCnt] == CT_OPUS )
-    {
-        iClientFrameSizeSamples = DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES;
+//    // select the opus encoder and raw audio frame length
+//    if ( vecAudioComprType[iChanCnt] == CT_OPUS )
+//    {
+//        iClientFrameSizeSamples = DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES;
 
-        if ( vecNumAudioChannels[iChanCnt] == 1 )
-        {
-            pCurOpusEncoder = OpusEncoderMono[iCurChanID];
-        }
-        else
-        {
-            pCurOpusEncoder = OpusEncoderStereo[iCurChanID];
-        }
-    }
-    else if ( vecAudioComprType[iChanCnt] == CT_OPUS64 )
-    {
-        iClientFrameSizeSamples = SYSTEM_FRAME_SIZE_SAMPLES;
+//        if ( vecNumAudioChannels[iChanCnt] == 1 )
+//        {
+//            pCurOpusEncoder = OpusEncoderMono[iCurChanID];
+//        }
+//        else
+//        {
+//            pCurOpusEncoder = OpusEncoderStereo[iCurChanID];
+//        }
+//    }
+//    else if ( vecAudioComprType[iChanCnt] == CT_OPUS64 )
+//    {
+//        iClientFrameSizeSamples = SYSTEM_FRAME_SIZE_SAMPLES;
 
-        if ( vecNumAudioChannels[iChanCnt] == 1 )
-        {
-            pCurOpusEncoder = Opus64EncoderMono[iCurChanID];
-        }
-        else
-        {
-            pCurOpusEncoder = Opus64EncoderStereo[iCurChanID];
-        }
-    }
+//        if ( vecNumAudioChannels[iChanCnt] == 1 )
+//        {
+//            pCurOpusEncoder = Opus64EncoderMono[iCurChanID];
+//        }
+//        else
+//        {
+//            pCurOpusEncoder = Opus64EncoderStereo[iCurChanID];
+//        }
+//    }
 
-    // If the server frame size is smaller than the received OPUS frame size, we need a conversion
-    // buffer which stores the large buffer.
-    // Note that we have a shortcut here. If the conversion buffer is not needed, the boolean flag
-    // is false and the Get() function is not called at all. Therefore if the buffer is not needed
-    // we do not spend any time in the function but go directly inside the if condition.
-    if ( ( vecUseDoubleSysFraSizeConvBuf[iChanCnt] == 0 ) ||
-         DoubleFrameSizeConvBufOut[iCurChanID].Put ( vecsSendData, SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] ) )
-    {
-        if ( vecUseDoubleSysFraSizeConvBuf[iChanCnt] != 0 )
-        {
-            // get the large frame from the conversion buffer
-            DoubleFrameSizeConvBufOut[iCurChanID].GetAll ( vecsSendData, DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] );
-        }
+//    // If the server frame size is smaller than the received OPUS frame size, we need a conversion
+//    // buffer which stores the large buffer.
+//    // Note that we have a shortcut here. If the conversion buffer is not needed, the boolean flag
+//    // is false and the Get() function is not called at all. Therefore if the buffer is not needed
+//    // we do not spend any time in the function but go directly inside the if condition.
+//    if ( ( vecUseDoubleSysFraSizeConvBuf[iChanCnt] == 0 ) ||
+//         DoubleFrameSizeConvBufOut[iCurChanID].Put ( vecsSendData, SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] ) )
+//    {
+//        if ( vecUseDoubleSysFraSizeConvBuf[iChanCnt] != 0 )
+//        {
+//            // get the large frame from the conversion buffer
+//            DoubleFrameSizeConvBufOut[iCurChanID].GetAll ( vecsSendData, DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt] );
+//        }
 
-        // OPUS encoding
-        if ( pCurOpusEncoder != nullptr )
-        {
-            //### TODO: BEGIN ###//
-            // find a better place than this: the setting does not change all the time so for speed
-            // optimization it would be better to set it only if the network frame size is changed
-            opus_custom_encoder_ctl ( pCurOpusEncoder,
-                                      OPUS_SET_BITRATE ( CalcBitRateBitsPerSecFromCodedBytes ( iCeltNumCodedBytes, iClientFrameSizeSamples ) ) );
-            //### TODO: END ###//
+//        // OPUS encoding
+//        if ( pCurOpusEncoder != nullptr )
+//        {
+//            //### TODO: BEGIN ###//
+//            // find a better place than this: the setting does not change all the time so for speed
+//            // optimization it would be better to set it only if the network frame size is changed
+//            opus_custom_encoder_ctl ( pCurOpusEncoder,
+//                                      OPUS_SET_BITRATE ( CalcBitRateBitsPerSecFromCodedBytes ( iCeltNumCodedBytes, iClientFrameSizeSamples ) ) );
+//            //### TODO: END ###//
 
-            for ( int iB = 0; iB < vecNumFrameSizeConvBlocks[iChanCnt]; iB++ )
-            {
-                const int iOffset = iB * SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt];
+//            for ( int iB = 0; iB < vecNumFrameSizeConvBlocks[iChanCnt]; iB++ )
+//            {
+//                const int iOffset = iB * SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt];
 
-                iUnused = opus_custom_encode ( pCurOpusEncoder,
-                                               &vecsSendData[iOffset],
-                                               iClientFrameSizeSamples,
-                                               &vecvecbyCodedData[iChanCnt][0],
-                                               iCeltNumCodedBytes );
+//                iUnused = opus_custom_encode ( pCurOpusEncoder,
+//                                               &vecsSendData[iOffset],
+//                                               iClientFrameSizeSamples,
+//                                               &vecvecbyCodedData[iChanCnt][0],
+//                                               iCeltNumCodedBytes );
 
-                // send separate mix to current clients
-                vecChannels[iCurChanID].PrepAndSendPacket ( &Socket, vecvecbyCodedData[iChanCnt], iCeltNumCodedBytes );
-            }
-        }
-    }
+//                // send separate mix to current clients
+//                vecChannels[iCurChanID].PrepAndSendPacket ( &Socket, vecvecbyCodedData[iChanCnt], iCeltNumCodedBytes );
+//            }
+//        }
+//    }
 
-    Q_UNUSED ( iUnused )
-}
+//    Q_UNUSED ( iUnused )
+//}
 
 CVector<CChannelInfo> CServer::CreateChannelList()
 {

@@ -23,6 +23,7 @@
 \******************************************************************************/
 
 #include "socket.h"
+#include "channel.h"
 #include "server.h"
 
 #ifdef _WIN32
@@ -459,18 +460,18 @@ void CSocket::OnDataReceived()
 
             int iCurChanID;
 
-            if ( pServer->PutAudioData ( vecbyRecBuf, iNumBytesRead, RecHostAddr, iCurChanID ) )
-            {
-                // we have a new connection, emit a signal
-                emit NewConnection ( iCurChanID, pServer->GetNumberOfConnectedClients(), RecHostAddr );
+//            if ( pServer->PutAudioData ( vecbyRecBuf, iNumBytesRead, RecHostAddr, iCurChanID ) )
+//            {
+//                // we have a new connection, emit a signal
+//                emit NewConnection ( iCurChanID, pServer->GetNumberOfConnectedClients(), RecHostAddr );
 
-                // this was an audio packet, start server if it is in sleep mode
-                if ( !pServer->IsRunning() )
-                {
-                    // (note that Qt will delete the event object when done)
-                    QCoreApplication::postEvent ( pServer, new CCustomEvent ( MS_PACKET_RECEIVED, 0, 0 ) );
-                }
-            }
+//                // this was an audio packet, start server if it is in sleep mode
+//                if ( !pServer->IsRunning() )
+//                {
+//                    // (note that Qt will delete the event object when done)
+//                    QCoreApplication::postEvent ( pServer, new CCustomEvent ( MS_PACKET_RECEIVED, 0, 0 ) );
+//                }
+//            }
 
             // check if no channel is available
             if ( iCurChanID == INVALID_CHANNEL_ID )

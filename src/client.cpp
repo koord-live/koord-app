@@ -36,8 +36,8 @@ CClient::CClient ( const quint16  iPortNumber,
     ChannelInfo(),
     strClientName ( strNClientName ),
     Channel ( false ), /* we need a client channel -> "false" */
-    CurOpusEncoder ( nullptr ),
-    CurOpusDecoder ( nullptr ),
+//    CurOpusEncoder ( nullptr ),
+//    CurOpusDecoder ( nullptr ),
     eAudioCompressionType ( CT_OPUS ),
     iCeltNumCodedBytes ( OPUS_NUM_BYTES_MONO_LOW_QUALITY ),
     iOPUSFrameSizeSamples ( DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES ),
@@ -48,7 +48,7 @@ CClient::CClient ( const quint16  iPortNumber,
     bMuteOutStream ( false ),
     fMuteOutStreamGain ( 1.0f ),
     Socket ( &Channel, iPortNumber, iQosNumber, "", bNEnableIPv6 ),
-    Sound ( AudioCallback, this, strMIDISetup, bNoAutoJackConnect, strNClientName ),
+//    Sound ( AudioCallback, this, strMIDISetup, bNoAutoJackConnect, strNClientName ),
     iAudioInFader ( AUD_FADER_IN_MIDDLE ),
     bReverbOnLeftChan ( false ),
     iReverbLevel ( 0 ),
@@ -72,39 +72,39 @@ CClient::CClient ( const quint16  iPortNumber,
 {
     int iOpusError;
 
-    OpusMode = opus_custom_mode_create ( SYSTEM_SAMPLE_RATE_HZ, DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES, &iOpusError );
+//    OpusMode = opus_custom_mode_create ( SYSTEM_SAMPLE_RATE_HZ, DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES, &iOpusError );
 
-    Opus64Mode = opus_custom_mode_create ( SYSTEM_SAMPLE_RATE_HZ, SYSTEM_FRAME_SIZE_SAMPLES, &iOpusError );
+//    Opus64Mode = opus_custom_mode_create ( SYSTEM_SAMPLE_RATE_HZ, SYSTEM_FRAME_SIZE_SAMPLES, &iOpusError );
 
-    // init audio encoders and decoders
-    OpusEncoderMono     = opus_custom_encoder_create ( OpusMode, 1, &iOpusError );   // mono encoder legacy
-    OpusDecoderMono     = opus_custom_decoder_create ( OpusMode, 1, &iOpusError );   // mono decoder legacy
-    OpusEncoderStereo   = opus_custom_encoder_create ( OpusMode, 2, &iOpusError );   // stereo encoder legacy
-    OpusDecoderStereo   = opus_custom_decoder_create ( OpusMode, 2, &iOpusError );   // stereo decoder legacy
-    Opus64EncoderMono   = opus_custom_encoder_create ( Opus64Mode, 1, &iOpusError ); // mono encoder OPUS64
-    Opus64DecoderMono   = opus_custom_decoder_create ( Opus64Mode, 1, &iOpusError ); // mono decoder OPUS64
-    Opus64EncoderStereo = opus_custom_encoder_create ( Opus64Mode, 2, &iOpusError ); // stereo encoder OPUS64
-    Opus64DecoderStereo = opus_custom_decoder_create ( Opus64Mode, 2, &iOpusError ); // stereo decoder OPUS64
+//    // init audio encoders and decoders
+//    OpusEncoderMono     = opus_custom_encoder_create ( OpusMode, 1, &iOpusError );   // mono encoder legacy
+//    OpusDecoderMono     = opus_custom_decoder_create ( OpusMode, 1, &iOpusError );   // mono decoder legacy
+//    OpusEncoderStereo   = opus_custom_encoder_create ( OpusMode, 2, &iOpusError );   // stereo encoder legacy
+//    OpusDecoderStereo   = opus_custom_decoder_create ( OpusMode, 2, &iOpusError );   // stereo decoder legacy
+//    Opus64EncoderMono   = opus_custom_encoder_create ( Opus64Mode, 1, &iOpusError ); // mono encoder OPUS64
+//    Opus64DecoderMono   = opus_custom_decoder_create ( Opus64Mode, 1, &iOpusError ); // mono decoder OPUS64
+//    Opus64EncoderStereo = opus_custom_encoder_create ( Opus64Mode, 2, &iOpusError ); // stereo encoder OPUS64
+//    Opus64DecoderStereo = opus_custom_decoder_create ( Opus64Mode, 2, &iOpusError ); // stereo decoder OPUS64
 
     // we require a constant bit rate
-    opus_custom_encoder_ctl ( OpusEncoderMono, OPUS_SET_VBR ( 0 ) );
-    opus_custom_encoder_ctl ( OpusEncoderStereo, OPUS_SET_VBR ( 0 ) );
-    opus_custom_encoder_ctl ( Opus64EncoderMono, OPUS_SET_VBR ( 0 ) );
-    opus_custom_encoder_ctl ( Opus64EncoderStereo, OPUS_SET_VBR ( 0 ) );
+//    opus_custom_encoder_ctl ( OpusEncoderMono, OPUS_SET_VBR ( 0 ) );
+//    opus_custom_encoder_ctl ( OpusEncoderStereo, OPUS_SET_VBR ( 0 ) );
+//    opus_custom_encoder_ctl ( Opus64EncoderMono, OPUS_SET_VBR ( 0 ) );
+//    opus_custom_encoder_ctl ( Opus64EncoderStereo, OPUS_SET_VBR ( 0 ) );
 
-    // for 64 samples frame size we have to adjust the PLC behavior to avoid loud artifacts
-    opus_custom_encoder_ctl ( Opus64EncoderMono, OPUS_SET_PACKET_LOSS_PERC ( 35 ) );
-    opus_custom_encoder_ctl ( Opus64EncoderStereo, OPUS_SET_PACKET_LOSS_PERC ( 35 ) );
+//    // for 64 samples frame size we have to adjust the PLC behavior to avoid loud artifacts
+//    opus_custom_encoder_ctl ( Opus64EncoderMono, OPUS_SET_PACKET_LOSS_PERC ( 35 ) );
+//    opus_custom_encoder_ctl ( Opus64EncoderStereo, OPUS_SET_PACKET_LOSS_PERC ( 35 ) );
 
-    // we want as low delay as possible
-    opus_custom_encoder_ctl ( OpusEncoderMono, OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
-    opus_custom_encoder_ctl ( OpusEncoderStereo, OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
-    opus_custom_encoder_ctl ( Opus64EncoderMono, OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
-    opus_custom_encoder_ctl ( Opus64EncoderStereo, OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
+//    // we want as low delay as possible
+//    opus_custom_encoder_ctl ( OpusEncoderMono, OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
+//    opus_custom_encoder_ctl ( OpusEncoderStereo, OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
+//    opus_custom_encoder_ctl ( Opus64EncoderMono, OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
+//    opus_custom_encoder_ctl ( Opus64EncoderStereo, OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
 
-    // set encoder low complexity for legacy 128 samples frame size
-    opus_custom_encoder_ctl ( OpusEncoderMono, OPUS_SET_COMPLEXITY ( 1 ) );
-    opus_custom_encoder_ctl ( OpusEncoderStereo, OPUS_SET_COMPLEXITY ( 1 ) );
+//    // set encoder low complexity for legacy 128 samples frame size
+//    opus_custom_encoder_ctl ( OpusEncoderMono, OPUS_SET_COMPLEXITY ( 1 ) );
+//    opus_custom_encoder_ctl ( OpusEncoderStereo, OPUS_SET_COMPLEXITY ( 1 ) );
 
     // Connections -------------------------------------------------------------
     // connections for the protocol mechanism
@@ -119,8 +119,8 @@ CClient::CClient ( const quint16  iPortNumber,
     QObject::connect ( &Channel, &CChannel::ReqChanInfo, this, &CClient::OnReqChanInfo );
 
     // The first ConClientListMesReceived handler performs the necessary cleanup and has to run first:
-    QObject::connect ( &Channel, &CChannel::ConClientListMesReceived, this, &CClient::OnConClientListMesReceived );
-    QObject::connect ( &Channel, &CChannel::ConClientListMesReceived, this, &CClient::ConClientListMesReceived );
+//    QObject::connect ( &Channel, &CChannel::ConClientListMesReceived, this, &CClient::OnConClientListMesReceived );
+//    QObject::connect ( &Channel, &CChannel::ConClientListMesReceived, this, &CClient::ConClientListMesReceived );
 
     QObject::connect ( &Channel, &CChannel::Disconnected, this, &CClient::Disconnected );
 
@@ -128,7 +128,7 @@ CClient::CClient ( const quint16  iPortNumber,
 
     QObject::connect ( &Channel, &CChannel::ChatTextReceived, this, &CClient::ChatTextReceived );
 
-    QObject::connect ( &Channel, &CChannel::ClientIDReceived, this, &CClient::OnClientIDReceived );
+//    QObject::connect ( &Channel, &CChannel::ClientIDReceived, this, &CClient::OnClientIDReceived );
 
     QObject::connect ( &Channel, &CChannel::MuteStateHasChangedReceived, this, &CClient::MuteStateHasChangedReceived );
 
@@ -157,17 +157,17 @@ CClient::CClient ( const quint16  iPortNumber,
     QObject::connect ( &ConnLessProtocol, &CProtocol::CLChannelLevelListReceived, this, &CClient::CLChannelLevelListReceived );
 
     // other
-    QObject::connect ( &Sound, &CSound::ReinitRequest, this, &CClient::OnSndCrdReinitRequest );
+//    QObject::connect ( &Sound, &CSound::ReinitRequest, this, &CClient::OnSndCrdReinitRequest );
 
-    QObject::connect ( &Sound, &CSound::ControllerInFaderLevel, this, &CClient::OnControllerInFaderLevel );
+//    QObject::connect ( &Sound, &CSound::ControllerInFaderLevel, this, &CClient::OnControllerInFaderLevel );
 
-    QObject::connect ( &Sound, &CSound::ControllerInPanValue, this, &CClient::OnControllerInPanValue );
+//    QObject::connect ( &Sound, &CSound::ControllerInPanValue, this, &CClient::OnControllerInPanValue );
 
-    QObject::connect ( &Sound, &CSound::ControllerInFaderIsSolo, this, &CClient::OnControllerInFaderIsSolo );
+//    QObject::connect ( &Sound, &CSound::ControllerInFaderIsSolo, this, &CClient::OnControllerInFaderIsSolo );
 
-    QObject::connect ( &Sound, &CSound::ControllerInFaderIsMute, this, &CClient::OnControllerInFaderIsMute );
+//    QObject::connect ( &Sound, &CSound::ControllerInFaderIsMute, this, &CClient::OnControllerInFaderIsMute );
 
-    QObject::connect ( &Sound, &CSound::ControllerInMuteMyself, this, &CClient::OnControllerInMuteMyself );
+//    QObject::connect ( &Sound, &CSound::ControllerInMuteMyself, this, &CClient::OnControllerInMuteMyself );
 
     QObject::connect ( &Socket, &CHighPrioSocket::InvalidPacketReceived, this, &CClient::OnInvalidPacketReceived );
 
@@ -196,24 +196,24 @@ CClient::CClient ( const quint16  iPortNumber,
 CClient::~CClient()
 {
     // if we were running, stop sound device
-    if ( Sound.IsRunning() )
-    {
-        Sound.Stop();
-    }
+//    if ( Sound.IsRunning() )
+//    {
+//        Sound.Stop();
+//    }
 
     // free audio encoders and decoders
-    opus_custom_encoder_destroy ( OpusEncoderMono );
-    opus_custom_decoder_destroy ( OpusDecoderMono );
-    opus_custom_encoder_destroy ( OpusEncoderStereo );
-    opus_custom_decoder_destroy ( OpusDecoderStereo );
-    opus_custom_encoder_destroy ( Opus64EncoderMono );
-    opus_custom_decoder_destroy ( Opus64DecoderMono );
-    opus_custom_encoder_destroy ( Opus64EncoderStereo );
-    opus_custom_decoder_destroy ( Opus64DecoderStereo );
+//    opus_custom_encoder_destroy ( OpusEncoderMono );
+//    opus_custom_decoder_destroy ( OpusDecoderMono );
+//    opus_custom_encoder_destroy ( OpusEncoderStereo );
+//    opus_custom_decoder_destroy ( OpusDecoderStereo );
+//    opus_custom_encoder_destroy ( Opus64EncoderMono );
+//    opus_custom_decoder_destroy ( Opus64DecoderMono );
+//    opus_custom_encoder_destroy ( Opus64EncoderStereo );
+//    opus_custom_decoder_destroy ( Opus64DecoderStereo );
 
-    // free audio modes
-    opus_custom_mode_destroy ( OpusMode );
-    opus_custom_mode_destroy ( Opus64Mode );
+//    // free audio modes
+//    opus_custom_mode_destroy ( OpusMode );
+//    opus_custom_mode_destroy ( Opus64Mode );
 }
 
 void CClient::OnSendProtMessage ( CVector<uint8_t> vecMessage )
@@ -291,32 +291,32 @@ void CClient::OnNewConnection()
     //### TODO: END ###//
 }
 
-void CClient::OnConClientListMesReceived ( CVector<CChannelInfo> vecChanInfo )
-{
-    // Upon receiving a new client list, we have to reset oldGain and newGain
-    // entries for unused channels. This ensures that a disconnected channel
-    // does not leave behind wrong cached gain values which would leak into
-    // any new channel which reused this channel id.
-    int iNumConnectedClients = vecChanInfo.Size();
+//void CClient::OnConClientListMesReceived ( CVector<CChannelInfo> vecChanInfo )
+//{
+//    // Upon receiving a new client list, we have to reset oldGain and newGain
+//    // entries for unused channels. This ensures that a disconnected channel
+//    // does not leave behind wrong cached gain values which would leak into
+//    // any new channel which reused this channel id.
+//    int iNumConnectedClients = vecChanInfo.Size();
 
-    // Save what channel IDs are in use:
-    bool bChanIdInUse[MAX_NUM_CHANNELS] = {};
-    for ( int i = 0; i < iNumConnectedClients; i++ )
-    {
-        bChanIdInUse[vecChanInfo[i].iChanID] = true;
-    }
+//    // Save what channel IDs are in use:
+//    bool bChanIdInUse[MAX_NUM_CHANNELS] = {};
+//    for ( int i = 0; i < iNumConnectedClients; i++ )
+//    {
+//        bChanIdInUse[vecChanInfo[i].iChanID] = true;
+//    }
 
-    // Reset all gains for unused channel IDs:
-    for ( int iId = 0; iId < MAX_NUM_CHANNELS; iId++ )
-    {
-        if ( !bChanIdInUse[iId] )
-        {
-            // reset oldGain and newGain as this channel id is currently unused and will
-            // start with a server-side gain at 1 (100%) again.
-            oldGain[iId] = newGain[iId] = 1;
-        }
-    }
-}
+//    // Reset all gains for unused channel IDs:
+//    for ( int iId = 0; iId < MAX_NUM_CHANNELS; iId++ )
+//    {
+//        if ( !bChanIdInUse[iId] )
+//        {
+//            // reset oldGain and newGain as this channel id is currently unused and will
+//            // start with a server-side gain at 1 (100%) again.
+//            oldGain[iId] = newGain[iId] = 1;
+//        }
+//    }
+//}
 
 void CClient::CreateServerJitterBufferMessage()
 {
@@ -513,250 +513,250 @@ bool CClient::GetAndResetbJitterBufferOKFlag()
     return bSocketJitBufOKFlag;
 }
 
-void CClient::SetSndCrdPrefFrameSizeFactor ( const int iNewFactor )
-{
-    // first check new input parameter
-    if ( ( iNewFactor == FRAME_SIZE_FACTOR_PREFERRED ) || ( iNewFactor == FRAME_SIZE_FACTOR_DEFAULT ) || ( iNewFactor == FRAME_SIZE_FACTOR_SAFE ) )
-    {
-        // init with new parameter, if client was running then first
-        // stop it and restart again after new initialization
-        const bool bWasRunning = Sound.IsRunning();
-        if ( bWasRunning )
-        {
-            Sound.Stop();
-        }
+//void CClient::SetSndCrdPrefFrameSizeFactor ( const int iNewFactor )
+//{
+//    // first check new input parameter
+//    if ( ( iNewFactor == FRAME_SIZE_FACTOR_PREFERRED ) || ( iNewFactor == FRAME_SIZE_FACTOR_DEFAULT ) || ( iNewFactor == FRAME_SIZE_FACTOR_SAFE ) )
+//    {
+//        // init with new parameter, if client was running then first
+//        // stop it and restart again after new initialization
+//        const bool bWasRunning = Sound.IsRunning();
+//        if ( bWasRunning )
+//        {
+//            Sound.Stop();
+//        }
 
-        // set new parameter
-        iSndCrdPrefFrameSizeFactor = iNewFactor;
+//        // set new parameter
+//        iSndCrdPrefFrameSizeFactor = iNewFactor;
 
-        // init with new block size index parameter
-        Init();
+//        // init with new block size index parameter
+//        Init();
 
-        if ( bWasRunning )
-        {
-            // restart client
-            Sound.Start();
-        }
-    }
-}
+//        if ( bWasRunning )
+//        {
+//            // restart client
+//            Sound.Start();
+//        }
+//    }
+//}
 
-void CClient::SetEnableOPUS64 ( const bool eNEnableOPUS64 )
-{
-    // init with new parameter, if client was running then first
-    // stop it and restart again after new initialization
-    const bool bWasRunning = Sound.IsRunning();
-    if ( bWasRunning )
-    {
-        Sound.Stop();
-    }
+//void CClient::SetEnableOPUS64 ( const bool eNEnableOPUS64 )
+//{
+//    // init with new parameter, if client was running then first
+//    // stop it and restart again after new initialization
+//    const bool bWasRunning = Sound.IsRunning();
+//    if ( bWasRunning )
+//    {
+//        Sound.Stop();
+//    }
 
-    // set new parameter
-    bEnableOPUS64 = eNEnableOPUS64;
-    Init();
+//    // set new parameter
+//    bEnableOPUS64 = eNEnableOPUS64;
+//    Init();
 
-    if ( bWasRunning )
-    {
-        Sound.Start();
-    }
-}
+//    if ( bWasRunning )
+//    {
+//        Sound.Start();
+//    }
+//}
 
-void CClient::SetAudioQuality ( const EAudioQuality eNAudioQuality )
-{
-    // init with new parameter, if client was running then first
-    // stop it and restart again after new initialization
-    const bool bWasRunning = Sound.IsRunning();
-    if ( bWasRunning )
-    {
-        Sound.Stop();
-    }
+//void CClient::SetAudioQuality ( const EAudioQuality eNAudioQuality )
+//{
+//    // init with new parameter, if client was running then first
+//    // stop it and restart again after new initialization
+//    const bool bWasRunning = Sound.IsRunning();
+//    if ( bWasRunning )
+//    {
+//        Sound.Stop();
+//    }
 
-    // set new parameter
-    eAudioQuality = eNAudioQuality;
-    Init();
+//    // set new parameter
+//    eAudioQuality = eNAudioQuality;
+//    Init();
 
-    if ( bWasRunning )
-    {
-        Sound.Start();
-    }
-}
+//    if ( bWasRunning )
+//    {
+//        Sound.Start();
+//    }
+//}
 
-void CClient::SetAudioChannels ( const EAudChanConf eNAudChanConf )
-{
-    // init with new parameter, if client was running then first
-    // stop it and restart again after new initialization
-    const bool bWasRunning = Sound.IsRunning();
-    if ( bWasRunning )
-    {
-        Sound.Stop();
-    }
+//void CClient::SetAudioChannels ( const EAudChanConf eNAudChanConf )
+//{
+//    // init with new parameter, if client was running then first
+//    // stop it and restart again after new initialization
+//    const bool bWasRunning = Sound.IsRunning();
+//    if ( bWasRunning )
+//    {
+//        Sound.Stop();
+//    }
 
-    // set new parameter
-    eAudioChannelConf = eNAudChanConf;
-    Init();
+//    // set new parameter
+//    eAudioChannelConf = eNAudChanConf;
+//    Init();
 
-    if ( bWasRunning )
-    {
-        Sound.Start();
-    }
-}
+//    if ( bWasRunning )
+//    {
+//        Sound.Start();
+//    }
+//}
 
-QString CClient::SetSndCrdDev ( const QString strNewDev )
-{
-    // if client was running then first
-    // stop it and restart again after new initialization
-    const bool bWasRunning = Sound.IsRunning();
-    if ( bWasRunning )
-    {
-        Sound.Stop();
-    }
+//QString CClient::SetSndCrdDev ( const QString strNewDev )
+//{
+//    // if client was running then first
+//    // stop it and restart again after new initialization
+//    const bool bWasRunning = Sound.IsRunning();
+//    if ( bWasRunning )
+//    {
+//        Sound.Stop();
+//    }
 
-    const QString strError = Sound.SetDev ( strNewDev );
+//    const QString strError = Sound.SetDev ( strNewDev );
 
-    // init again because the sound card actual buffer size might
-    // be changed on new device
-    Init();
+//    // init again because the sound card actual buffer size might
+//    // be changed on new device
+//    Init();
 
-    if ( bWasRunning )
-    {
-        // restart client
-        Sound.Start();
-    }
+//    if ( bWasRunning )
+//    {
+//        // restart client
+//        Sound.Start();
+//    }
 
-    // in case of an error inform the GUI about it
-    if ( !strError.isEmpty() )
-    {
-        emit SoundDeviceChanged ( strError );
-    }
+//    // in case of an error inform the GUI about it
+//    if ( !strError.isEmpty() )
+//    {
+//        emit SoundDeviceChanged ( strError );
+//    }
 
-    return strError;
-}
+//    return strError;
+//}
 
-void CClient::SetSndCrdLeftInputChannel ( const int iNewChan )
-{
-    // if client was running then first
-    // stop it and restart again after new initialization
-    const bool bWasRunning = Sound.IsRunning();
-    if ( bWasRunning )
-    {
-        Sound.Stop();
-    }
+//void CClient::SetSndCrdLeftInputChannel ( const int iNewChan )
+//{
+//    // if client was running then first
+//    // stop it and restart again after new initialization
+//    const bool bWasRunning = Sound.IsRunning();
+//    if ( bWasRunning )
+//    {
+//        Sound.Stop();
+//    }
 
-    Sound.SetLeftInputChannel ( iNewChan );
-    Init();
+//    Sound.SetLeftInputChannel ( iNewChan );
+//    Init();
 
-    if ( bWasRunning )
-    {
-        // restart client
-        Sound.Start();
-    }
-}
+//    if ( bWasRunning )
+//    {
+//        // restart client
+//        Sound.Start();
+//    }
+//}
 
-void CClient::SetSndCrdRightInputChannel ( const int iNewChan )
-{
-    // if client was running then first
-    // stop it and restart again after new initialization
-    const bool bWasRunning = Sound.IsRunning();
-    if ( bWasRunning )
-    {
-        Sound.Stop();
-    }
+//void CClient::SetSndCrdRightInputChannel ( const int iNewChan )
+//{
+//    // if client was running then first
+//    // stop it and restart again after new initialization
+//    const bool bWasRunning = Sound.IsRunning();
+//    if ( bWasRunning )
+//    {
+//        Sound.Stop();
+//    }
 
-    Sound.SetRightInputChannel ( iNewChan );
-    Init();
+//    Sound.SetRightInputChannel ( iNewChan );
+//    Init();
 
-    if ( bWasRunning )
-    {
-        // restart client
-        Sound.Start();
-    }
-}
+//    if ( bWasRunning )
+//    {
+//        // restart client
+//        Sound.Start();
+//    }
+//}
 
-void CClient::SetSndCrdLeftOutputChannel ( const int iNewChan )
-{
-    // if client was running then first
-    // stop it and restart again after new initialization
-    const bool bWasRunning = Sound.IsRunning();
-    if ( bWasRunning )
-    {
-        Sound.Stop();
-    }
+//void CClient::SetSndCrdLeftOutputChannel ( const int iNewChan )
+//{
+//    // if client was running then first
+//    // stop it and restart again after new initialization
+//    const bool bWasRunning = Sound.IsRunning();
+//    if ( bWasRunning )
+//    {
+//        Sound.Stop();
+//    }
 
-    Sound.SetLeftOutputChannel ( iNewChan );
-    Init();
+//    Sound.SetLeftOutputChannel ( iNewChan );
+//    Init();
 
-    if ( bWasRunning )
-    {
-        // restart client
-        Sound.Start();
-    }
-}
+//    if ( bWasRunning )
+//    {
+//        // restart client
+//        Sound.Start();
+//    }
+//}
 
-void CClient::SetSndCrdRightOutputChannel ( const int iNewChan )
-{
-    // if client was running then first
-    // stop it and restart again after new initialization
-    const bool bWasRunning = Sound.IsRunning();
-    if ( bWasRunning )
-    {
-        Sound.Stop();
-    }
+//void CClient::SetSndCrdRightOutputChannel ( const int iNewChan )
+//{
+//    // if client was running then first
+//    // stop it and restart again after new initialization
+//    const bool bWasRunning = Sound.IsRunning();
+//    if ( bWasRunning )
+//    {
+//        Sound.Stop();
+//    }
 
-    Sound.SetRightOutputChannel ( iNewChan );
-    Init();
+//    Sound.SetRightOutputChannel ( iNewChan );
+//    Init();
 
-    if ( bWasRunning )
-    {
-        // restart client
-        Sound.Start();
-    }
-}
+//    if ( bWasRunning )
+//    {
+//        // restart client
+//        Sound.Start();
+//    }
+//}
 
-void CClient::OnSndCrdReinitRequest ( int iSndCrdResetType )
-{
-    QString strError = "";
+//void CClient::OnSndCrdReinitRequest ( int iSndCrdResetType )
+//{
+//    QString strError = "";
 
-    // audio device notifications can come at any time and they are in a
-    // different thread, therefore we need a mutex here
-    MutexDriverReinit.lock();
-    {
-        // in older QT versions, enums cannot easily be used in signals without
-        // registering them -> workaroud: we use the int type and cast to the enum
-        const ESndCrdResetType eSndCrdResetType = static_cast<ESndCrdResetType> ( iSndCrdResetType );
+//    // audio device notifications can come at any time and they are in a
+//    // different thread, therefore we need a mutex here
+//    MutexDriverReinit.lock();
+//    {
+//        // in older QT versions, enums cannot easily be used in signals without
+//        // registering them -> workaroud: we use the int type and cast to the enum
+//        const ESndCrdResetType eSndCrdResetType = static_cast<ESndCrdResetType> ( iSndCrdResetType );
 
-        // if client was running then first
-        // stop it and restart again after new initialization
-        const bool bWasRunning = Sound.IsRunning();
-        if ( bWasRunning )
-        {
-            Sound.Stop();
-        }
+//        // if client was running then first
+//        // stop it and restart again after new initialization
+//        const bool bWasRunning = Sound.IsRunning();
+//        if ( bWasRunning )
+//        {
+//            Sound.Stop();
+//        }
 
-        // perform reinit request as indicated by the request type parameter
-        if ( eSndCrdResetType != RS_ONLY_RESTART )
-        {
-            if ( eSndCrdResetType != RS_ONLY_RESTART_AND_INIT )
-            {
-                // reinit the driver if requested
-                // (we use the currently selected driver)
-                strError = Sound.SetDev ( Sound.GetDev() );
-            }
+//        // perform reinit request as indicated by the request type parameter
+//        if ( eSndCrdResetType != RS_ONLY_RESTART )
+//        {
+//            if ( eSndCrdResetType != RS_ONLY_RESTART_AND_INIT )
+//            {
+//                // reinit the driver if requested
+//                // (we use the currently selected driver)
+//                strError = Sound.SetDev ( Sound.GetDev() );
+//            }
 
-            // init client object (must always be performed if the driver
-            // was changed)
-            Init();
-        }
+//            // init client object (must always be performed if the driver
+//            // was changed)
+//            Init();
+//        }
 
-        if ( bWasRunning )
-        {
-            // restart client
-            Sound.Start();
-        }
-    }
-    MutexDriverReinit.unlock();
+//        if ( bWasRunning )
+//        {
+//            // restart client
+//            Sound.Start();
+//        }
+//    }
+//    MutexDriverReinit.unlock();
 
-    // inform GUI about the sound card device change
-    emit SoundDeviceChanged ( strError );
-}
+//    // inform GUI about the sound card device change
+//    emit SoundDeviceChanged ( strError );
+//}
 
 void CClient::OnHandledSignal ( int sigNum )
 {
@@ -785,78 +785,78 @@ void CClient::OnHandledSignal ( int sigNum )
 #endif
 }
 
-void CClient::OnControllerInFaderLevel ( int iChannelIdx, int iValue )
-{
-    // in case of a headless client the faders cannot be moved so we need
-    // to send the controller information directly to the server
-#ifdef HEADLESS
-    // only apply new fader level if channel index is valid
-    if ( ( iChannelIdx >= 0 ) && ( iChannelIdx < MAX_NUM_CHANNELS ) )
-    {
-        SetRemoteChanGain ( iChannelIdx, MathUtils::CalcFaderGain ( iValue ), false );
-    }
-#endif
+//void CClient::OnControllerInFaderLevel ( int iChannelIdx, int iValue )
+//{
+//    // in case of a headless client the faders cannot be moved so we need
+//    // to send the controller information directly to the server
+//#ifdef HEADLESS
+//    // only apply new fader level if channel index is valid
+//    if ( ( iChannelIdx >= 0 ) && ( iChannelIdx < MAX_NUM_CHANNELS ) )
+//    {
+//        SetRemoteChanGain ( iChannelIdx, MathUtils::CalcFaderGain ( iValue ), false );
+//    }
+//#endif
 
-    emit ControllerInFaderLevel ( iChannelIdx, iValue );
-}
+//    emit ControllerInFaderLevel ( iChannelIdx, iValue );
+//}
 
-void CClient::OnControllerInPanValue ( int iChannelIdx, int iValue )
-{
-    // in case of a headless client the panners cannot be moved so we need
-    // to send the controller information directly to the server
-#ifdef HEADLESS
-    // channel index is valid
-    SetRemoteChanPan ( iChannelIdx, static_cast<float> ( iValue ) / AUD_MIX_PAN_MAX );
-#endif
+//void CClient::OnControllerInPanValue ( int iChannelIdx, int iValue )
+//{
+//    // in case of a headless client the panners cannot be moved so we need
+//    // to send the controller information directly to the server
+//#ifdef HEADLESS
+//    // channel index is valid
+//    SetRemoteChanPan ( iChannelIdx, static_cast<float> ( iValue ) / AUD_MIX_PAN_MAX );
+//#endif
 
-    emit ControllerInPanValue ( iChannelIdx, iValue );
-}
+//    emit ControllerInPanValue ( iChannelIdx, iValue );
+//}
 
-void CClient::OnControllerInFaderIsSolo ( int iChannelIdx, bool bIsSolo )
-{
-    // in case of a headless client the buttons are not displayed so we need
-    // to send the controller information directly to the server
-#ifdef HEADLESS
-    // FIXME: no idea what to do here.
-#endif
+//void CClient::OnControllerInFaderIsSolo ( int iChannelIdx, bool bIsSolo )
+//{
+//    // in case of a headless client the buttons are not displayed so we need
+//    // to send the controller information directly to the server
+//#ifdef HEADLESS
+//    // FIXME: no idea what to do here.
+//#endif
 
-    emit ControllerInFaderIsSolo ( iChannelIdx, bIsSolo );
-}
+//    emit ControllerInFaderIsSolo ( iChannelIdx, bIsSolo );
+//}
 
-void CClient::OnControllerInFaderIsMute ( int iChannelIdx, bool bIsMute )
-{
-    // in case of a headless client the buttons are not displayed so we need
-    // to send the controller information directly to the server
-#ifdef HEADLESS
-    // FIXME: no idea what to do here.
-#endif
+//void CClient::OnControllerInFaderIsMute ( int iChannelIdx, bool bIsMute )
+//{
+//    // in case of a headless client the buttons are not displayed so we need
+//    // to send the controller information directly to the server
+//#ifdef HEADLESS
+//    // FIXME: no idea what to do here.
+//#endif
 
-    emit ControllerInFaderIsMute ( iChannelIdx, bIsMute );
-}
+//    emit ControllerInFaderIsMute ( iChannelIdx, bIsMute );
+//}
 
-void CClient::OnControllerInMuteMyself ( bool bMute )
-{
-    // in case of a headless client the buttons are not displayed so we need
-    // to send the controller information directly to the server
-#ifdef HEADLESS
-    // FIXME: no idea what to do here.
-#endif
+//void CClient::OnControllerInMuteMyself ( bool bMute )
+//{
+//    // in case of a headless client the buttons are not displayed so we need
+//    // to send the controller information directly to the server
+//#ifdef HEADLESS
+//    // FIXME: no idea what to do here.
+//#endif
 
-    emit ControllerInMuteMyself ( bMute );
-}
+//    emit ControllerInMuteMyself ( bMute );
+//}
 
-void CClient::OnClientIDReceived ( int iChanID )
-{
-    // for headless mode we support to mute our own signal in the personal mix
-    // (note that the check for headless is done in the main.cpp and must not
-    // be checked here)
-    if ( bMuteMeInPersonalMix )
-    {
-        SetRemoteChanGain ( iChanID, 0, false );
-    }
+//void CClient::OnClientIDReceived ( int iChanID )
+//{
+//    // for headless mode we support to mute our own signal in the personal mix
+//    // (note that the check for headless is done in the main.cpp and must not
+//    // be checked here)
+//    if ( bMuteMeInPersonalMix )
+//    {
+//        SetRemoteChanGain ( iChanID, 0, false );
+//    }
 
-    emit ClientIDReceived ( iChanID );
-}
+//    emit ClientIDReceived ( iChanID );
+//}
 
 void CClient::Start()
 {
@@ -867,13 +867,13 @@ void CClient::Start()
     Channel.SetEnable ( true );
 
     // start audio interface
-    Sound.Start();
+//    Sound.Start();
 }
 
 void CClient::Stop()
 {
     // stop audio interface
-    Sound.Stop();
+//    Sound.Stop();
 
     // disable channel
     Channel.SetEnable ( false );
@@ -911,15 +911,15 @@ void CClient::Init()
     const int iFraSizeDefault   = SYSTEM_FRAME_SIZE_SAMPLES * FRAME_SIZE_FACTOR_DEFAULT;
     const int iFraSizeSafe      = SYSTEM_FRAME_SIZE_SAMPLES * FRAME_SIZE_FACTOR_SAFE;
 
-#if defined( Q_OS_IOS )
-    bFraSiFactPrefSupported = true; // to reduce sound init time, because we know it's supported in iOS
-    bFraSiFactDefSupported  = true;
-    bFraSiFactSafeSupported = true;
-#else
-    bFraSiFactPrefSupported = ( Sound.Init ( iFraSizePreffered ) == iFraSizePreffered );
-    bFraSiFactDefSupported  = ( Sound.Init ( iFraSizeDefault ) == iFraSizeDefault );
-    bFraSiFactSafeSupported = ( Sound.Init ( iFraSizeSafe ) == iFraSizeSafe );
-#endif
+//#if defined( Q_OS_IOS )
+//    bFraSiFactPrefSupported = true; // to reduce sound init time, because we know it's supported in iOS
+//    bFraSiFactDefSupported  = true;
+//    bFraSiFactSafeSupported = true;
+//#else
+//    bFraSiFactPrefSupported = ( Sound.Init ( iFraSizePreffered ) == iFraSizePreffered );
+//    bFraSiFactDefSupported  = ( Sound.Init ( iFraSizeDefault ) == iFraSizeDefault );
+//    bFraSiFactSafeSupported = ( Sound.Init ( iFraSizeSafe ) == iFraSizeSafe );
+//#endif
 
     // translate block size index in actual block size
     const int iPrefMonoFrameSize = iSndCrdPrefFrameSizeFactor * SYSTEM_FRAME_SIZE_SAMPLES;
@@ -933,187 +933,187 @@ void CClient::Init()
     //      iMonoBlockSizeSam = Sound.Init ( iPrefMonoFrameSize );
     // Problem is legitimate setting changes (buffer size for example).
     // so the condition should be something like "if ( Sound.isInitialized and APP_IS_INIALIZING)"
-    iMonoBlockSizeSam = Sound.Init ( iPrefMonoFrameSize );
+//    iMonoBlockSizeSam = Sound.Init ( iPrefMonoFrameSize );
 
     // Calculate the current sound card frame size factor. In case
     // the current mono block size is not a multiple of the system
     // frame size, we have to use a sound card conversion buffer.
-    if ( ( ( iMonoBlockSizeSam == ( SYSTEM_FRAME_SIZE_SAMPLES * FRAME_SIZE_FACTOR_PREFERRED ) ) && bEnableOPUS64 ) ||
-         ( iMonoBlockSizeSam == ( SYSTEM_FRAME_SIZE_SAMPLES * FRAME_SIZE_FACTOR_DEFAULT ) ) ||
-         ( iMonoBlockSizeSam == ( SYSTEM_FRAME_SIZE_SAMPLES * FRAME_SIZE_FACTOR_SAFE ) ) )
-    {
-        // regular case: one of our predefined buffer sizes is available
-        iSndCrdFrameSizeFactor = iMonoBlockSizeSam / SYSTEM_FRAME_SIZE_SAMPLES;
+//    if ( ( ( iMonoBlockSizeSam == ( SYSTEM_FRAME_SIZE_SAMPLES * FRAME_SIZE_FACTOR_PREFERRED ) ) && bEnableOPUS64 ) ||
+//         ( iMonoBlockSizeSam == ( SYSTEM_FRAME_SIZE_SAMPLES * FRAME_SIZE_FACTOR_DEFAULT ) ) ||
+//         ( iMonoBlockSizeSam == ( SYSTEM_FRAME_SIZE_SAMPLES * FRAME_SIZE_FACTOR_SAFE ) ) )
+//    {
+//        // regular case: one of our predefined buffer sizes is available
+//        iSndCrdFrameSizeFactor = iMonoBlockSizeSam / SYSTEM_FRAME_SIZE_SAMPLES;
 
-        // no sound card conversion buffer required
-        bSndCrdConversionBufferRequired = false;
-    }
-    else
-    {
-        // An unsupported sound card buffer size is currently used -> we have
-        // to use a conversion buffer. Per definition we use the smallest buffer
-        // size as the current frame size.
+//        // no sound card conversion buffer required
+//        bSndCrdConversionBufferRequired = false;
+//    }
+//    else
+//    {
+//        // An unsupported sound card buffer size is currently used -> we have
+//        // to use a conversion buffer. Per definition we use the smallest buffer
+//        // size as the current frame size.
 
-        // store actual sound card buffer size (stereo)
-        bSndCrdConversionBufferRequired  = true;
-        iSndCardMonoBlockSizeSamConvBuff = iMonoBlockSizeSam;
+//        // store actual sound card buffer size (stereo)
+//        bSndCrdConversionBufferRequired  = true;
+//        iSndCardMonoBlockSizeSamConvBuff = iMonoBlockSizeSam;
 
-        // overwrite block size factor by using one frame
-        iSndCrdFrameSizeFactor = 1;
-    }
+//        // overwrite block size factor by using one frame
+//        iSndCrdFrameSizeFactor = 1;
+//    }
 
-    // select the OPUS frame size mode depending on current mono block size samples
-    if ( bSndCrdConversionBufferRequired )
-    {
-        if ( ( iSndCardMonoBlockSizeSamConvBuff < DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES ) && bEnableOPUS64 )
-        {
-            iMonoBlockSizeSam     = SYSTEM_FRAME_SIZE_SAMPLES;
-            eAudioCompressionType = CT_OPUS64;
-        }
-        else
-        {
-            iMonoBlockSizeSam     = DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES;
-            eAudioCompressionType = CT_OPUS;
-        }
-    }
-    else
-    {
-        if ( iMonoBlockSizeSam < DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES )
-        {
-            eAudioCompressionType = CT_OPUS64;
-        }
-        else
-        {
-            // since we use double size frame size for OPUS, we have to adjust the frame size factor
-            iSndCrdFrameSizeFactor /= 2;
-            eAudioCompressionType = CT_OPUS;
-        }
-    }
+//    // select the OPUS frame size mode depending on current mono block size samples
+//    if ( bSndCrdConversionBufferRequired )
+//    {
+//        if ( ( iSndCardMonoBlockSizeSamConvBuff < DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES ) && bEnableOPUS64 )
+//        {
+//            iMonoBlockSizeSam     = SYSTEM_FRAME_SIZE_SAMPLES;
+//            eAudioCompressionType = CT_OPUS64;
+//        }
+//        else
+//        {
+//            iMonoBlockSizeSam     = DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES;
+//            eAudioCompressionType = CT_OPUS;
+//        }
+//    }
+//    else
+//    {
+//        if ( iMonoBlockSizeSam < DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES )
+//        {
+//            eAudioCompressionType = CT_OPUS64;
+//        }
+//        else
+//        {
+//            // since we use double size frame size for OPUS, we have to adjust the frame size factor
+//            iSndCrdFrameSizeFactor /= 2;
+//            eAudioCompressionType = CT_OPUS;
+//        }
+//    }
 
-    // inits for audio coding
-    if ( eAudioCompressionType == CT_OPUS )
-    {
-        iOPUSFrameSizeSamples = DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES;
+//    // inits for audio coding
+//    if ( eAudioCompressionType == CT_OPUS )
+//    {
+//        iOPUSFrameSizeSamples = DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES;
 
-        if ( eAudioChannelConf == CC_MONO )
-        {
-            CurOpusEncoder    = OpusEncoderMono;
-            CurOpusDecoder    = OpusDecoderMono;
-            iNumAudioChannels = 1;
+//        if ( eAudioChannelConf == CC_MONO )
+//        {
+////            CurOpusEncoder    = OpusEncoderMono;
+////            CurOpusDecoder    = OpusDecoderMono;
+//            iNumAudioChannels = 1;
 
-            switch ( eAudioQuality )
-            {
-            case AQ_LOW:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_LOW_QUALITY_DBLE_FRAMESIZE;
-                break;
-            case AQ_NORMAL:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_NORMAL_QUALITY_DBLE_FRAMESIZE;
-                break;
-            case AQ_HIGH:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_HIGH_QUALITY_DBLE_FRAMESIZE;
-                break;
-            }
-        }
-        else
-        {
-            CurOpusEncoder    = OpusEncoderStereo;
-            CurOpusDecoder    = OpusDecoderStereo;
-            iNumAudioChannels = 2;
+//            switch ( eAudioQuality )
+//            {
+//            case AQ_LOW:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_LOW_QUALITY_DBLE_FRAMESIZE;
+//                break;
+//            case AQ_NORMAL:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_NORMAL_QUALITY_DBLE_FRAMESIZE;
+//                break;
+//            case AQ_HIGH:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_HIGH_QUALITY_DBLE_FRAMESIZE;
+//                break;
+//            }
+//        }
+//        else
+//        {
+////            CurOpusEncoder    = OpusEncoderStereo;
+////            CurOpusDecoder    = OpusDecoderStereo;
+//            iNumAudioChannels = 2;
 
-            switch ( eAudioQuality )
-            {
-            case AQ_LOW:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_LOW_QUALITY_DBLE_FRAMESIZE;
-                break;
-            case AQ_NORMAL:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_NORMAL_QUALITY_DBLE_FRAMESIZE;
-                break;
-            case AQ_HIGH:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_HIGH_QUALITY_DBLE_FRAMESIZE;
-                break;
-            }
-        }
-    }
-    else /* CT_OPUS64 */
-    {
-        iOPUSFrameSizeSamples = SYSTEM_FRAME_SIZE_SAMPLES;
+//            switch ( eAudioQuality )
+//            {
+//            case AQ_LOW:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_LOW_QUALITY_DBLE_FRAMESIZE;
+//                break;
+//            case AQ_NORMAL:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_NORMAL_QUALITY_DBLE_FRAMESIZE;
+//                break;
+//            case AQ_HIGH:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_HIGH_QUALITY_DBLE_FRAMESIZE;
+//                break;
+//            }
+//        }
+//    }
+//    else /* CT_OPUS64 */
+//    {
+//        iOPUSFrameSizeSamples = SYSTEM_FRAME_SIZE_SAMPLES;
 
-        if ( eAudioChannelConf == CC_MONO )
-        {
-            CurOpusEncoder    = Opus64EncoderMono;
-            CurOpusDecoder    = Opus64DecoderMono;
-            iNumAudioChannels = 1;
+//        if ( eAudioChannelConf == CC_MONO )
+//        {
+////            CurOpusEncoder    = Opus64EncoderMono;
+////            CurOpusDecoder    = Opus64DecoderMono;
+//            iNumAudioChannels = 1;
 
-            switch ( eAudioQuality )
-            {
-            case AQ_LOW:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_LOW_QUALITY;
-                break;
-            case AQ_NORMAL:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_NORMAL_QUALITY;
-                break;
-            case AQ_HIGH:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_HIGH_QUALITY;
-                break;
-            }
-        }
-        else
-        {
-            CurOpusEncoder    = Opus64EncoderStereo;
-            CurOpusDecoder    = Opus64DecoderStereo;
-            iNumAudioChannels = 2;
+//            switch ( eAudioQuality )
+//            {
+//            case AQ_LOW:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_LOW_QUALITY;
+//                break;
+//            case AQ_NORMAL:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_NORMAL_QUALITY;
+//                break;
+//            case AQ_HIGH:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_MONO_HIGH_QUALITY;
+//                break;
+//            }
+//        }
+//        else
+//        {
+////            CurOpusEncoder    = Opus64EncoderStereo;
+////            CurOpusDecoder    = Opus64DecoderStereo;
+//            iNumAudioChannels = 2;
 
-            switch ( eAudioQuality )
-            {
-            case AQ_LOW:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_LOW_QUALITY;
-                break;
-            case AQ_NORMAL:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_NORMAL_QUALITY;
-                break;
-            case AQ_HIGH:
-                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_HIGH_QUALITY;
-                break;
-            }
-        }
-    }
+//            switch ( eAudioQuality )
+//            {
+//            case AQ_LOW:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_LOW_QUALITY;
+//                break;
+//            case AQ_NORMAL:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_NORMAL_QUALITY;
+//                break;
+//            case AQ_HIGH:
+//                iCeltNumCodedBytes = OPUS_NUM_BYTES_STEREO_HIGH_QUALITY;
+//                break;
+//            }
+//        }
+//    }
 
-    // calculate stereo (two channels) buffer size
-    iStereoBlockSizeSam = 2 * iMonoBlockSizeSam;
+//    // calculate stereo (two channels) buffer size
+//    iStereoBlockSizeSam = 2 * iMonoBlockSizeSam;
 
-    vecCeltData.Init ( iCeltNumCodedBytes );
-    vecZeros.Init ( iStereoBlockSizeSam, 0 );
-    vecsStereoSndCrdMuteStream.Init ( iStereoBlockSizeSam );
+//    vecCeltData.Init ( iCeltNumCodedBytes );
+//    vecZeros.Init ( iStereoBlockSizeSam, 0 );
+//    vecsStereoSndCrdMuteStream.Init ( iStereoBlockSizeSam );
 
-    opus_custom_encoder_ctl ( CurOpusEncoder,
-                              OPUS_SET_BITRATE ( CalcBitRateBitsPerSecFromCodedBytes ( iCeltNumCodedBytes, iOPUSFrameSizeSamples ) ) );
+//    opus_custom_encoder_ctl ( CurOpusEncoder,
+//                              OPUS_SET_BITRATE ( CalcBitRateBitsPerSecFromCodedBytes ( iCeltNumCodedBytes, iOPUSFrameSizeSamples ) ) );
 
-    // inits for network and channel
-    vecbyNetwData.Init ( iCeltNumCodedBytes );
+//    // inits for network and channel
+//    vecbyNetwData.Init ( iCeltNumCodedBytes );
 
-    // set the channel network properties
-    Channel.SetAudioStreamProperties ( eAudioCompressionType, iCeltNumCodedBytes, iSndCrdFrameSizeFactor, iNumAudioChannels );
+//    // set the channel network properties
+//    Channel.SetAudioStreamProperties ( eAudioCompressionType, iCeltNumCodedBytes, iSndCrdFrameSizeFactor, iNumAudioChannels );
 
-    // init reverberation
-    AudioReverb.Init ( eAudioChannelConf, iStereoBlockSizeSam, SYSTEM_SAMPLE_RATE_HZ );
+//    // init reverberation
+//    AudioReverb.Init ( eAudioChannelConf, iStereoBlockSizeSam, SYSTEM_SAMPLE_RATE_HZ );
 
-    // init the sound card conversion buffers
-    if ( bSndCrdConversionBufferRequired )
-    {
-        // inits for conversion buffer (the size of the conversion buffer must
-        // be the sum of input/output sizes which is the worst case fill level)
-        const int iSndCardStereoBlockSizeSamConvBuff = 2 * iSndCardMonoBlockSizeSamConvBuff;
-        const int iConBufSize                        = iStereoBlockSizeSam + iSndCardStereoBlockSizeSamConvBuff;
+//    // init the sound card conversion buffers
+//    if ( bSndCrdConversionBufferRequired )
+//    {
+//        // inits for conversion buffer (the size of the conversion buffer must
+//        // be the sum of input/output sizes which is the worst case fill level)
+//        const int iSndCardStereoBlockSizeSamConvBuff = 2 * iSndCardMonoBlockSizeSamConvBuff;
+//        const int iConBufSize                        = iStereoBlockSizeSam + iSndCardStereoBlockSizeSamConvBuff;
 
-        SndCrdConversionBufferIn.Init ( iConBufSize );
-        SndCrdConversionBufferOut.Init ( iConBufSize );
-        vecDataConvBuf.Init ( iStereoBlockSizeSam );
+//        SndCrdConversionBufferIn.Init ( iConBufSize );
+//        SndCrdConversionBufferOut.Init ( iConBufSize );
+//        vecDataConvBuf.Init ( iStereoBlockSizeSam );
 
-        // the output conversion buffer must be filled with the inner
-        // block size for initialization (this is the latency which is
-        // introduced by the conversion buffer) to avoid buffer underruns
-        SndCrdConversionBufferOut.Put ( vecZeros, iStereoBlockSizeSam );
-    }
+//        // the output conversion buffer must be filled with the inner
+//        // block size for initialization (this is the latency which is
+//        // introduced by the conversion buffer) to avoid buffer underruns
+//        SndCrdConversionBufferOut.Put ( vecZeros, iStereoBlockSizeSam );
+//    }
 
     // reset initialization phase flag and mute flag
     bIsInitializationPhase = true;
@@ -1167,185 +1167,185 @@ void CClient::ProcessSndCrdAudioData ( CVector<int16_t>& vecsStereoSndCrd )
     }
 }
 
-void CClient::ProcessAudioDataIntern ( CVector<int16_t>& vecsStereoSndCrd )
-{
-    int            i, j, iUnused;
-    unsigned char* pCurCodedData;
+//void CClient::ProcessAudioDataIntern ( CVector<int16_t>& vecsStereoSndCrd )
+//{
+//    int            i, j, iUnused;
+//    unsigned char* pCurCodedData;
 
-    // Transmit signal ---------------------------------------------------------
+//    // Transmit signal ---------------------------------------------------------
 
-    if ( iInputBoost != 1 )
-    {
-        // apply a general gain boost to all audio input:
-        for ( i = 0, j = 0; i < iMonoBlockSizeSam; i++, j += 2 )
-        {
-            vecsStereoSndCrd[j + 1] = static_cast<int16_t> ( iInputBoost * vecsStereoSndCrd[j + 1] );
-            vecsStereoSndCrd[j]     = static_cast<int16_t> ( iInputBoost * vecsStereoSndCrd[j] );
-        }
-    }
+//    if ( iInputBoost != 1 )
+//    {
+//        // apply a general gain boost to all audio input:
+//        for ( i = 0, j = 0; i < iMonoBlockSizeSam; i++, j += 2 )
+//        {
+//            vecsStereoSndCrd[j + 1] = static_cast<int16_t> ( iInputBoost * vecsStereoSndCrd[j + 1] );
+//            vecsStereoSndCrd[j]     = static_cast<int16_t> ( iInputBoost * vecsStereoSndCrd[j] );
+//        }
+//    }
 
-    // update stereo signal level meter (not needed in headless mode)
-#ifndef HEADLESS
-    SignalLevelMeter.Update ( vecsStereoSndCrd, iMonoBlockSizeSam, true );
-#endif
+//    // update stereo signal level meter (not needed in headless mode)
+//#ifndef HEADLESS
+//    SignalLevelMeter.Update ( vecsStereoSndCrd, iMonoBlockSizeSam, true );
+//#endif
 
-    // add reverberation effect if activated
-    if ( iReverbLevel != 0 )
-    {
-        AudioReverb.Process ( vecsStereoSndCrd, bReverbOnLeftChan, static_cast<float> ( iReverbLevel ) / AUD_REVERB_MAX / 4 );
-    }
+//    // add reverberation effect if activated
+//    if ( iReverbLevel != 0 )
+//    {
+//        AudioReverb.Process ( vecsStereoSndCrd, bReverbOnLeftChan, static_cast<float> ( iReverbLevel ) / AUD_REVERB_MAX / 4 );
+//    }
 
-    // apply pan (audio fader) and mix mono signals
-    if ( !( ( iAudioInFader == AUD_FADER_IN_MIDDLE ) && ( eAudioChannelConf == CC_STEREO ) ) )
-    {
-        // calculate pan gain in the range 0 to 1, where 0.5 is the middle position
-        const float fPan = static_cast<float> ( iAudioInFader ) / AUD_FADER_IN_MAX;
+//    // apply pan (audio fader) and mix mono signals
+//    if ( !( ( iAudioInFader == AUD_FADER_IN_MIDDLE ) && ( eAudioChannelConf == CC_STEREO ) ) )
+//    {
+//        // calculate pan gain in the range 0 to 1, where 0.5 is the middle position
+//        const float fPan = static_cast<float> ( iAudioInFader ) / AUD_FADER_IN_MAX;
 
-        if ( eAudioChannelConf == CC_STEREO )
-        {
-            // for stereo only apply pan attenuation on one channel (same as pan in the server)
-            const float fGainL = MathUtils::GetLeftPan ( fPan, false );
-            const float fGainR = MathUtils::GetRightPan ( fPan, false );
+//        if ( eAudioChannelConf == CC_STEREO )
+//        {
+//            // for stereo only apply pan attenuation on one channel (same as pan in the server)
+//            const float fGainL = MathUtils::GetLeftPan ( fPan, false );
+//            const float fGainR = MathUtils::GetRightPan ( fPan, false );
 
-            for ( i = 0, j = 0; i < iMonoBlockSizeSam; i++, j += 2 )
-            {
-                // note that the gain is always <= 1, therefore a simple cast is
-                // ok since we never can get an overload
-                vecsStereoSndCrd[j + 1] = static_cast<int16_t> ( fGainR * vecsStereoSndCrd[j + 1] );
-                vecsStereoSndCrd[j]     = static_cast<int16_t> ( fGainL * vecsStereoSndCrd[j] );
-            }
-        }
-        else
-        {
-            // for mono implement a cross-fade between channels and mix them, for
-            // mono-in/stereo-out use no attenuation in pan center
-            const float fGainL = MathUtils::GetLeftPan ( fPan, eAudioChannelConf != CC_MONO_IN_STEREO_OUT );
-            const float fGainR = MathUtils::GetRightPan ( fPan, eAudioChannelConf != CC_MONO_IN_STEREO_OUT );
+//            for ( i = 0, j = 0; i < iMonoBlockSizeSam; i++, j += 2 )
+//            {
+//                // note that the gain is always <= 1, therefore a simple cast is
+//                // ok since we never can get an overload
+//                vecsStereoSndCrd[j + 1] = static_cast<int16_t> ( fGainR * vecsStereoSndCrd[j + 1] );
+//                vecsStereoSndCrd[j]     = static_cast<int16_t> ( fGainL * vecsStereoSndCrd[j] );
+//            }
+//        }
+//        else
+//        {
+//            // for mono implement a cross-fade between channels and mix them, for
+//            // mono-in/stereo-out use no attenuation in pan center
+//            const float fGainL = MathUtils::GetLeftPan ( fPan, eAudioChannelConf != CC_MONO_IN_STEREO_OUT );
+//            const float fGainR = MathUtils::GetRightPan ( fPan, eAudioChannelConf != CC_MONO_IN_STEREO_OUT );
 
-            for ( i = 0, j = 0; i < iMonoBlockSizeSam; i++, j += 2 )
-            {
-                // note that we need the Float2Short for stereo pan mode
-                vecsStereoSndCrd[i] = Float2Short ( fGainL * vecsStereoSndCrd[j] + fGainR * vecsStereoSndCrd[j + 1] );
-            }
-        }
-    }
+//            for ( i = 0, j = 0; i < iMonoBlockSizeSam; i++, j += 2 )
+//            {
+//                // note that we need the Float2Short for stereo pan mode
+//                vecsStereoSndCrd[i] = Float2Short ( fGainL * vecsStereoSndCrd[j] + fGainR * vecsStereoSndCrd[j + 1] );
+//            }
+//        }
+//    }
 
-    // Support for mono-in/stereo-out mode: Per definition this mode works in
-    // full stereo mode at the transmission level. The only thing which is done
-    // is to mix both sound card inputs together and then put this signal on
-    // both stereo channels to be transmitted to the server.
-    if ( eAudioChannelConf == CC_MONO_IN_STEREO_OUT )
-    {
-        // copy mono data in stereo sound card buffer (note that since the input
-        // and output is the same buffer, we have to start from the end not to
-        // overwrite input values)
-        for ( i = iMonoBlockSizeSam - 1, j = iStereoBlockSizeSam - 2; i >= 0; i--, j -= 2 )
-        {
-            vecsStereoSndCrd[j] = vecsStereoSndCrd[j + 1] = vecsStereoSndCrd[i];
-        }
-    }
+//    // Support for mono-in/stereo-out mode: Per definition this mode works in
+//    // full stereo mode at the transmission level. The only thing which is done
+//    // is to mix both sound card inputs together and then put this signal on
+//    // both stereo channels to be transmitted to the server.
+//    if ( eAudioChannelConf == CC_MONO_IN_STEREO_OUT )
+//    {
+//        // copy mono data in stereo sound card buffer (note that since the input
+//        // and output is the same buffer, we have to start from the end not to
+//        // overwrite input values)
+//        for ( i = iMonoBlockSizeSam - 1, j = iStereoBlockSizeSam - 2; i >= 0; i--, j -= 2 )
+//        {
+//            vecsStereoSndCrd[j] = vecsStereoSndCrd[j + 1] = vecsStereoSndCrd[i];
+//        }
+//    }
 
-    for ( i = 0; i < iSndCrdFrameSizeFactor; i++ )
-    {
-        // OPUS encoding
-        if ( CurOpusEncoder != nullptr )
-        {
-            if ( bMuteOutStream )
-            {
-                iUnused = opus_custom_encode ( CurOpusEncoder,
-                                               &vecZeros[i * iNumAudioChannels * iOPUSFrameSizeSamples],
-                                               iOPUSFrameSizeSamples,
-                                               &vecCeltData[0],
-                                               iCeltNumCodedBytes );
-            }
-            else
-            {
-                iUnused = opus_custom_encode ( CurOpusEncoder,
-                                               &vecsStereoSndCrd[i * iNumAudioChannels * iOPUSFrameSizeSamples],
-                                               iOPUSFrameSizeSamples,
-                                               &vecCeltData[0],
-                                               iCeltNumCodedBytes );
-            }
-        }
+//    for ( i = 0; i < iSndCrdFrameSizeFactor; i++ )
+//    {
+//        // OPUS encoding
+//        if ( CurOpusEncoder != nullptr )
+//        {
+//            if ( bMuteOutStream )
+//            {
+//                iUnused = opus_custom_encode ( CurOpusEncoder,
+//                                               &vecZeros[i * iNumAudioChannels * iOPUSFrameSizeSamples],
+//                                               iOPUSFrameSizeSamples,
+//                                               &vecCeltData[0],
+//                                               iCeltNumCodedBytes );
+//            }
+//            else
+//            {
+//                iUnused = opus_custom_encode ( CurOpusEncoder,
+//                                               &vecsStereoSndCrd[i * iNumAudioChannels * iOPUSFrameSizeSamples],
+//                                               iOPUSFrameSizeSamples,
+//                                               &vecCeltData[0],
+//                                               iCeltNumCodedBytes );
+//            }
+//        }
 
-        // send coded audio through the network
-        Channel.PrepAndSendPacket ( &Socket, vecCeltData, iCeltNumCodedBytes );
-    }
+//        // send coded audio through the network
+//        Channel.PrepAndSendPacket ( &Socket, vecCeltData, iCeltNumCodedBytes );
+//    }
 
-    // Receive signal ----------------------------------------------------------
-    // in case of mute stream, store local data
-    if ( bMuteOutStream )
-    {
-        vecsStereoSndCrdMuteStream = vecsStereoSndCrd;
-    }
+//    // Receive signal ----------------------------------------------------------
+//    // in case of mute stream, store local data
+//    if ( bMuteOutStream )
+//    {
+//        vecsStereoSndCrdMuteStream = vecsStereoSndCrd;
+//    }
 
-    for ( i = 0; i < iSndCrdFrameSizeFactor; i++ )
-    {
-        // receive a new block
-        const bool bReceiveDataOk = ( Channel.GetData ( vecbyNetwData, iCeltNumCodedBytes ) == GS_BUFFER_OK );
+//    for ( i = 0; i < iSndCrdFrameSizeFactor; i++ )
+//    {
+//        // receive a new block
+//        const bool bReceiveDataOk = ( Channel.GetData ( vecbyNetwData, iCeltNumCodedBytes ) == GS_BUFFER_OK );
 
-        // get pointer to coded data and manage the flags
-        if ( bReceiveDataOk )
-        {
-            pCurCodedData = &vecbyNetwData[0];
+//        // get pointer to coded data and manage the flags
+//        if ( bReceiveDataOk )
+//        {
+//            pCurCodedData = &vecbyNetwData[0];
 
-            // on any valid received packet, we clear the initialization phase flag
-            bIsInitializationPhase = false;
-        }
-        else
-        {
-            // for lost packets use null pointer as coded input data
-            pCurCodedData = nullptr;
+//            // on any valid received packet, we clear the initialization phase flag
+//            bIsInitializationPhase = false;
+//        }
+//        else
+//        {
+//            // for lost packets use null pointer as coded input data
+//            pCurCodedData = nullptr;
 
-            // invalidate the buffer OK status flag
-            bJitterBufferOK = false;
-        }
+//            // invalidate the buffer OK status flag
+//            bJitterBufferOK = false;
+//        }
 
-        // OPUS decoding
-        if ( CurOpusDecoder != nullptr )
-        {
-            iUnused = opus_custom_decode ( CurOpusDecoder,
-                                           pCurCodedData,
-                                           iCeltNumCodedBytes,
-                                           &vecsStereoSndCrd[i * iNumAudioChannels * iOPUSFrameSizeSamples],
-                                           iOPUSFrameSizeSamples );
-        }
-    }
+//        // OPUS decoding
+//        if ( CurOpusDecoder != nullptr )
+//        {
+//            iUnused = opus_custom_decode ( CurOpusDecoder,
+//                                           pCurCodedData,
+//                                           iCeltNumCodedBytes,
+//                                           &vecsStereoSndCrd[i * iNumAudioChannels * iOPUSFrameSizeSamples],
+//                                           iOPUSFrameSizeSamples );
+//        }
+//    }
 
-    // for muted stream we have to add our local data here
-    if ( bMuteOutStream )
-    {
-        for ( i = 0; i < iStereoBlockSizeSam; i++ )
-        {
-            vecsStereoSndCrd[i] = Float2Short ( vecsStereoSndCrd[i] + vecsStereoSndCrdMuteStream[i] * fMuteOutStreamGain );
-        }
-    }
+//    // for muted stream we have to add our local data here
+//    if ( bMuteOutStream )
+//    {
+//        for ( i = 0; i < iStereoBlockSizeSam; i++ )
+//        {
+//            vecsStereoSndCrd[i] = Float2Short ( vecsStereoSndCrd[i] + vecsStereoSndCrdMuteStream[i] * fMuteOutStreamGain );
+//        }
+//    }
 
-    // check if channel is connected and if we do not have the initialization phase
-    if ( Channel.IsConnected() && ( !bIsInitializationPhase ) )
-    {
-        if ( eAudioChannelConf == CC_MONO )
-        {
-            // copy mono data in stereo sound card buffer (note that since the input
-            // and output is the same buffer, we have to start from the end not to
-            // overwrite input values)
-            for ( i = iMonoBlockSizeSam - 1, j = iStereoBlockSizeSam - 2; i >= 0; i--, j -= 2 )
-            {
-                vecsStereoSndCrd[j] = vecsStereoSndCrd[j + 1] = vecsStereoSndCrd[i];
-            }
-        }
-    }
-    else
-    {
-        // if not connected, clear data
-        vecsStereoSndCrd.Reset ( 0 );
-    }
+//    // check if channel is connected and if we do not have the initialization phase
+//    if ( Channel.IsConnected() && ( !bIsInitializationPhase ) )
+//    {
+//        if ( eAudioChannelConf == CC_MONO )
+//        {
+//            // copy mono data in stereo sound card buffer (note that since the input
+//            // and output is the same buffer, we have to start from the end not to
+//            // overwrite input values)
+//            for ( i = iMonoBlockSizeSam - 1, j = iStereoBlockSizeSam - 2; i >= 0; i--, j -= 2 )
+//            {
+//                vecsStereoSndCrd[j] = vecsStereoSndCrd[j + 1] = vecsStereoSndCrd[i];
+//            }
+//        }
+//    }
+//    else
+//    {
+//        // if not connected, clear data
+//        vecsStereoSndCrd.Reset ( 0 );
+//    }
 
-    // update socket buffer size
-    Channel.UpdateSocketBufferSize();
+//    // update socket buffer size
+//    Channel.UpdateSocketBufferSize();
 
-    Q_UNUSED ( iUnused )
-}
+//    Q_UNUSED ( iUnused )
+//}
 
 int CClient::EstimatedOverallDelay ( const int iPingTimeMs )
 {
@@ -1364,23 +1364,23 @@ int CClient::EstimatedOverallDelay ( const int iPingTimeMs )
 
     // try to get the actual input/output sound card delay from the audio
     // interface, per definition it is not available if a 0 is returned
-    const float fSoundCardInputOutputLatencyMs = Sound.GetInOutLatencyMs();
+//    const float fSoundCardInputOutputLatencyMs = Sound.GetInOutLatencyMs();
 
-    if ( fSoundCardInputOutputLatencyMs == 0.0f )
-    {
-        // use an alternative approach for estimating the sound card delay:
-        //
-        // we assume that we have two period sizes for the input and one for the
-        // output, therefore we have "3 *" instead of "2 *" (for input and output)
-        // the actual sound card buffer size
-        // "GetSndCrdConvBufAdditionalDelayMonoBlSize"
-        fTotalSoundCardDelayMs += ( 3 * GetSndCrdActualMonoBlSize() ) * 1000.0f / SYSTEM_SAMPLE_RATE_HZ;
-    }
-    else
-    {
-        // add the actual sound card latency in ms
-        fTotalSoundCardDelayMs += fSoundCardInputOutputLatencyMs;
-    }
+//    if ( fSoundCardInputOutputLatencyMs == 0.0f )
+//    {
+//        // use an alternative approach for estimating the sound card delay:
+//        //
+//        // we assume that we have two period sizes for the input and one for the
+//        // output, therefore we have "3 *" instead of "2 *" (for input and output)
+//        // the actual sound card buffer size
+//        // "GetSndCrdConvBufAdditionalDelayMonoBlSize"
+//        fTotalSoundCardDelayMs += ( 3 * GetSndCrdActualMonoBlSize() ) * 1000.0f / SYSTEM_SAMPLE_RATE_HZ;
+//    }
+//    else
+//    {
+//        // add the actual sound card latency in ms
+//        fTotalSoundCardDelayMs += fSoundCardInputOutputLatencyMs;
+//    }
 
     // network packets are of the same size as the audio packets per definition
     // if no sound card conversion buffer is used

@@ -1,0 +1,56 @@
+name: Build qt wasm
+
+env:
+  QT_VERSION: 6.4.1
+
+on:
+  push:
+    tags:
+      - "qt_wasm*"
+    branches:
+      - qt_wasm
+
+jobs:
+  build_qt_wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - name:                       Checkout code
+        id:                         codecheck
+        uses:                       actions/checkout@v2
+
+      - name:                       Get git short hash
+        id:                         vars
+        run:                        echo "sha_short=sha-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        
+      - name:                       Echo git shorthash
+        run:                        echo ${{ steps.vars.outputs.sha_short }}
+
+      - name:                       Build Qt wasm
+        id:                         qtwasm
+        run:                        ./.github/autobuild/qt_webasm.sh build
+        env:
+          GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+          QT_VERSION:               ${{ env.QT_VERSION }}
+        
+      - name:                       Post-Build for Qt wasm build
+        id:                         get-artifacts
+        run:                        ./.github/autobuild/qt_webasm.sh get-artifacts
+
+      - name:                       Upload Artifact 1 to Job
+        uses:                       actions/upload-artifact@v2
+        with:
+          name:                     ${{ steps.get-artifacts.outputs.artifact_1 }}
+          path:                     deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
+          retention-days:           31
+          if-no-files-found:        error
+
+      - name:                       Create Release
+        id:                         create-release
+        uses:                       ncipollo/release-action@v1
+        with:
+          tag:                      webasmqt_${{ env.QT_VERSION }}
+          artifacts:                "deploy/qt_webasm_${{ env.QT_VERSION }}.tar.gz"
+          draft:                    true
+          token:                    ${{ secrets.GITHUB_TOKEN }}
+          name:                     Qt_Webasm_${{ env.QT_VERSION }}
+      

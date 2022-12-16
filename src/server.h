@@ -29,11 +29,11 @@
 #include <QHostAddress>
 #include <QFileInfo>
 #include <algorithm>
-#ifdef USE_OPUS_SHARED_LIB
-#    include "opus/opus_custom.h"
-#else
-#    include "opus_custom.h"
-#endif
+//#ifdef USE_OPUS_SHARED_LIB
+//#    include "opus/opus_custom.h"
+//#else
+//#    include "opus_custom.h"
+//#endif
 #include "global.h"
 #include "buffer.h"
 #include "signalhandler.h"
@@ -236,16 +236,16 @@ protected:
     bool      bChannelIsNowDisconnected;
 
     // audio encoder/decoder
-    OpusCustomMode*    Opus64Mode[MAX_NUM_CHANNELS];
-    OpusCustomEncoder* Opus64EncoderMono[MAX_NUM_CHANNELS];
-    OpusCustomDecoder* Opus64DecoderMono[MAX_NUM_CHANNELS];
-    OpusCustomEncoder* Opus64EncoderStereo[MAX_NUM_CHANNELS];
-    OpusCustomDecoder* Opus64DecoderStereo[MAX_NUM_CHANNELS];
-    OpusCustomMode*    OpusMode[MAX_NUM_CHANNELS];
-    OpusCustomEncoder* OpusEncoderMono[MAX_NUM_CHANNELS];
-    OpusCustomDecoder* OpusDecoderMono[MAX_NUM_CHANNELS];
-    OpusCustomEncoder* OpusEncoderStereo[MAX_NUM_CHANNELS];
-    OpusCustomDecoder* OpusDecoderStereo[MAX_NUM_CHANNELS];
+//    OpusCustomMode*    Opus64Mode[MAX_NUM_CHANNELS];
+//    OpusCustomEncoder* Opus64EncoderMono[MAX_NUM_CHANNELS];
+//    OpusCustomDecoder* Opus64DecoderMono[MAX_NUM_CHANNELS];
+//    OpusCustomEncoder* Opus64EncoderStereo[MAX_NUM_CHANNELS];
+//    OpusCustomDecoder* Opus64DecoderStereo[MAX_NUM_CHANNELS];
+//    OpusCustomMode*    OpusMode[MAX_NUM_CHANNELS];
+//    OpusCustomEncoder* OpusEncoderMono[MAX_NUM_CHANNELS];
+//    OpusCustomDecoder* OpusDecoderMono[MAX_NUM_CHANNELS];
+//    OpusCustomEncoder* OpusEncoderStereo[MAX_NUM_CHANNELS];
+//    OpusCustomDecoder* OpusDecoderStereo[MAX_NUM_CHANNELS];
     CConvBuf<int16_t>  DoubleFrameSizeConvBufIn[MAX_NUM_CHANNELS];
     CConvBuf<int16_t>  DoubleFrameSizeConvBufOut[MAX_NUM_CHANNELS];
 

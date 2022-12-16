@@ -52,15 +52,13 @@
 #include "util.h"
 #include "client.h"
 #include "settings.h"
-#include "multicolorled.h"
-#include "audiomixerboard.h"
-#include "analyzerconsole.h"
+//#include "multicolorled.h"
+//#include "audiomixerboard.h"
+//#include "analyzerconsole.h"
 #include "ui_clientdlgbase.h"
 #if defined( Q_OS_MACOS )
 #    include "mac/badgelabel.h"
 #endif
-#include <QQuickWidget>
-#include <QQuickView>
 //#include "unsafearea.h"
 
 /* Definitions ****************************************************************/
@@ -87,7 +85,6 @@ class CClientDlg : public QMainWindow, private Ui_CClientDlgBase
 
 public:
     CClientDlg ( CClient*         pNCliP,
-                 CClientSettings* pNSetP,
                  const QString&   strConnOnStartupAddress,
                  const QString&   strMIDISetup,
                  const bool       bNewShowComplRegConnList,
@@ -101,7 +98,7 @@ public:
     void UpdateUploadRate();
     void UpdateDisplay();
     void UpdateSettingsDisplay();
-    void UpdateSoundDeviceChannelSelectionFrame();
+//    void UpdateSoundDeviceChannelSelectionFrame();
     void SetEnableFeedbackDetection ( bool enable );
 
     // for QML
@@ -121,25 +118,25 @@ public:
     QString GetSelectedServerName() const { return strSelectedServerName; }
 
 protected:
-    void SetGUIDesign ( const EGUIDesign eNewDesign );
-    void SetMeterStyle ( const EMeterStyle eNewMeterStyle );
-    void SetMyWindowTitle ( const int iNumClients );
+//    void SetGUIDesign ( const EGUIDesign eNewDesign );
+//    void SetMeterStyle ( const EMeterStyle eNewMeterStyle );
+//    void SetMyWindowTitle ( const int iNumClients );
 //    void ShowConnectionSetupDialog();
 //    void ShowBasicConnectionSetupDialog();
-    void ShowJoinWidget();
-    void HideJoinWidget();
+//    void ShowJoinWidget();
+//    void HideJoinWidget();
     void ShowGeneralSettings ( int iTab );
-    void ShowChatWindow ( const bool bForceRaise = true );
-    void ShowAnalyzerConsole();
-    void UpdateAudioFaderSlider();
-    void UpdateRevSelection();
+//    void ShowChatWindow ( const bool bForceRaise = true );
+//    void ShowAnalyzerConsole();
+//    void UpdateAudioFaderSlider();
+//    void UpdateRevSelection();
     void Connect ( const QString& strSelectedAddress, const QString& strMixerBoardLabel );
-    void Disconnect();
-    void ManageDragNDrop ( QDropEvent* Event, const bool bCheckAccept );
-    void SetPingTime ( const int iPingTime, const int iOverallDelayMs, const CMultiColorLED::ELightColor eOverallDelayLEDColor );
+//    void Disconnect();
+//    void ManageDragNDrop ( QDropEvent* Event, const bool bCheckAccept );
+//    void SetPingTime ( const int iPingTime, const int iOverallDelayMs, const CMultiColorLED::ELightColor eOverallDelayLEDColor );
 
     CClient*         pClient;
-    CClientSettings* pSettings;
+//    CClientSettings* pSettings;
 //    UnsafeArea*    mUnsafeArea;
 
     int            iClients;
@@ -162,25 +159,21 @@ protected:
     QString        strVideoUrl;
     QString        strVideoHost;
     QString        strSessionHash;
-#if defined(Q_OS_ANDROID)
-    QQuickWidget*   quickWidget;
-#else
-    QQuickView*     quickView;
-#endif
+
     QNetworkAccessManager*   qNam;
 
     virtual void closeEvent ( QCloseEvent* Event );
-    virtual void dragEnterEvent ( QDragEnterEvent* Event ) { ManageDragNDrop ( Event, true ); }
-    virtual void dropEvent ( QDropEvent* Event ) { ManageDragNDrop ( Event, false ); }
+//    virtual void dragEnterEvent ( QDragEnterEvent* Event ) { ManageDragNDrop ( Event, true ); }
+//    virtual void dropEvent ( QDropEvent* Event ) { ManageDragNDrop ( Event, false ); }
 
-    CAnalyzerConsole   AnalyzerConsole;
+//    CAnalyzerConsole   AnalyzerConsole;
 
     // settings stuff
-    void    UpdateJitterBufferFrame();
-    void    UpdateSoundCardFrame();
+//    void    UpdateJitterBufferFrame();
+//    void    UpdateSoundCardFrame();
     void    UpdateDirectoryServerComboBox();
 //    void    UpdateAudioFaderSlider();
-    QString GenSndCrdBufferDelayString ( const int iFrameSize, const QString strAddText = "" );
+//    QString GenSndCrdBufferDelayString ( const int iFrameSize, const QString strAddText = "" );
     virtual void showEvent ( QShowEvent* );
 //    CClient*         pClient;
 //    CClientSettings* pSettings;
@@ -216,11 +209,11 @@ protected:
 //    UrlHandler* url_handler;
 
 public slots:
-    void OnConnectDisconBut();
-    void OnInviteBoxActivated();
-    void OnNewStartClicked();
-    void OnTimerSigMet();
-    void OnTimerBuffersLED();
+//    void OnConnectDisconBut();
+//    void OnInviteBoxActivated();
+//    void OnNewStartClicked();
+//    void OnTimerSigMet();
+//    void OnTimerBuffersLED();
     void OnTimerCheckAudioDeviceOk();
     void OnTimerDetectFeedback();
 
@@ -229,63 +222,63 @@ public slots:
     void OnTimerStatus() { UpdateDisplay(); }
 
     void OnTimerPing();
-    void OnPingTimeResult ( int iPingTime );
+//    void OnPingTimeResult ( int iPingTime );
     void OnCLPingTimeWithNumClientsReceived ( CHostAddress InetAddr, int iPingTime, int iNumClients );
 
-    void OnControllerInFaderLevel ( const int iChannelIdx, const int iValue ) { MainMixerBoard->SetFaderLevel ( iChannelIdx, iValue ); }
+//    void OnControllerInFaderLevel ( const int iChannelIdx, const int iValue ) { MainMixerBoard->SetFaderLevel ( iChannelIdx, iValue ); }
 
-    void OnControllerInPanValue ( const int iChannelIdx, const int iValue ) { MainMixerBoard->SetPanValue ( iChannelIdx, iValue ); }
+//    void OnControllerInPanValue ( const int iChannelIdx, const int iValue ) { MainMixerBoard->SetPanValue ( iChannelIdx, iValue ); }
 
-    void OnControllerInFaderIsSolo ( const int iChannelIdx, const bool bIsSolo ) { MainMixerBoard->SetFaderIsSolo ( iChannelIdx, bIsSolo ); }
+//    void OnControllerInFaderIsSolo ( const int iChannelIdx, const bool bIsSolo ) { MainMixerBoard->SetFaderIsSolo ( iChannelIdx, bIsSolo ); }
 
-    void OnControllerInFaderIsMute ( const int iChannelIdx, const bool bIsMute ) { MainMixerBoard->SetFaderIsMute ( iChannelIdx, bIsMute ); }
+//    void OnControllerInFaderIsMute ( const int iChannelIdx, const bool bIsMute ) { MainMixerBoard->SetFaderIsMute ( iChannelIdx, bIsMute ); }
 
-    void OnControllerInMuteMyself ( const bool bMute ) { chbLocalMute->setChecked ( bMute ); }
+//    void OnControllerInMuteMyself ( const bool bMute ) { chbLocalMute->setChecked ( bMute ); }
 
-    void OnVersionAndOSReceived ( COSUtil::EOpSystemType, QString strVersion );
+//    void OnVersionAndOSReceived ( COSUtil::EOpSystemType, QString strVersion );
 
-    void OnCLVersionAndOSReceived ( CHostAddress, COSUtil::EOpSystemType, QString strVersion );
+//    void OnCLVersionAndOSReceived ( CHostAddress, COSUtil::EOpSystemType, QString strVersion );
 
-    void OnLoadChannelSetup();
-    void OnSaveChannelSetup();
+//    void OnLoadChannelSetup();
+//    void OnSaveChannelSetup();
 //    void OnOpenConnectionSetupDialog() { ShowBasicConnectionSetupDialog(); }
 //    void OnOpenUserProfileSettings();
 //    void OnOpenAudioNetSettings();
 //    void OnOpenAdvancedSettings();
 //    void OnOpenChatDialog() { ShowChatWindow(); }
-    void OnOpenAnalyzerConsole() { ShowAnalyzerConsole(); }
-    void OnOwnFaderFirst()
-    {
-        pSettings->bOwnFaderFirst = !pSettings->bOwnFaderFirst;
-        MainMixerBoard->SetFaderSorting ( pSettings->eChannelSortType );
-    }
-    void OnNoSortChannels() { MainMixerBoard->SetFaderSorting ( ST_NO_SORT ); }
-    void OnSortChannelsByName() { MainMixerBoard->SetFaderSorting ( ST_BY_NAME ); }
+//    void OnOpenAnalyzerConsole() { ShowAnalyzerConsole(); }
+//    void OnOwnFaderFirst()
+//    {
+//        pSettings->bOwnFaderFirst = !pSettings->bOwnFaderFirst;
+//        MainMixerBoard->SetFaderSorting ( pSettings->eChannelSortType );
+//    }
+//    void OnNoSortChannels() { MainMixerBoard->SetFaderSorting ( ST_NO_SORT ); }
+//    void OnSortChannelsByName() { MainMixerBoard->SetFaderSorting ( ST_BY_NAME ); }
 //    void OnSortChannelsByInstrument() { MainMixerBoard->SetFaderSorting ( ST_BY_INSTRUMENT ); }
-    void OnSortChannelsByGroupID() { MainMixerBoard->SetFaderSorting ( ST_BY_GROUPID ); }
+//    void OnSortChannelsByGroupID() { MainMixerBoard->SetFaderSorting ( ST_BY_GROUPID ); }
 //    void OnSortChannelsByCity() { MainMixerBoard->SetFaderSorting ( ST_BY_CITY ); }
-    void OnClearAllStoredSoloMuteSettings();
-    void OnSetAllFadersToNewClientLevel() { MainMixerBoard->SetAllFaderLevelsToNewClientLevel(); }
-    void OnAutoAdjustAllFaderLevels() { MainMixerBoard->AutoAdjustAllFaderLevels(); }
-    void OnNumMixerPanelRowsChanged ( int value ) { MainMixerBoard->SetNumMixerPanelRows ( value ); }
+//    void OnClearAllStoredSoloMuteSettings();
+//    void OnSetAllFadersToNewClientLevel() { MainMixerBoard->SetAllFaderLevelsToNewClientLevel(); }
+//    void OnAutoAdjustAllFaderLevels() { MainMixerBoard->AutoAdjustAllFaderLevels(); }
+//    void OnNumMixerPanelRowsChanged ( int value ) { MainMixerBoard->SetNumMixerPanelRows ( value ); }
 
     void OnSettingsStateChanged ( int value );
 //    void OnPubConnectStateChanged ( int value );
-    void OnChatStateChanged ( int value );
-    void OnLocalMuteStateChanged ( int value );
+//    void OnChatStateChanged ( int value );
+//    void OnLocalMuteStateChanged ( int value );
 
-    void OnAudioReverbValueChanged ( int value ) { pClient->SetReverbLevel ( value ); }
+//    void OnAudioReverbValueChanged ( int value ) { pClient->SetReverbLevel ( value ); }
 
-    void OnReverbSelLClicked() { pClient->SetReverbOnLeftChan ( true ); }
+//    void OnReverbSelLClicked() { pClient->SetReverbOnLeftChan ( true ); }
 
-    void OnReverbSelRClicked() { pClient->SetReverbOnLeftChan ( false ); }
+//    void OnReverbSelRClicked() { pClient->SetReverbOnLeftChan ( false ); }
 
 //    void OnFeedbackDetectionChanged ( int state ) { SetEnableFeedbackDetection ( state == Qt::Checked ); }
 
-    void OnConClientListMesReceived ( CVector<CChannelInfo> vecChanInfo );
+//    void OnConClientListMesReceived ( CVector<CChannelInfo> vecChanInfo );
 //    void OnChatTextReceived ( QString strChatText );
 //    void OnLicenceRequired ( ELicenceType eLicenceType );
-    void OnSoundDeviceChanged ( QString strError );
+//    void OnSoundDeviceChanged ( QString strError );
 
     void OnChangeChanGain ( int iId, float fGain, bool bIsMyOwnFader ) { pClient->SetRemoteChanGain ( iId, fGain, bIsMyOwnFader ); }
 
@@ -316,31 +309,31 @@ public slots:
          SetConnClientsList ( InetAddr, vecChanInfo );
      }
 
-    void OnClientIDReceived ( int iChanID ) { MainMixerBoard->SetMyChannelID ( iChanID ); }
+//    void OnClientIDReceived ( int iChanID ) { MainMixerBoard->SetMyChannelID ( iChanID ); }
 
-    void OnMuteStateHasChangedReceived ( int iChanID, bool bIsMuted ) { MainMixerBoard->SetRemoteFaderIsMute ( iChanID, bIsMuted ); }
+//    void OnMuteStateHasChangedReceived ( int iChanID, bool bIsMuted ) { MainMixerBoard->SetRemoteFaderIsMute ( iChanID, bIsMuted ); }
 
-    void OnCLChannelLevelListReceived ( CHostAddress /* unused */, CVector<uint16_t> vecLevelList )
-    {
-        MainMixerBoard->SetChannelLevels ( vecLevelList );
-    }
+//    void OnCLChannelLevelListReceived ( CHostAddress /* unused */, CVector<uint16_t> vecLevelList )
+//    {
+//        MainMixerBoard->SetChannelLevels ( vecLevelList );
+//    }
 
-    void OnJoinCancelClicked();
-    void OnEventJoinConnectClicked ( const QString& url );
-    void OnJoinConnectClicked();
+//    void OnJoinCancelClicked();
+//    void OnEventJoinConnectClicked ( const QString& url );
+//    void OnJoinConnectClicked();
 //    void OnBasicConnectDlgAccepted();
 //    void OnConnectDlgAccepted();
-    void OnDisconnected() { Disconnect(); }
-    void OnGUIDesignChanged();
-    void OnMeterStyleChanged();
-    void OnRecorderStateReceived ( ERecorderState eRecorderState );
-    void SetMixerBoardDeco ( const ERecorderState newRecorderState, const EGUIDesign eNewDesign );
-    void OnAudioChannelsChanged() { UpdateRevSelection(); }
-    void OnNumClientsChanged ( int iNewNumClients );
+//    void OnDisconnected() { Disconnect(); }
+//    void OnGUIDesignChanged();
+//    void OnMeterStyleChanged();
+//    void OnRecorderStateReceived ( ERecorderState eRecorderState );
+//    void SetMixerBoardDeco ( const ERecorderState newRecorderState, const EGUIDesign eNewDesign );
+//    void OnAudioChannelsChanged() { UpdateRevSelection(); }
+//    void OnNumClientsChanged ( int iNewNumClients );
 
     // updates
-    void OnCheckForUpdate();
-    void OnDownloadUpdateClicked();
+//    void OnCheckForUpdate();
+//    void OnDownloadUpdateClicked();
 
 //    // session chat stuff ========================
 //    void OnSendText();
@@ -351,38 +344,38 @@ public slots:
 
     // settings stuff ==========================================
 //    void OnTimerStatus() { UpdateDisplay(); }
-    void OnNetBufValueChanged ( int value );
-    void OnNetBufServerValueChanged ( int value );
-    void OnAutoJitBufStateChanged ( int value );
-    void OnEnableOPUS64StateChanged ( int value );
-    void OnFeedbackDetectionChanged ( int value );
-    void OnCustomDirectoriesEditingFinished();
-    void OnNewClientLevelEditingFinished() { pSettings->iNewClientFaderLevel = edtNewClientLevel->text().toInt(); }
-    void OnNewClientLevelChanged();
-    void OnInputBoostChanged();
-    void OnSndCrdBufferDelayButtonGroupClicked ( QAbstractButton* button );
-    void OnSoundcardActivated ( int iSndDevIdx );
-    void OnLInChanActivated ( int iChanIdx );
-    void OnRInChanActivated ( int iChanIdx );
-    void OnLOutChanActivated ( int iChanIdx );
-    void OnROutChanActivated ( int iChanIdx );
-    void OnAudioChannelsActivated ( int iChanIdx );
-    void OnAudioQualityActivated ( int iQualityIdx );
-    void OnGUIDesignActivated ( int iDesignIdx );
-    void OnMeterStyleActivated ( int iMeterStyleIdx );
-    void OnLanguageChanged ( QString strLanguage ) { pSettings->strLanguage = strLanguage; }
-    void OnAliasTextChanged ( const QString& strNewName );
+//    void OnNetBufValueChanged ( int value );
+//    void OnNetBufServerValueChanged ( int value );
+//    void OnAutoJitBufStateChanged ( int value );
+//    void OnEnableOPUS64StateChanged ( int value );
+//    void OnFeedbackDetectionChanged ( int value );
+//    void OnCustomDirectoriesEditingFinished();
+//    void OnNewClientLevelEditingFinished() { pSettings->iNewClientFaderLevel = edtNewClientLevel->text().toInt(); }
+//    void OnNewClientLevelChanged();
+//    void OnInputBoostChanged();
+//    void OnSndCrdBufferDelayButtonGroupClicked ( QAbstractButton* button );
+//    void OnSoundcardActivated ( int iSndDevIdx );
+//    void OnLInChanActivated ( int iChanIdx );
+//    void OnRInChanActivated ( int iChanIdx );
+//    void OnLOutChanActivated ( int iChanIdx );
+//    void OnROutChanActivated ( int iChanIdx );
+//    void OnAudioChannelsActivated ( int iChanIdx );
+//    void OnAudioQualityActivated ( int iQualityIdx );
+//    void OnGUIDesignActivated ( int iDesignIdx );
+//    void OnMeterStyleActivated ( int iMeterStyleIdx );
+//    void OnLanguageChanged ( QString strLanguage ) { pSettings->strLanguage = strLanguage; }
+//    void OnAliasTextChanged ( const QString& strNewName );
 //    void OnInstrumentActivated ( int iCntryListItem );
 //    void OnCountryActivated ( int iCntryListItem );
 //    void OnCityTextChanged ( const QString& strNewName );
 //    void OnSkillActivated ( int iCntryListItem );
 //    void OnTabChanged();
 //    void OnMakeTabChange ( int iTabIdx );
-    void OnAudioPanValueChanged ( int value );
-#if defined( _WIN32 ) && !defined( WITH_JACK )
-    // Only include this slot for Windows when JACK is NOT used
-    void OnDriverSetupClicked();
-#endif
+//    void OnAudioPanValueChanged ( int value );
+//#if defined( _WIN32 ) && !defined( WITH_JACK )
+//    // Only include this slot for Windows when JACK is NOT used
+//    void OnDriverSetupClicked();
+//#endif
     // end of settings stuff ===================================
 
     void accept() { close(); } // introduced by pljones
@@ -390,16 +383,16 @@ public slots:
 
     // regionchecker stuff
 //    void OnServerListItemDoubleClicked ( QTreeWidgetItem* Item, int );
-    void OnServerAddrEditTextChanged ( const QString& );
-    void OnDirectoryServerChanged ( int iTypeIdx );
+//    void OnServerAddrEditTextChanged ( const QString& );
+//    void OnDirectoryServerChanged ( int iTypeIdx );
 //    void OnFilterTextEdited ( const QString& ) { UpdateListFilter(); }
 //    void OnExpandAllStateChanged ( int value ) { ShowAllMusicians ( value == Qt::Checked ); }
-    void OnCustomDirectoriesChanged();
+//    void OnCustomDirectoriesChanged();
 //    void OnConnectClicked();
     void OnRegionTimerPing();
     void OnTimerReRequestServList();
 
-    void OnConnectFromURLHandler(const QString& connect_url);
+//    void OnConnectFromURLHandler(const QString& connect_url);
 //    void setDefaultSingleUserMode(const QString& value);
 
 signals:

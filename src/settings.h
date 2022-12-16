@@ -60,8 +60,8 @@ public:
     QString    strLanguage;
 
 protected:
-    virtual void WriteSettingsToXML ( QDomDocument& IniXMLDocument )                                                  = 0;
-    virtual void ReadSettingsFromXML ( const QDomDocument& IniXMLDocument, const QList<QString>& CommandLineOptions ) = 0;
+//    virtual void WriteSettingsToXML ( QDomDocument& IniXMLDocument )                                                  = 0;
+//    virtual void ReadSettingsFromXML ( const QDomDocument& IniXMLDocument, const QList<QString>& CommandLineOptions ) = 0;
 
     void ReadFromFile ( const QString& strCurFileName, QDomDocument& XMLDocument );
 
@@ -184,8 +184,8 @@ public:
     QByteArray strTestMode;
 
 protected:
-    virtual void WriteSettingsToXML ( QDomDocument& IniXMLDocument ) override;
-    virtual void ReadSettingsFromXML ( const QDomDocument& IniXMLDocument, const QList<QString>& CommandLineOptions ) override;
+//    virtual void WriteSettingsToXML ( QDomDocument& IniXMLDocument ) override;
+//    virtual void ReadSettingsFromXML ( const QDomDocument& IniXMLDocument, const QList<QString>& CommandLineOptions ) override;
 
     // Code for #2680 clean up
     QString CleanUpLegacyFaderSetting ( QString strFaderTag, int iIdx );
@@ -206,8 +206,8 @@ public:
     }
 
 protected:
-    virtual void WriteSettingsToXML ( QDomDocument& IniXMLDocument ) override;
-    virtual void ReadSettingsFromXML ( const QDomDocument& IniXMLDocument, const QList<QString>& CommandLineOptions ) override;
+//    virtual void WriteSettingsToXML ( QDomDocument& IniXMLDocument ) override;
+//    virtual void ReadSettingsFromXML ( const QDomDocument& IniXMLDocument, const QList<QString>& CommandLineOptions ) override;
 
     CServer* pServer;
 };
