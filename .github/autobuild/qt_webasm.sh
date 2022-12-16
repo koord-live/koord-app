@@ -28,8 +28,8 @@ QT_BASEDIR="/opt/Qt"
 
 setup() {
     # Install build deps from apt
-    # sudo apt-get install -y --no-install-recommends \
-    #     ninja-build \
+    sudo apt-get install -y --no-install-recommends \
+        ninja-build
     #     flex bison \
     #     libgl-dev \
     #     libegl-dev \
