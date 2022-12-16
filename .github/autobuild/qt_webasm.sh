@@ -68,7 +68,14 @@ build_qt() {
     
     cd $HOME/qt5
 
-    ./configure -feature-thread -qt-host-path "${QT_BASEDIR}/6.4.1/gcc_64" -skip qtdoc -skip qttranslations -platform wasm-emscripten -prefix $PWD/qtbase
+    mkdir -p /opt/qt_wasm/
+
+    ./configure -feature-thread \
+        -platform wasm-emscripten \
+        -prefix /opt/qt_wasm \
+        -qt-host-path "${QT_BASEDIR}/6.4.1/gcc_64" \
+        -skip qtdoc -skip qttranslations
+        
 
     cmake --build . --parallel -t qtbase -t qtdeclarative -t qtsvg
 
@@ -83,7 +90,7 @@ build_qt() {
 pass_artifacts_to_job() {
     mkdir -p ${GITHUB_WORKSPACE}/deploy
     
-    cd /opt/Qt/${QT_VERSION}
+    cd /opt/qt_wasm
     tar cf ${HOME}/qt_webasm_${QT_VERSION}.tar  .
     cd ${HOME}
     gzip qt_webasm_${QT_VERSION}.tar
