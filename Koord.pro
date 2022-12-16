@@ -26,19 +26,16 @@ CONFIG += qt \
 
 QT += network \
     xml \
-#    concurrent \
+    concurrent \
     svg \
     widgets
 
 
 INCLUDEPATH += src
 
-#INCLUDEPATH_OPUS = libs/opus/include \
-#    libs/opus/celt \
-#    libs/opus/silk \
-#    libs/opus/silk/float \
-#    libs/opus/silk/fixed \
-#    libs/opus
+# add support for full POSIX sockets over WebSockets
+# https://emscripten.org/docs/porting/networking.html#full-posix-sockets-over-websocket-proxy-server
+# LIBS += -lwebsocket.js -sPROXY_POSIX_SOCKETS -sUSE_PTHREADS -sPROXY_TO_PTHREAD
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\" \
     CUSTOM_MODES \
@@ -145,21 +142,6 @@ contains(CONFIG, "headless") {
 #contains(CONFIG, "nojsonrpc") {
 message(JSON-RPC support excluded from build.)
 DEFINES += NO_JSON_RPC
-#} else {
-#    HEADERS += \
-#        src/rpcserver.h \
-#        src/serverrpc.h
-#    SOURCES += \
-#        src/rpcserver.cpp \
-#        src/serverrpc.cpp
-#    contains(CONFIG, "serveronly") {
-#        message("server only, skipping client rpc")
-#    } else {
-#        HEADERS += src/clientrpc.h
-#        SOURCES += src/clientrpc.cpp
-#    }
-#}
-
 
 # disable version check if requested (#370)
 contains(CONFIG, "disable_version_check") {

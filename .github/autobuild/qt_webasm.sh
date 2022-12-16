@@ -4,35 +4,24 @@ set -eu
 QT_BASEDIR="/opt/Qt"
 
 ## REQUIREMENTS (provided by Github ubuntu 2004 build image):
-# - gradle 7.2+
-# - android cli tools (sdkmanager)
 # - cmake 
 
 ## Utility to build Qt for Android, on Linux (Ubuntu 2004 or 2204)
 # References:
-# - https://wiki.qt.io/Building_Qt_6_from_Git#Getting_the_source_code
-# - https://doc.qt.io/qt-6/android-building.html
-# - https://doc.qt.io/qt-6/android-getting-started.html
+# - https://doc.qt.io/qt-6/wasm.html#developing-with-qt-for-webassembly
 
 ## WHY:
-# Qt Android QtWebView does not have any way of allowing Camera/Mic permissions in a webpage, apparently
-# Due to this bug: https://bugreports.qt.io/browse/QTBUG-63731
-# So we need to hack and rebuild Android for Qt (at least some):
-    # Hack in file: QtAndroidWebViewController.java
-    # - Add following function to inner class QtAndroidWebChromeClient:
-    #     @Override public void onPermissionRequest(PermissionRequest request) { request.grant(request.getResources()); }
-    # - copy built jar QtAndroidWebView.jar to Qt installation to rebuild
+# Need custom webassembly qt for:
+# - multi-threading for QtConcurrent
 
-## UPDATE Nov 2022: 
-# We now build the whole of Qt for all ABIs as aqt is not installing armv7 and armv8a reliably any more 
 
 setup() {
     # Install build deps from apt
     sudo apt-get install -y --no-install-recommends \
-        ninja-build
-    #     flex bison \
-    #     libgl-dev \
-    #     libegl-dev \
+        ninja-build \
+        flex bison \
+        libgl-dev \
+        libegl-dev
     #     libclang-11-dev \
     #     gperf \
     #     nodejs
@@ -78,7 +67,8 @@ setup() {
 build_qt() {
     
     cd $HOME/qt5
-    ./configure -qt-host-path "${QT_BASEDIR}/6.4.1/gcc_64" -skip qtdoc -skip qttranslations -platform wasm-emscripten -prefix $PWD/qtbase
+
+    ./configure -feature-thread -qt-host-path "${QT_BASEDIR}/6.4.1/gcc_64" -skip qtdoc -skip qttranslations -platform wasm-emscripten -prefix $PWD/qtbase
 
     cmake --build . --parallel -t qtbase -t qtdeclarative -t qtsvg
 

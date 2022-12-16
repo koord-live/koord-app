@@ -61,21 +61,6 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     // setup main UI
     setupUi ( this );
 
-//    // if on iPhone / iPad (notches prob only on iPhone)
-//#if defined(Q_OS_IOS)
-//    QSize size = qApp->screens()[0]->size();
-//    int _height = size.height();
-//    int _width = size.width();
-//    QScreen* screen = QGuiApplication::primaryScreen();
-//    int _dpi = screen->devicePixelRatio();
-//    mUnsafeArea->configureDevice(_height, _width, _dpi);
-//    mUnsafeArea->orientationChanged(2); // force landscape left for now
-//    int safeWidth = _width - mUnsafeArea->unsafeLeftMargin()- mUnsafeArea->unsafeRightMargin();
-////            - (isTabletInLandscape? drawerWidth : 0)
-//    int safeHeight = _height - mUnsafeArea->unsafeTopMargin() - mUnsafeArea->unsafeBottomMargin();
-//    this->setFixedSize(QSize(safeWidth, safeHeight));
-//#endif
-
     // set up net manager for https requests
     qNam = new QNetworkAccessManager;
 
