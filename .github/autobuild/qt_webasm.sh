@@ -87,6 +87,27 @@ build_qt() {
 
 }
 
+build_region_checker_wasm() {
+
+    ## update path - as for linux ?
+    # export PATH=$HOME/qt5/qtbase/bin/:$HOME/qt5/qtbase/libexec/:${PATH}
+
+    ## build region checker
+    cd ${GITHUB_WORKSPACE}
+    # $HOME/qt5/qtbase/bin/qmake Koord.pro -spec wasm-emscripten
+    $HOME/qt5/qtbase/bin/qmake Koord.pro
+
+    # compile
+    make -j "$(nproc)"
+
+    # check files
+    echo "Listing wasm and html files..."
+    ls -al *.wasm
+    ls -al *.html
+
+
+}
+
 pass_artifacts_to_job() {
     mkdir -p ${GITHUB_WORKSPACE}/deploy
     
@@ -94,6 +115,17 @@ pass_artifacts_to_job() {
     tar cf ${HOME}/qt_webasm_${QT_VERSION}.tar  .
     cd ${HOME}
     gzip qt_webasm_${QT_VERSION}.tar
+
+    ## Libs that are necessary for inclusion??
+    # bin
+    # include
+    # lib
+    # libexec
+    # mkspecs
+    # modules
+    # plugins
+    # qml
+
 
     mv -v $HOME/qt_webasm_${QT_VERSION}.tar.gz ${GITHUB_WORKSPACE}/deploy/qt_webasm_${QT_VERSION}.tar.gz
     echo ">>> Setting output as such: name=artifact_1::qt_webasm_${QT_VERSION}.tar.gz"

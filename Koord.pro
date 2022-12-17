@@ -47,6 +47,10 @@ DEFINES += QT_NO_DEPRECATED_WARNINGS
 
 wasm-emscripten {
     message(We have emscripten here.)
+} else:win32 {
+    DEFINES -= UNICODE # fixes issue with ASIO SDK (asiolist.cpp is not unicode compatible)
+    DEFINES += NOMINMAX # solves a compiler error with std::min/max
+    DEFINES += _WINSOCKAPI_ # try fix winsock / winsock2 redefinition problems
 }
 
 
