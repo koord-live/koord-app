@@ -554,7 +554,7 @@ CSound::CSound ( void ( *fpNewCallback ) ( CVector<int16_t>& psData, void* arg )
         throw CGenErr ( "<b>" + tr ( "No ASIO audio device driver found." ) + "</b><br><br>" +
                         QString ( tr ( "Please install an ASIO driver before running %1. "
                                        "If you own a device with ASIO support, install its official ASIO driver. "
-                                       "If not, you'll need to install a universal driver like ASIO4ALL." ) )
+                                       "If not, you'll need to use the bundled KoordASIO driver." ) )
                             .arg ( APP_NAME ) );
     }
     asioDrivers->removeCurrentDriver();

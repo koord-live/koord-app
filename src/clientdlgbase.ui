@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>583</width>
-    <height>389</height>
+    <height>416</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1315,6 +1315,22 @@ QCheckBox::indicator {
               </widget>
              </item>
              <item>
+              <spacer name="verticalSpacer_6">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
               <widget class="QWidget" name="defaultButtonWidget" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1401,7 +1417,7 @@ QCheckBox::indicator {
 </string>
                     </property>
                     <property name="text">
-                     <string>Join...</string>
+                     <string>Join</string>
                     </property>
                     <property name="autoDefault">
                      <bool>false</bool>
@@ -1498,6 +1514,82 @@ QCheckBox::indicator {
                 </item>
                </layout>
               </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="regionCheckLayout">
+               <property name="leftMargin">
+                <number>11</number>
+               </property>
+               <property name="rightMargin">
+                <number>11</number>
+               </property>
+               <item>
+                <widget class="QTreeWidget" name="lvwServers">
+                 <property name="font">
+                  <font>
+                   <family>Rubik</family>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="sortingEnabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="columnCount">
+                  <number>3</number>
+                 </property>
+                 <attribute name="headerShowSortIndicator" stdset="0">
+                  <bool>false</bool>
+                 </attribute>
+                 <column>
+                  <property name="text">
+                   <string notr="true">REGION</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string notr="true">DELAY (ms)</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>JOY LEVEL</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
              </item>
              <item>
               <widget class="CAudioMixerBoard" name="MainMixerBoard" native="true">
@@ -2416,7 +2508,7 @@ QCheckBox::indicator {
              <normaloff>:/svg/main/res/update.svg</normaloff>:/svg/main/res/update.svg</iconset>
            </property>
           </widget>
-          <widget class="QTreeWidget" name="lvwServers">
+          <widget class="QTreeWidget" name="lvwServers_old">
            <property name="geometry">
             <rect>
              <x>0</x>

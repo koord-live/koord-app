@@ -204,7 +204,7 @@ protected:
     QTimer       TimerInitialSort;
     CHostAddress haDirectoryAddress;
     QString      strSelectedServerName;
-    bool         bShowCompleteRegList;
+    bool         bShowCompleteRegList = true;
     bool         bServerListReceived;
     bool         bReducedServerListReceived;
     bool         bServerListItemWasChosen;

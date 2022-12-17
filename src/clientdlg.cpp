@@ -88,17 +88,17 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 //    // setup dir servers
 //    // set up list view for connected clients (note that the last column size
 //    // must not be specified since this column takes all the remaining space)
-//#ifdef (Q_OS_ANDROID)
-//    // for Android we need larger numbers because of the default font size
-//    lvwServers->setColumnWidth ( 0, 200 );
-//    lvwServers->setColumnWidth ( 1, 130 );
-//    lvwServers->setColumnWidth ( 2, 100 );
-//#else
-//    lvwServers->setColumnWidth ( 0, 180 );
-//    lvwServers->setColumnWidth ( 1, 75 );
-//    lvwServers->setColumnWidth ( 2, 70 );
-//    lvwServers->setColumnWidth ( 3, 220 );
-//#endif
+#if defined(Q_OS_ANDROID)
+    // for Android we need larger numbers because of the default font size
+    lvwServers->setColumnWidth ( 0, 200 );
+    lvwServers->setColumnWidth ( 1, 130 );
+    lvwServers->setColumnWidth ( 2, 100 );
+#else
+    lvwServers->setColumnWidth ( 0, 180 );
+    lvwServers->setColumnWidth ( 1, 75 );
+    lvwServers->setColumnWidth ( 2, 70 );
+    lvwServers->setColumnWidth ( 3, 220 );
+#endif
     lvwServers->clear();
 
 //    // make sure we do not get a too long horizontal scroll bar
@@ -112,7 +112,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 //    // 3: location
 //    // 4: minimum ping time (invisible)
 //    // 5: maximum number of clients (invisible)
-    lvwServers->setColumnCount ( 2 );
+//    lvwServers->setColumnCount ( 3 );
 //    lvwServers->hideColumn ( 4 );
 //    lvwServers->hideColumn ( 5 );
 
@@ -347,7 +347,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     OnTimerStatus();
 
     // init connection button text
-    butConnect->setText ( tr ( "Join..." ) );
+    butConnect->setText ( tr ( "Join" ) );
 
     // init input level meter bars
     lbrInputLevelL->SetValue ( 0 );
@@ -486,14 +486,10 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
 #    if defined( _WIN32 )
     // set Windows specific tool tip
-    cbxSoundcard->setToolTip ( tr ( "If the ASIO4ALL driver is used, "
-                                    "please note that this driver usually introduces approx. 10-30 ms of "
-                                    "additional audio delay. Using a sound card with a native ASIO driver "
-                                    "is therefore recommended." ) +
+    cbxSoundcard->setToolTip ( tr ( "Use the KoordASIO driver if you do not have a special driver for your "
+                                    "device. Use ASIO Settings panel to change to Exclusive mode for best "
+                                    "performance. " ) +
                                "<br>" +
-                               tr ( "If you are using the kX ASIO "
-                                    "driver, make sure to connect the ASIO inputs in the kX DSP settings "
-                                    "panel." ) +
                                TOOLTIP_COM_END_TEXT );
 #    endif
 
@@ -1005,6 +1001,8 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
     QObject::connect ( &TimerPing, &QTimer::timeout, this, &CClientDlg::OnTimerPing );
 
+    QObject::connect ( &RegionTimerPing, &QTimer::timeout, this, &CClientDlg::OnRegionTimerPing );
+
     QObject::connect ( &TimerReRequestServList, &QTimer::timeout, this, &CClientDlg::OnTimerReRequestServList );
 
     QObject::connect ( &TimerCheckAudioDeviceOk, &QTimer::timeout, this, &CClientDlg::OnTimerCheckAudioDeviceOk );
@@ -1077,6 +1075,20 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
     QObject::connect ( sessionCancelButton, &QPushButton::clicked, this, &CClientDlg::OnJoinCancelClicked );
     QObject::connect ( sessionConnectButton, &QPushButton::clicked, this, &CClientDlg::OnJoinConnectClicked );
+
+    // note that this connection must be a queued connection, otherwise the server list ping
+    // times are not accurate and the client list may not be retrieved for all servers listed
+    // (it seems the sendto() function needs to be called from different threads to fire the
+    // packet immediately and do not collect packets before transmitting)
+    QObject::connect ( this, &CClientDlg::CreateCLServerListPingMes, this, &CClientDlg::OnCreateCLServerListPingMes, Qt::QueuedConnection );
+
+    QObject::connect ( this, &CClientDlg::CreateCLServerListReqVerAndOSMes, this, &CClientDlg::OnCreateCLServerListReqVerAndOSMes );
+
+    QObject::connect ( this,
+                       &CClientDlg::CreateCLServerListReqConnClientsListMes,
+                       this,
+                       &CClientDlg::OnCreateCLServerListReqConnClientsListMes );
+
 
     // ==================================================================================================
     // SETTINGS SLOTS ========
@@ -1887,6 +1899,8 @@ void CClientDlg::Connect ( const QString& strSelectedAddress, const QString& str
         inviteComboBox->addItem(QIcon(":/svg/main/res/whatsapp.svg"), "Share via Whatsapp");
         butNewStart->setVisible(false);
         defaultButtonWidget->setMaximumHeight(30);
+        // hide regionchecker
+        lvwServers->setVisible(false);
 
 //        // enable chat widgets
 //        butSend->setEnabled(true);
@@ -2002,7 +2016,9 @@ void CClientDlg::Disconnect()
     butNewStart->setVisible(true);
     inviteComboBox->setVisible(false);
     inviteComboBox->clear();
-    butConnect->setText ( tr ( "Join..." ) );
+    butConnect->setText ( tr ( "Join" ) );
+    // show RegionChecker again
+    lvwServers->setVisible(true);
 
 //    // disable chat widgets
 //    butSend->setEnabled(false);
@@ -2959,6 +2975,11 @@ void CClientDlg::SetServerList ( const CHostAddress& InetAddr, const CVector<CSe
         {
             pNewListViewItem->setHidden ( true );
         }
+        // if this is Directory Server, don't show it
+        if ( iIdx == 0 )
+        {
+            pNewListViewItem->setHidden( true );
+        }
 
         // server name (if empty, show host address instead)
         if ( !vecServerInfo[iIdx].strName.isEmpty() )
@@ -2983,20 +3004,23 @@ void CClientDlg::SetServerList ( const CHostAddress& InetAddr, const CVector<CSe
         }
 
         // in case of all servers shown, add the registration number at the beginning
-        if ( bShowCompleteRegList )
-        {
-            pNewListViewItem->setText ( 0, QString ( "%1: " ).arg ( 1 + iIdx, 3 ) + pNewListViewItem->text ( 0 ) );
-        }
+//        if ( bShowCompleteRegList )
+//        {
+//            pNewListViewItem->setText ( 0, QString ( "%1: " ).arg ( 1 + iIdx, 3 ) + pNewListViewItem->text ( 0 ) );
+//        }
 
         // show server name in bold font if it is a permanent server
-        QFont CurServerNameFont = pNewListViewItem->font ( 0 );
-        CurServerNameFont.setBold ( vecServerInfo[iIdx].bPermanentOnline );
-        pNewListViewItem->setFont ( 0, CurServerNameFont );
+//        QFont CurServerNameFont = pNewListViewItem->font ( 0 );
+//        CurServerNameFont.setBold ( vecServerInfo[iIdx].bPermanentOnline );
+//        pNewListViewItem->setFont ( 0, CurServerNameFont );
 
         // the ping time shall be shown in bold font
         QFont CurPingTimeFont = pNewListViewItem->font ( 1 );
         CurPingTimeFont.setBold ( true );
         pNewListViewItem->setFont ( 1, CurPingTimeFont );
+
+        // happiness level in emoji font
+        pNewListViewItem->setFont ( 2, QFont("Segoe UI Emoji") );
 
         // server location (city and country)
         QString strLocation = vecServerInfo[iIdx].strCity;
@@ -3344,6 +3368,7 @@ void CClientDlg::OnRegionTimerPing()
                                                  haServerAddress,
                                                  bEnableIPv6 ) )
         {
+//            qDebug() << "lvwServer listing: " + lvwServers->topLevelItem ( iIdx )->data ( 0, Qt::UserRole ).toString();
             // if address is valid, send ping message using a new thread
             QFuture<void> f = QtConcurrent::run ( &CClientDlg::EmitCLServerListPingMes, this, haServerAddress );
             Q_UNUSED ( f );
@@ -3402,18 +3427,24 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         // value. Temporary bad ping measurements are of no interest.
         // Color definition: <= 25 ms green, <= 50 ms yellow, otherwise red
         if ( iMinPingTime <= 25 )
+//        if ( iMinPingTime <= 80 )
         {
-            pCurListViewItem->setForeground ( 1, Qt::darkGreen );
+            pCurListViewItem->setForeground ( 1, Qt::green );
+            pCurListViewItem->setText ( 2, "" );
+            pCurListViewItem->setText ( 2, "😃" );
         }
         else
         {
             if ( iMinPingTime <= 50 )
+//            if ( iMinPingTime <= 100 )
             {
-                pCurListViewItem->setForeground ( 1, Qt::darkYellow );
+                pCurListViewItem->setForeground ( 1, Qt::yellow );
+                pCurListViewItem->setText ( 2, "😑" );
             }
             else
             {
                 pCurListViewItem->setForeground ( 1, Qt::red );
+                pCurListViewItem->setText ( 2, "😡" );
             }
         }
 
@@ -3421,29 +3452,30 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         // certain value
         if ( iMinPingTime > 500 )
         {
-            pCurListViewItem->setText ( 1, ">500 ms" );
+            pCurListViewItem->setText ( 1, ">500" );
+            pCurListViewItem->setText ( 2, "🤬" );
         }
         else
         {
             // prepend spaces so that we can sort correctly (fieldWidth of
             // 4 is sufficient since the maximum width is ">500") (#201)
-            pCurListViewItem->setText ( 1, QString ( "%1 ms" ).arg ( iMinPingTime, 4, 10, QLatin1Char ( ' ' ) ) );
+            pCurListViewItem->setText ( 1, QString ( "%1" ).arg ( iMinPingTime, 4, 10, QLatin1Char ( ' ' ) ) );
         }
 
-        // update number of clients text
-        if ( pCurListViewItem->text ( 5 ).toInt() == 0 )
-        {
-            // special case: reduced server list
-            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) );
-        }
-        else if ( iNumClients >= pCurListViewItem->text ( 5 ).toInt() )
-        {
-            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) + " (full)" );
-        }
-        else
-        {
-            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) + "/" + pCurListViewItem->text ( 5 ) );
-        }
+//        // update number of clients text
+//        if ( pCurListViewItem->text ( 5 ).toInt() == 0 )
+//        {
+//            // special case: reduced server list
+//            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) );
+//        }
+//        else if ( iNumClients >= pCurListViewItem->text ( 5 ).toInt() )
+//        {
+//            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) + " (full)" );
+//        }
+//        else
+//        {
+//            pCurListViewItem->setText ( 2, QString().setNum ( iNumClients ) + "/" + pCurListViewItem->text ( 5 ) );
+//        }
 
         // check if the number of child list items matches the number of
         // connected clients, if not then request the client names
@@ -3453,7 +3485,8 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         }
 
         // this is the first time a ping time was received, set item to visible
-        if ( bIsFirstPing )
+        // UNLESS it is Directory Server, in which case keep it hidden
+        if ( bIsFirstPing && !pCurListViewItem->text ( 0 ).contains("Directory"))
         {
             pCurListViewItem->setHidden ( false );
         }
@@ -3464,11 +3497,17 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         // could lead to connecting an incorrect server) the sorting is disabled
         // as long as the mouse is over the list (but it is not disabled for the
         // initial timer of about 2s, see TimerInitialSort) (#293).
-        if ( bDoSorting && !bShowCompleteRegList &&
-             ( TimerInitialSort.isActive() || !lvwServers->underMouse() ) ) // do not sort if "show all servers"
-        {
-            lvwServers->sortByColumn ( 4, Qt::AscendingOrder );
-        }
+//        if ( bDoSorting && !bShowCompleteRegList &&
+//             ( TimerInitialSort.isActive() || !lvwServers->underMouse() ) ) // do not sort if "show all servers"
+//        {
+//            lvwServers->sortByColumn ( 2, Qt::AscendingOrder );
+//        }
+
+//        if ( bDoSorting && TimerInitialSort.isActive() ) // do not sort if "show all servers"
+//        {
+//            lvwServers->sortByColumn ( 1, Qt::AscendingOrder );
+//        }
+        lvwServers->sortByColumn ( 1, Qt::AscendingOrder );
     }
 
     // if no server item has children, do not show decoration
