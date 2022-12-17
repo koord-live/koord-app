@@ -26,7 +26,7 @@ CONFIG += qt \
 
 QT += network \
     xml \
-    concurrent \
+#    concurrent \
     svg \
     widgets
 
@@ -35,7 +35,7 @@ INCLUDEPATH += src
 
 # add support for full POSIX sockets over WebSockets
 # https://emscripten.org/docs/porting/networking.html#full-posix-sockets-over-websocket-proxy-server
-LIBS += -lwebsocket.js -sPROXY_POSIX_SOCKETS -sUSE_PTHREADS -sPROXY_TO_PTHREAD
+#LIBS += -lwebsocket.js -sPROXY_POSIX_SOCKETS -sUSE_PTHREADS -sPROXY_TO_PTHREAD
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\" \
     CUSTOM_MODES \
