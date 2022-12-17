@@ -101,10 +101,14 @@ build_region_checker_wasm() {
     make -j "$(nproc)"
 
     # check files
-    echo "Listing wasm and html files..."
-    ls -al *.wasm
-    ls -al *.html
+    echo "Listing wasm, js, html files..."
+    ls -al *.wasm *.js *.html 
 
+    # echo "Time sorted listing:"
+    # ls -alrt
+
+    # echo "Recursive listing:"
+    # ls -alR
 
 }
 
@@ -112,9 +116,10 @@ pass_artifacts_to_job() {
     mkdir -p ${GITHUB_WORKSPACE}/deploy
     
     cd ${GITHUB_WORKSPACE}
-    tar cf ${HOME}/regchkr_webasm_${QT_VERSION}.tar  .
+    # package wasm deployment files
+    tar cf ${HOME}/regchkr_webasm_${QT_VERSION}.tar  Koord.html Koord.wasm Koord.js qtloader.js
     cd ${HOME}
-    gzip qt_webasm_${QT_VERSION}.tar
+    gzip regchkr_webasm_${QT_VERSION}.tar
 
     ## Libs that are necessary for inclusion??
     # bin
