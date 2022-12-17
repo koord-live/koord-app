@@ -1315,6 +1315,22 @@ QCheckBox::indicator {
               </widget>
              </item>
              <item>
+              <spacer name="verticalSpacer_6">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
               <widget class="QWidget" name="defaultButtonWidget" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1401,7 +1417,7 @@ QCheckBox::indicator {
 </string>
                     </property>
                     <property name="text">
-                     <string>Join...</string>
+                     <string>Join</string>
                     </property>
                     <property name="autoDefault">
                      <bool>false</bool>
@@ -1528,7 +1544,7 @@ QCheckBox::indicator {
                  <property name="font">
                   <font>
                    <family>Rubik</family>
-                   <bold>true</bold>
+                   <bold>false</bold>
                   </font>
                  </property>
                  <property name="sortingEnabled">
@@ -1552,7 +1568,7 @@ QCheckBox::indicator {
                  </column>
                  <column>
                   <property name="text">
-                   <string>JOY RATING</string>
+                   <string>JOY LEVEL</string>
                   </property>
                  </column>
                 </widget>

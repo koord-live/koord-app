@@ -347,7 +347,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     OnTimerStatus();
 
     // init connection button text
-    butConnect->setText ( tr ( "Join..." ) );
+    butConnect->setText ( tr ( "Join" ) );
 
     // init input level meter bars
     lbrInputLevelL->SetValue ( 0 );
@@ -486,14 +486,10 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
 #    if defined( _WIN32 )
     // set Windows specific tool tip
-    cbxSoundcard->setToolTip ( tr ( "If the ASIO4ALL driver is used, "
-                                    "please note that this driver usually introduces approx. 10-30 ms of "
-                                    "additional audio delay. Using a sound card with a native ASIO driver "
-                                    "is therefore recommended." ) +
+    cbxSoundcard->setToolTip ( tr ( "Use the KoordASIO driver if you do not have a special driver for your "
+                                    "device. Use ASIO Settings panel to change to Exclusive mode for best "
+                                    "performance. " ) +
                                "<br>" +
-                               tr ( "If you are using the kX ASIO "
-                                    "driver, make sure to connect the ASIO inputs in the kX DSP settings "
-                                    "panel." ) +
                                TOOLTIP_COM_END_TEXT );
 #    endif
 
@@ -2020,7 +2016,7 @@ void CClientDlg::Disconnect()
     butNewStart->setVisible(true);
     inviteComboBox->setVisible(false);
     inviteComboBox->clear();
-    butConnect->setText ( tr ( "Join..." ) );
+    butConnect->setText ( tr ( "Join" ) );
     // show RegionChecker again
     lvwServers->setVisible(true);
 
@@ -3430,19 +3426,19 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
         // Only show minimum ping time in the list since this is the important
         // value. Temporary bad ping measurements are of no interest.
         // Color definition: <= 25 ms green, <= 50 ms yellow, otherwise red
-//        if ( iMinPingTime <= 25 )
-        if ( iMinPingTime <= 80 )
+        if ( iMinPingTime <= 25 )
+//        if ( iMinPingTime <= 80 )
         {
-            pCurListViewItem->setForeground ( 1, Qt::darkGreen );
+            pCurListViewItem->setForeground ( 1, Qt::green );
             pCurListViewItem->setText ( 2, "" );
             pCurListViewItem->setText ( 2, "😃" );
         }
         else
         {
-//            if ( iMinPingTime <= 50 )
-            if ( iMinPingTime <= 100 )
+            if ( iMinPingTime <= 50 )
+//            if ( iMinPingTime <= 100 )
             {
-                pCurListViewItem->setForeground ( 1, Qt::darkYellow );
+                pCurListViewItem->setForeground ( 1, Qt::yellow );
                 pCurListViewItem->setText ( 2, "😑" );
             }
             else
