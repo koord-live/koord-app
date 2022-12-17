@@ -1470,7 +1470,7 @@ void CClientDlg::OnInviteBoxActivated()
 void CClientDlg::OnNewStartClicked()
 {
     // just open website for now
-    QDesktopServices::openUrl(QUrl("https://koord.live", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("https://koord.live/session", QUrl::TolerantMode));
 }
 
 void CClientDlg::OnDownloadUpdateClicked()
