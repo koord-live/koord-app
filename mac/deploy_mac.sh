@@ -320,7 +320,7 @@ ls -al  "${deploypkg_path}/"
 #     build_app_package 
 
 # if we are doing Universal build, now build pkg for App store upload
-if [ ${TARGET_ARCHS} == "x86_64 arm64" ]; then
+if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
     build_installer_pkg
 fi
 
