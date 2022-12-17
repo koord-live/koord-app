@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>583</width>
-    <height>416</height>
+    <width>690</width>
+    <height>387</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1320,7 +1320,7 @@ QCheckBox::indicator {
                 <enum>Qt::Vertical</enum>
                </property>
                <property name="sizeType">
-                <enum>QSizePolicy::Minimum</enum>
+                <enum>QSizePolicy::Expanding</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
@@ -1521,7 +1521,7 @@ QCheckBox::indicator {
                 <enum>Qt::Vertical</enum>
                </property>
                <property name="sizeType">
-                <enum>QSizePolicy::Minimum</enum>
+                <enum>QSizePolicy::Expanding</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
@@ -1581,7 +1581,7 @@ QCheckBox::indicator {
                 <enum>Qt::Vertical</enum>
                </property>
                <property name="sizeType">
-                <enum>QSizePolicy::Minimum</enum>
+                <enum>QSizePolicy::Expanding</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
@@ -2645,7 +2645,7 @@ QCheckBox::indicator {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>507</width>
+             <width>563</width>
              <height>1712</height>
             </rect>
            </property>

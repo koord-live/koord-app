@@ -88,17 +88,17 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 //    // setup dir servers
 //    // set up list view for connected clients (note that the last column size
 //    // must not be specified since this column takes all the remaining space)
-#if defined(Q_OS_ANDROID)
-    // for Android we need larger numbers because of the default font size
-    lvwServers->setColumnWidth ( 0, 200 );
-    lvwServers->setColumnWidth ( 1, 130 );
+//#if defined(Q_OS_ANDROID)
+//    // for Android we need larger numbers because of the default font size
+//    lvwServers->setColumnWidth ( 0, 200 );
+//    lvwServers->setColumnWidth ( 1, 130 );
+//    lvwServers->setColumnWidth ( 2, 100 );
+//#else
+    lvwServers->setColumnWidth ( 0, 150 );
+    lvwServers->setColumnWidth ( 1, 100 );
     lvwServers->setColumnWidth ( 2, 100 );
-#else
-    lvwServers->setColumnWidth ( 0, 180 );
-    lvwServers->setColumnWidth ( 1, 75 );
-    lvwServers->setColumnWidth ( 2, 70 );
-    lvwServers->setColumnWidth ( 3, 220 );
-#endif
+//    lvwServers->setColumnWidth ( 3, 220 );
+//#endif
     lvwServers->clear();
 
 //    // make sure we do not get a too long horizontal scroll bar
