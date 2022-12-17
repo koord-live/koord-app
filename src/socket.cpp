@@ -105,28 +105,29 @@ void CSocket::Init ( const quint16 iNewPortNumber, const quint16 iNewQosNumber, 
 
     if ( bEnableIPv6 )
     {
-        // try to create a IPv6 UDP socket
-        UdpSocket = socket ( AF_INET6, SOCK_DGRAM, 0 );
-        if ( UdpSocket == -1 )
-        {
-            // IPv6 requested but not available, throw error
-            throw CGenErr ( "IPv6 requested but not available on this system.", "Network Error" );
-        }
+        // Don't do anything, will not be ipv6...
+//        // try to create a IPv6 UDP socket
+//        UdpSocket = socket ( AF_INET6, SOCK_DGRAM, 0 );
+//        if ( UdpSocket == -1 )
+//        {
+//            // IPv6 requested but not available, throw error
+//            throw CGenErr ( "IPv6 requested but not available on this system.", "Network Error" );
+//        }
 
-        // The IPV6_V6ONLY socket option must be false in order for the socket to listen on both protocols.
-        // On Linux it's false by default on most (all?) distros, but on Windows it is true by default
-        const uint8_t no = 0;
-        setsockopt ( UdpSocket, IPPROTO_IPV6, IPV6_V6ONLY, (const char*) &no, sizeof ( no ) );
+//        // The IPV6_V6ONLY socket option must be false in order for the socket to listen on both protocols.
+//        // On Linux it's false by default on most (all?) distros, but on Windows it is true by default
+//        const uint8_t no = 0;
+//        setsockopt ( UdpSocket, IPPROTO_IPV6, IPV6_V6ONLY, (const char*) &no, sizeof ( no ) );
 
-        // set the QoS
-        const char tos = (char) iQosNumber; // Quality of Service
-        setsockopt ( UdpSocket, IPPROTO_IPV6, IPV6_TCLASS, &tos, sizeof ( tos ) );
+//        // set the QoS
+//        const char tos = (char) iQosNumber; // Quality of Service
+//        setsockopt ( UdpSocket, IPPROTO_IPV6, IPV6_TCLASS, &tos, sizeof ( tos ) );
 
-        UdpSocketAddr.sa6.sin6_family = AF_INET6;
-        UdpSocketAddr.sa6.sin6_addr   = in6addr_any;
-        UdpSocketAddrLen              = sizeof ( UdpSocketAddr.sa6 );
+//        UdpSocketAddr.sa6.sin6_family = AF_INET6;
+//        UdpSocketAddr.sa6.sin6_addr   = in6addr_any;
+//        UdpSocketAddrLen              = sizeof ( UdpSocketAddr.sa6 );
 
-        UdpPort = &UdpSocketAddr.sa6.sin6_port; // where to put the port number
+//        UdpPort = &UdpSocketAddr.sa6.sin6_port; // where to put the port number
 
         // FIXME: If binding a dual-protocol interface to a specific address, does it cease to be dual-protocol?
 

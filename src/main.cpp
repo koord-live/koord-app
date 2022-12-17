@@ -213,15 +213,6 @@ int main ( int argc, char** argv )
             continue;
         }
 
-        // Enable IPv6 ---------------------------------------------------------
-        if ( GetFlagArgument ( argv, i, "-6", "--enableipv6" ) )
-        {
-            bEnableIPv6 = true;
-            qInfo() << "- IPv6 enabled";
-            CommandLineOptions << "--enableipv6";
-            continue;
-        }
-
         // Server only:
 
         // Disconnect all clients on quit --------------------------------------

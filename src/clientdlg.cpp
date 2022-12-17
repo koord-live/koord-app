@@ -40,7 +40,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     pClient ( pNCliP ),
     bConnectDlgWasShown ( false ),
     bDetectFeedback ( false ),
-    bEnableIPv6 ( bNEnableIPv6 ),
+    bEnableIPv6 ( false ),
     eLastRecorderState ( RS_UNDEFINED ), // for SetMixerBoardDeco
     eLastDesign ( GD_ORIGINAL ),         //          "
     strSelectedAddress ("")
@@ -52,11 +52,6 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     if (bShowAnalyzerConsole == false)
         ;
     // end cruft
-
-    //FIXME - possibly not necessary
-#if defined(Q_OS_ANDROID)
-    setCentralWidget(backgroundFrame);
-#endif
 
     // setup main UI
     setupUi ( this );
