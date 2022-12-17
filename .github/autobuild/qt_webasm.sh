@@ -111,8 +111,8 @@ build_region_checker_wasm() {
 pass_artifacts_to_job() {
     mkdir -p ${GITHUB_WORKSPACE}/deploy
     
-    cd $HOME/qt5/qtbase
-    tar cf ${HOME}/qt_webasm_${QT_VERSION}.tar  .
+    cd ${GITHUB_WORKSPACE}
+    tar cf ${HOME}/regchkr_webasm_${QT_VERSION}.tar  .
     cd ${HOME}
     gzip qt_webasm_${QT_VERSION}.tar
 
@@ -127,15 +127,16 @@ pass_artifacts_to_job() {
     # qml
 
 
-    mv -v $HOME/qt_webasm_${QT_VERSION}.tar.gz ${GITHUB_WORKSPACE}/deploy/qt_webasm_${QT_VERSION}.tar.gz
-    echo ">>> Setting output as such: name=artifact_1::qt_webasm_${QT_VERSION}.tar.gz"
-    echo "artifact_1=qt_webasm_${QT_VERSION}.tar.gz" >> "$GITHUB_OUTPUT"
+    mv -v $HOME/regchkr_webasm_${QT_VERSION}.tar.gz ${GITHUB_WORKSPACE}/deploy/regchkr_webasm_${QT_VERSION}.tar.gz
+    echo ">>> Setting output as such: name=artifact_1::regchkr_webasm_${QT_VERSION}.tar.gz"
+    echo "artifact_1=regchkr_webasm_${QT_VERSION}.tar.gz" >> "$GITHUB_OUTPUT"
 }
 
 case "${1:-}" in
     build)
         setup
-        build_qt 
+        build_qt
+        build_region_checker_wasm
         ;;
     get-artifacts)
         pass_artifacts_to_job
