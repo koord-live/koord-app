@@ -117,7 +117,13 @@ pass_artifacts_to_job() {
     
     cd ${GITHUB_WORKSPACE}
     # package wasm deployment files
-    tar cf ${HOME}/regchkr_webasm_${QT_VERSION}.tar  Koord.html Koord.wasm Koord.js qtloader.js
+    tar cf ${HOME}/regchkr_webasm_${QT_VERSION}.tar  \
+        Koord.html \
+        Koord.wasm \
+        Koord.js \
+        qtloader.js \
+        Koord.worker.js \
+        qtlogo.svg
     cd ${HOME}
     gzip regchkr_webasm_${QT_VERSION}.tar
 
