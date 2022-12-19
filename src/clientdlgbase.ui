@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>690</width>
+    <width>596</width>
     <height>387</height>
    </rect>
   </property>
@@ -1172,7 +1172,7 @@ QCheckBox::indicator {
                        <string>Paste the Session link you created, or received from a band member</string>
                       </property>
                       <property name="text">
-                       <string>PASTE THE SESSION LINK HERE:</string>
+                       <string>PASTE SESSION LINK HERE:</string>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignCenter</set>
@@ -1540,38 +1540,111 @@ QCheckBox::indicator {
                 <number>11</number>
                </property>
                <item>
-                <widget class="QTreeWidget" name="lvwServers">
-                 <property name="font">
-                  <font>
-                   <family>Rubik</family>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                 <property name="sortingEnabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="columnCount">
-                  <number>3</number>
-                 </property>
-                 <attribute name="headerShowSortIndicator" stdset="0">
-                  <bool>false</bool>
-                 </attribute>
-                 <column>
-                  <property name="text">
-                   <string notr="true">REGION</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string notr="true">DELAY (ms)</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>JOY LEVEL</string>
-                  </property>
-                 </column>
-                </widget>
+                <layout class="QHBoxLayout" name="horizontalLayout_13">
+                 <item>
+                  <spacer name="horizontalSpacer_17">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Preferred</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>5</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <layout class="QVBoxLayout" name="verticalLayout_26">
+                   <item>
+                    <widget class="QLabel" name="label_12">
+                     <property name="font">
+                      <font>
+                       <family>Rubik</family>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">color: rgb(255, 155, 18)</string>
+                     </property>
+                     <property name="text">
+                      <string>Check which Koord region has the lowest network delay --&gt;</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QTreeWidget" name="lvwServers">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>350</width>
+                       <height>200</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>400</width>
+                       <height>1000</height>
+                      </size>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>Rubik</family>
+                       <bold>false</bold>
+                      </font>
+                     </property>
+                     <property name="sortingEnabled">
+                      <bool>false</bool>
+                     </property>
+                     <property name="columnCount">
+                      <number>3</number>
+                     </property>
+                     <attribute name="headerShowSortIndicator" stdset="0">
+                      <bool>false</bool>
+                     </attribute>
+                     <column>
+                      <property name="text">
+                       <string notr="true">REGION</string>
+                      </property>
+                     </column>
+                     <column>
+                      <property name="text">
+                       <string notr="true">DELAY (ms)</string>
+                      </property>
+                     </column>
+                     <column>
+                      <property name="text">
+                       <string>JOY LEVEL</string>
+                      </property>
+                     </column>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_16">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Preferred</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>5</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
                </item>
               </layout>
              </item>
@@ -2645,7 +2718,7 @@ QCheckBox::indicator {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>563</width>
+             <width>520</width>
              <height>1712</height>
             </rect>
            </property>

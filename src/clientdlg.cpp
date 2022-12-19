@@ -1469,8 +1469,19 @@ void CClientDlg::OnInviteBoxActivated()
 
 void CClientDlg::OnNewStartClicked()
 {
-    // just open website for now
-    QDesktopServices::openUrl(QUrl("https://koord.live/session", QUrl::TolerantMode));
+    // open website session dashboard with region pre-selected
+    // update current best region for start session param
+    int idx = 0;
+    if ( lvwServers->topLevelItem ( 0 )->text ( 0 ).contains("Directory") )  {
+        idx = 1;
+    }
+    strCurrBestRegion = lvwServers->topLevelItem ( idx )->text ( 0 )
+                            .replace( matchState, "")  // remove any state refs eg TX or DC
+                            .replace( " ", "" )            // remove remaining whitespace eg in "New York"
+                            .replace( ",", "" )            // remove commas, prob before
+                            .toLower();
+    // qInfo() << strCurrBestRegion;
+    QDesktopServices::openUrl(QUrl("https://koord.live/session?region=" + strCurrBestRegion, QUrl::TolerantMode));
 }
 
 void CClientDlg::OnDownloadUpdateClicked()
@@ -3508,6 +3519,7 @@ void CClientDlg::SetPingTimeAndNumClientsResult ( const CHostAddress& InetAddr, 
 //            lvwServers->sortByColumn ( 1, Qt::AscendingOrder );
 //        }
         lvwServers->sortByColumn ( 1, Qt::AscendingOrder );
+
     }
 
     // if no server item has children, do not show decoration

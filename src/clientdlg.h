@@ -162,6 +162,9 @@ protected:
     QString        strVideoUrl;
     QString        strVideoHost;
     QString        strSessionHash;
+    QString        strCurrBestRegion;
+    // declare this here?? initialize? or in globals.h?
+    QRegularExpression matchState = QRegularExpression(" [A-Z][A-Z]$" );
 #if defined(Q_OS_ANDROID)
     QQuickWidget*   quickWidget;
 #else
