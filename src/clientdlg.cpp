@@ -1912,6 +1912,8 @@ void CClientDlg::Connect ( const QString& strSelectedAddress, const QString& str
         defaultButtonWidget->setMaximumHeight(30);
         // hide regionchecker
         regionChecker->setVisible(false);
+        verticalSpacerGroupTop->changeSize(20,0);
+        verticalSpacerGroupMid->changeSize(20,0);
 
 //        // enable chat widgets
 //        butSend->setEnabled(true);
@@ -2030,6 +2032,8 @@ void CClientDlg::Disconnect()
     butConnect->setText ( tr ( "Join" ) );
     // show RegionChecker again
     regionChecker->setVisible(true);
+    verticalSpacerGroupTop->changeSize(20,40);
+    verticalSpacerGroupMid->changeSize(20,40);
 
 //    // disable chat widgets
 //    butSend->setEnabled(false);
