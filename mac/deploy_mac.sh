@@ -320,6 +320,21 @@ if [[ "${build_mode}" == "normal" ]]; then
 elif [[ "${build_mode}" == "posix" ]]; then
     echo "Starting POSIX/AppStore build ...."
     
+    ################################################
+    ## SINGLEAPPLICATION / POSIX hackery ###########
+    # patch the Entitlements file with APP GROUP ID stuff
+    # needed for POSIX/AppStore shared mem to work - with singleapplication
+    echo "Patching Koord.entitlements with Application Groups..."
+    patch -u ${GITHUB_WORKSPACE}/mac/Koord.entitlements \
+        -i ${GITHUB_WORKSPACE}/mac/appstore_entitlements.patch
+
+    echo "Patching SingleApplication for POSIX/AppStore compliance ..."
+    # note: patch made as per:
+    #    diff -Naur singleapplication_p_orig.cpp singleapplication_p.cpp > macOS_posix.patch
+    patch -u ${GITHUB_WORKSPACE}/singleapplication/singleapplication_p.cpp \
+        -i ${GITHUB_WORKSPACE}/mac/macOS_posix.patch
+    ################################################
+
     # rebuild code again with Posix Qt
     build_app_compile_universal
 

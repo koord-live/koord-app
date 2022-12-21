@@ -45,11 +45,11 @@ setup() {
         rm /tmp/qt_mac_${QT_VERSION}_posix.tar.gz
         # qt now installed in QT_POSIX_DIR
 
-        echo "Patching SingleApplication for POSIX/AppStore compliance ..."
-        # note: patch made as per:
-        #    diff -Naur singleapplication_p_orig.cpp singleapplication_p.cpp > macOS_posix.patch
-        patch -u ${GITHUB_WORKSPACE}/singleapplication/singleapplication_p.cpp \
-            -i ${GITHUB_WORKSPACE}/mac/macOS_posix.patch
+        # echo "Patching SingleApplication for POSIX/AppStore compliance ..."
+        # # note: patch made as per:
+        # #    diff -Naur singleapplication_p_orig.cpp singleapplication_p.cpp > macOS_posix.patch
+        # patch -u ${GITHUB_WORKSPACE}/singleapplication/singleapplication_p.cpp \
+        #     -i ${GITHUB_WORKSPACE}/mac/macOS_posix.patch
 
         ###################################
         ## Install other deps eg OpenSSL
@@ -135,10 +135,13 @@ build_app_and_packages() {
     echo "Path set to ${PATH}, building ..."
     TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}"
 
-    # # Now build for posix mode
-    export PATH=${POSIX_PATH}
-    echo "Path set to ${PATH}, building posix ...."
-    TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m posix
+    # # Now build for posix mode - just for appstore
+    if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
+        export PATH=${POSIX_PATH}
+        echo "Path set to ${PATH}, building posix ...."
+        TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m posix
+    fi
+    
 }
 
 pass_artifact_to_job() {
