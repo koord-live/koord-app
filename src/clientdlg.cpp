@@ -1911,7 +1911,7 @@ void CClientDlg::Connect ( const QString& strSelectedAddress, const QString& str
         butNewStart->setVisible(false);
         defaultButtonWidget->setMaximumHeight(30);
         // hide regionchecker
-        lvwServers->setVisible(false);
+        regionChecker->setVisible(false);
 
 //        // enable chat widgets
 //        butSend->setEnabled(true);
@@ -2029,7 +2029,7 @@ void CClientDlg::Disconnect()
     inviteComboBox->clear();
     butConnect->setText ( tr ( "Join" ) );
     // show RegionChecker again
-    lvwServers->setVisible(true);
+    regionChecker->setVisible(true);
 
 //    // disable chat widgets
 //    butSend->setEnabled(false);
