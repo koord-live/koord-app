@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# QT_DIR=/usr/local/opt/qt
+QT_DIR=/usr/local/opt/qt
 QT_POSIX_DIR=/usr/local/opt/qt_posix
 # QT_POSIX_VER=6.4.1
 
@@ -29,11 +29,11 @@ setup() {
         ###############################
         echo "Installing Qt..."
         # ## NORMAL QT - which we like
-        # python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
-        # # no need for webengine in Mac! At all! Like iOS
-        # python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
-        #     --archives qtbase qtdeclarative qtsvg qttools \
-        #     --modules qtwebview
+        python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
+        # no need for webengine in Mac! At all! Like iOS
+        python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
+            --archives qtbase qtdeclarative qtsvg qttools \
+            --modules qtwebview
 
         ## POSIX QT - for AppStore and SingleApplication compatibility
         # Install Qt from POSIX build release
@@ -117,7 +117,7 @@ prepare_signing() {
 build_app_and_packages() {
     # Add the qt binaries to the PATH.
     ## For normal Qt:
-    # NORMAL_PATH="${QT_DIR}/${QT_VERSION}/macos/bin:${PATH}"
+    NORMAL_PATH="${QT_DIR}/${QT_VERSION}/macos/bin:${PATH}"
     POSIX_PATH="${QT_POSIX_DIR}/bin:${PATH}"
     ## For POSIX Qt:
     # export PATH="${QT_POSIX_DIR}/bin:${PATH}"
@@ -130,15 +130,15 @@ build_app_and_packages() {
     fi
     
     # Build for normal mode
-    # export PATH=${NORMAL_PATH}
-    export PATH=${POSIX_PATH}
+    export PATH=${NORMAL_PATH}
+    # export PATH=${POSIX_PATH}
     echo "Path set to ${PATH}, building ..."
     TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}"
 
     # # Now build for posix mode
-    # export PATH=${POSIX_PATH}
-    # echo "Path set to ${PATH}, building posix ...."
-    # TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m posix
+    export PATH=${POSIX_PATH}
+    echo "Path set to ${PATH}, building posix ...."
+    TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m posix
 }
 
 pass_artifact_to_job() {

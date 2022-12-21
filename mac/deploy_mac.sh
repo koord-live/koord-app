@@ -11,8 +11,9 @@ deploypkg_path="${root_path}/deploypkg"
 macadhoc_cert_name=""
 macapp_cert_name=""
 macinst_cert_name=""
+build_mode="normal"
 
-while getopts 'hs:a:i:' flag; do
+while getopts 'hs:a:i:m:' flag; do
     case "${flag}" in
         s)
             macadhoc_cert_name=$OPTARG
@@ -30,6 +31,12 @@ while getopts 'hs:a:i:' flag; do
             macinst_cert_name=$OPTARG
             if [[ -z "$macinst_cert_name" ]]; then
                 echo "Please add the name of the installer signing certificate to use: -i \"<name>\""
+            fi
+            ;;
+        m)
+            build_mode=$OPTARG
+            if [[ -z "$build_mode" ]]; then
+                echo "Please add build mode, ie normal or POSIX/AppStore-compliant: -m \"<name>\""
             fi
             ;;
         h)
@@ -289,45 +296,43 @@ setup_dirs
 ## optionally set client_target_name like this
 # client_target_name=$(sed -nE 's/^QMAKE_TARGET *= *(.*)$/\1/p' "${build_path}/Makefile")
 
-# if [[ "${build_mode}" == "normal" ]]; then
+if [[ "${build_mode}" == "normal" ]]; then
+    echo "Starting NORMAL build ...."
 
-# compile code
-build_app_compile_universal
-# build .app/ structure
-build_app_package 
-# create versioned DMG installer image  
-build_disk_image
+    # compile code
+    build_app_compile_universal
+    # build .app/ structure
+    build_app_package 
+    # create versioned DMG installer image  
+    build_disk_image
 
-# # Cleanup - make clean
-# echo ">>> DOING distclean ..."
-# make -f "${build_path}/Makefile" -C "${build_path}" distclean
-# # Clean deploy dir of app bundle dir - leave dmg build
-# echo ">>> DELETING ${deploy_path}/${client_target_name}.app/"
-# ls -al  "${deploy_path}/"
-# rm -fr "${deploy_path}/${client_target_name}.app"
+    # Cleanup - make clean
+    echo ">>> DOING distclean ..."
+    make -f "${build_path}/Makefile" -C "${build_path}" distclean
+    # Clean deploy dir of app bundle dir - leave dmg build
+    echo ">>> DELETING ${deploy_path}/${client_target_name}.app/"
+    ls -al  "${deploy_path}/"
+    rm -fr "${deploy_path}/${client_target_name}.app"
 
-echo "Listing Deploypkg path"
-ls -al  "${deploypkg_path}/"
+    echo "Listing Deploypkg path"
+    ls -al  "${deploypkg_path}/"
 
-# # elif [[ "${build_mode}" == "posix" ]]; then
-#     ##FIXME - only necessary due to SingleApplication / Posix problems 
-#     ## Now build for App Store:
-#     # use a special preprocessor DEFINE for build-time flagging - avoid SingleApplication if for App Store!
-#     #   DEFINES+=APPSTORE
-#     # rebuild code again
-#     build_app_compile_universal appstore
-#     # rebuild .app/ structure
-#     build_app_package 
+elif [[ "${build_mode}" == "posix" ]]; then
+    echo "Starting POSIX/AppStore build ...."
+    
+    # rebuild code again with Posix Qt
+    build_app_compile_universal
 
-# if we are doing Universal build, now build pkg for App store upload
-if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
+    # rebuild .app/ structure
+    build_app_package 
+    
+    # build .pkg file for store upload
     build_installer_pkg
+
+    echo "Listing Deploypkg path"
+    ls -al  "${deploypkg_path}/"
+
+    # make clean
+    make -f "${build_path}/Makefile" -C "${build_path}" distclean
 fi
 
-# # make clean
-# make -f "${build_path}/Makefile" -C "${build_path}" distclean
-
-echo "Listing Deploypkg path"
-ls -al  "${deploypkg_path}/"
-
-# fi
