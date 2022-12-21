@@ -7,7 +7,7 @@ QT_POSIX_DIR=/usr/local/opt/qt_posix
 
 # The following version pinnings are semi-automatically checked for
 # updates. Verify .github/workflows/bump-dependencies.yaml when changing those manually:
-# AQTINSTALL_VERSION=3.0.1
+AQTINSTALL_VERSION=3.0.2
 
 TARGET_ARCHS="${TARGET_ARCHS:-}"
 
