@@ -206,7 +206,7 @@ jobs:
             run_codeql:             false
             is_main_build_target:   true
             # xcode_version:          14.0.1
-            xcode_version:          12.1.1
+            xcode_version:          12.4
 
           - config_name:            macOS 10.14+ legacy - dmg
             target_os:              macos
