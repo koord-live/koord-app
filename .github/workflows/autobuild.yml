@@ -197,14 +197,16 @@ jobs:
           # #   base_command:           TARGET_ARCH=armhf ./.github/autobuild/linux.sh
           # #   run_codeql:             false
 
-          # - config_name:            macOS 11+ - dmg+AppStore
-          #   target_os:              macos
-          #   building_on_os:         macos-12
-          #   base_command:           QT_VERSION=6.4.1 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64 arm64" ./.github/autobuild/mac.sh
-          #   # Disable CodeQL on mac as it interferes with signing the binaries (signing hangs, see #2563 and #2564)
-          #   run_codeql:             false
-          #   is_main_build_target:   true
-          #   xcode_version:          14.0.1
+          - config_name:            macOS - dmg+AppStore
+            target_os:              macos
+            # building_on_os:         macos-12
+            building_on_os:         macos-10.15
+            base_command:           QT_VERSION=6.4.1 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64 arm64" ./.github/autobuild/mac.sh
+            # Disable CodeQL on mac as it interferes with signing the binaries (signing hangs, see #2563 and #2564)
+            run_codeql:             false
+            is_main_build_target:   true
+            # xcode_version:          14.0.1
+            xcode_version:          12.1.1
 
           - config_name:            macOS 10.14+ legacy - dmg
             target_os:              macos
