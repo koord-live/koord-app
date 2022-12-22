@@ -96,7 +96,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 //#else
     lvwServers->setColumnWidth ( 0, 150 );
     lvwServers->setColumnWidth ( 1, 100 );
-    lvwServers->setColumnWidth ( 2, 100 );
+    lvwServers->setColumnWidth ( 2, 50 );
 //    lvwServers->setColumnWidth ( 3, 220 );
 //#endif
     lvwServers->clear();
@@ -1912,6 +1912,10 @@ void CClientDlg::Connect ( const QString& strSelectedAddress, const QString& str
         defaultButtonWidget->setMaximumHeight(30);
         // hide regionchecker
         regionChecker->setVisible(false);
+        // stop region ping timer
+        RegionTimerPing.stop();
+        TimerReRequestServList.stop();
+        //FIXME - UI hacks for mixerboard space
         verticalSpacerGroupTop->changeSize(20,0);
         verticalSpacerGroupMid->changeSize(20,0);
 
@@ -2032,6 +2036,9 @@ void CClientDlg::Disconnect()
     butConnect->setText ( tr ( "Join" ) );
     // show RegionChecker again
     regionChecker->setVisible(true);
+    RegionTimerPing.start();
+    TimerReRequestServList.start();
+    //FIXME - UI hacks to make space for mixerboard
     verticalSpacerGroupTop->changeSize(20,40);
     verticalSpacerGroupMid->changeSize(20,40);
 

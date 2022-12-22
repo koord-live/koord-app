@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>596</width>
-    <height>387</height>
+    <width>619</width>
+    <height>411</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1632,6 +1632,12 @@ QCheckBox::indicator {
                       <property name="text">
                        <string>Check which Koord region has the lowest network delay --&gt;</string>
                       </property>
+                      <property name="scaledContents">
+                       <bool>true</bool>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
                      </widget>
                     </item>
                     <item>
@@ -1644,8 +1650,8 @@ QCheckBox::indicator {
                       </property>
                       <property name="minimumSize">
                        <size>
-                        <width>350</width>
-                        <height>200</height>
+                        <width>200</width>
+                        <height>50</height>
                        </size>
                       </property>
                       <property name="maximumSize">
@@ -2782,7 +2788,7 @@ QCheckBox::indicator {
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>671</width>
+             <width>543</width>
              <height>1712</height>
             </rect>
            </property>
