@@ -165,7 +165,8 @@ QString CSound::CheckDeviceCapabilities()
     // check the number of available channels
     ASIOGetChannels ( &lNumInChan, &lNumOutChan );
 
-    if ( ( lNumInChan < NUM_IN_OUT_CHANNELS ) || ( lNumOutChan < NUM_IN_OUT_CHANNELS ) )
+//    if ( ( lNumInChan < NUM_IN_OUT_CHANNELS ) || ( lNumOutChan < NUM_IN_OUT_CHANNELS ) )
+    if ( ( lNumInChan < MIN_IN_CHANNELS ) || ( lNumOutChan < MIN_OUT_CHANNELS  ) )
     {
         // return error string
         return QString ( tr ( "The selected audio device is incompatible since it doesn't support "
