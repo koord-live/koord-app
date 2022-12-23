@@ -1476,9 +1476,11 @@ void CClientDlg::OnNewStartClicked()
         idx = 1;
     }
     strCurrBestRegion = lvwServers->topLevelItem ( idx )->text ( 0 )
-                            .replace( matchState, "")  // remove any state refs eg TX or DC
+                            .replace( matchState, "" )  // remove any state refs eg TX or DC
                             .replace( " ", "" )            // remove remaining whitespace eg in "New York"
                             .replace( ",", "" )            // remove commas, prob before
+                            .replace( "Zürich", "Zurich" )      // special case #1
+                            .replace( "SãoPaulo", "SaoPaulo" )  // special case #2
                             .toLower();
     // qInfo() << strCurrBestRegion;
     QDesktopServices::openUrl(QUrl("https://koord.live/session?region=" + strCurrBestRegion, QUrl::TolerantMode));
