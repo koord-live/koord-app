@@ -138,8 +138,8 @@ build_app_and_packages() {
     # # Now build for posix mode - just for appstore
     if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
         export PATH=${POSIX_PATH}
-        echo "Path set to ${PATH}, building posix ...."
-        TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m posix
+        echo "Path set to ${PATH}, building for appstore ...."
+        TARGET_ARCHS="${TARGET_ARCHS}" ./mac/deploy_mac.sh "${BUILD_ARGS[@]}" -m appstore
     fi
     
 }

@@ -59,27 +59,27 @@ setup_dirs() {
     mkdir -p "${deploypkg_path}"
 }
 
-# build_app_compile()
-# {
-#     # local client_or_server="${1}"
+build_app_compile_legacy()
+{
+    # local client_or_server="${1}"
 
-#     # We need this in build environment otherwise defaults to webengine!!
-#     # bug is here: https://code.qt.io/cgit/qt/qtwebview.git/tree/src/webview/qwebviewfactory.cpp?h=6.3.1#n51
-#     # Note: not sure if this is useful here or only in Run env
-#     export QT_WEBVIEW_PLUGIN="native"
+    # We need this in build environment otherwise defaults to webengine!!
+    # bug is here: https://code.qt.io/cgit/qt/qtwebview.git/tree/src/webview/qwebviewfactory.cpp?h=6.3.1#n51
+    # Note: not sure if this is useful here or only in Run env
+    export QT_WEBVIEW_PLUGIN="native"
 
-#     # Build Koord
-#     declare -a BUILD_ARGS=("_UNUSED_DUMMY=''")  # old bash fails otherwise
-#     if [[ "${TARGET_ARCH:-}" ]]; then
-#         BUILD_ARGS=("QMAKE_APPLE_DEVICE_ARCHS=${TARGET_ARCH}" "QT_ARCH=${TARGET_ARCH}")
-#     fi
-#     qmake "${project_path}" -o "${build_path}/Makefile" "CONFIG+=release" "${BUILD_ARGS[@]}" "${@:2}"
+    # Build Koord
+    declare -a BUILD_ARGS=("_UNUSED_DUMMY=''")  # old bash fails otherwise
+    if [[ "${TARGET_ARCH:-}" ]]; then
+        BUILD_ARGS=("QMAKE_APPLE_DEVICE_ARCHS=${TARGET_ARCH}" "QT_ARCH=${TARGET_ARCH}")
+    fi
+    qmake "${project_path}" -o "${build_path}/Makefile" "CONFIG+=release" "${BUILD_ARGS[@]}" "${@:2}"
     
-#     local job_count
-#     job_count=$(sysctl -n hw.ncpu)
+    local job_count
+    job_count=$(sysctl -n hw.ncpu)
 
-#     make -f "${build_path}/Makefile" -C "${build_path}" -j "${job_count}"
-# }
+    make -f "${build_path}/Makefile" -C "${build_path}" -j "${job_count}"
+}
 
 build_app_compile_universal()
 {
@@ -300,7 +300,13 @@ if [[ "${build_mode}" == "normal" ]]; then
     echo "Starting NORMAL build ...."
 
     # compile code
-    build_app_compile_universal
+    # if both Intel and AppleSilicon are specified, then build universal
+    # otherwise build normal for legacy mode
+    if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
+        build_app_compile_universal
+    elif [ "${TARGET_ARCHS}" == "x86_64" ]; then
+        build_app_compile_legacy
+    fi
     # build .app/ structure
     build_app_package 
     # create versioned DMG installer image  
@@ -317,7 +323,7 @@ if [[ "${build_mode}" == "normal" ]]; then
     echo "Listing Deploypkg path"
     ls -al  "${deploypkg_path}/"
 
-elif [[ "${build_mode}" == "posix" ]]; then
+elif [[ "${build_mode}" == "appstore" ]]; then
     echo "Starting POSIX/AppStore build ...."
     
     ################################################
