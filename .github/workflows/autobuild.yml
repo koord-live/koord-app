@@ -197,27 +197,26 @@ jobs:
           # #   base_command:           TARGET_ARCH=armhf ./.github/autobuild/linux.sh
           # #   run_codeql:             false
 
-          - config_name:            macOS 12+ - dmg+AppStore
-            target_os:              macos
-            building_on_os:         macos-12
-            # building_on_os:         macos-11
-            base_command:           QT_VERSION=6.4.1 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64 arm64" ./.github/autobuild/mac.sh
-            # Disable CodeQL on mac as it interferes with signing the binaries (signing hangs, see #2563 and #2564)
-            run_codeql:             false
-            is_main_build_target:   true
-            xcode_version:          14.0.1
-            # xcode_version:          13.2.1
+          # - config_name:            macOS 12+ - dmg+AppStore
+          #   target_os:              macos
+          #   building_on_os:         macos-12
+          #   # building_on_os:         macos-11
+          #   base_command:           QT_VERSION=6.4.1 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64 arm64" ./.github/autobuild/mac.sh
+          #   # Disable CodeQL on mac as it interferes with signing the binaries (signing hangs, see #2563 and #2564)
+          #   run_codeql:             false
+          #   is_main_build_target:   true
+          #   xcode_version:          14.0.1
 
           - config_name:            macOS 10.14+ legacy - dmg
             target_os:              macos
-            building_on_os:         macos-10.15
+            building_on_os:         macos-11
             base_command:           QT_VERSION=6.4.1 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64" ./.github/autobuild/mac.sh
             # Disable CodeQL on mac as it interferes with signing the binaries (signing hangs, see #2563 and #2564)
             run_codeql:             false
             is_main_build_target:   true
             # experiment! also try xcode 10.3 (to target macOS 10.14) or xcode 12.4.1 
             # https://github.com/actions/runner-images/blob/main/images/macos/macos-10.15-Readme.md
-            xcode_version:          12.4
+            xcode_version:          13.2.1
 
           # - config_name:            iOS 10.13 - AppStore
           #   target_os:              ios

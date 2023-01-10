@@ -73,7 +73,12 @@ build_app_compile_legacy()
     if [[ "${TARGET_ARCH:-}" ]]; then
         BUILD_ARGS=("QMAKE_APPLE_DEVICE_ARCHS=${TARGET_ARCH}" "QT_ARCH=${TARGET_ARCH}")
     fi
-    qmake "${project_path}" -o "${build_path}/Makefile" "CONFIG+=release" "${BUILD_ARGS[@]}" "${@:2}"
+    # add "legacy" to CONFIG to ensure we take right entitlements file
+    qmake "${project_path}" -o "${build_path}/Makefile" \
+        "CONFIG+=release" \
+        "CONFIG+=legacy" \
+        "${BUILD_ARGS[@]}" \
+        "${@:2}"
     
     local job_count
     job_count=$(sysctl -n hw.ncpu)
@@ -147,8 +152,11 @@ build_app_package()
     # local target_name=$(sed -nE 's/^QMAKE_TARGET *= *(.*)$/\1/p' "${build_path}/Makefile")
 
     # copy in provisioning profile - BEFORE codesigning with macdeployqt
-    echo ">>> Adding embedded.provisionprofile to ${build_path}/${client_target_name}.app/Contents/"
-    cp ~/embedded.provisionprofile_adhoc ${build_path}/${client_target_name}.app/Contents/embedded.provisionprofile
+    # ONLY do this if we are doing non-legacy build....
+    if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
+        echo ">>> Adding embedded.provisionprofile to ${build_path}/${client_target_name}.app/Contents/"
+        cp ~/embedded.provisionprofile_adhoc ${build_path}/${client_target_name}.app/Contents/embedded.provisionprofile
+    fi
 
     # Add Qt deployment dependencies
     # we do this here for signed / notarized dmg
