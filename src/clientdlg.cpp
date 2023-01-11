@@ -2014,10 +2014,14 @@ void CClientDlg::Connect ( const QString& strSelectedAddress, const QString& str
 #else
                 quickView->setSource(QUrl("qrc:/webengineview.qml"));
 #endif
-                strVideoUrl = strVideoHost + "#userInfo.displayName=\"" + pClient->ChannelInfo.strName + "\"";
-                qInfo() << "strVideoUrl set to: " << strVideoUrl;
-                // tell the QML side that value is updated
-                emit videoUrlChanged();
+                // redirect causes empty return vals first time round - wait until values are non-empty
+                if ( !strVideoHost.isEmpty() )
+                {
+                    strVideoUrl = strVideoHost + "#userInfo.displayName=\"" + pClient->ChannelInfo.strName + "\"";
+                    qInfo() << "strVideoHost: " << strVideoHost << ", strVideoUrl: " << strVideoUrl;
+                    // tell the QML side that value is updated
+                    emit videoUrlChanged();
+                }
             });
     }
 }
