@@ -367,6 +367,11 @@ Function BuildMsixPackage
 
 Function SignExe
 {
+    # echo path for debug
+    $env:PATH
+
+    (Get-Command SignTool).Path
+    
     $WindowsOVCertPwd = Get-Content "C:\KoordOVCertPwd" 
 
     Invoke-Native-Command -Command "SignTool" `
