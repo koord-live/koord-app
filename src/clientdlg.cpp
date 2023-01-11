@@ -1921,6 +1921,12 @@ void CClientDlg::Connect ( const QString& strSelectedAddress, const QString& str
         verticalSpacerGroupTop->changeSize(20,0);
         verticalSpacerGroupMid->changeSize(20,0);
 
+        //FIXME - workaround for error window on macOS
+        // switch to video tab immediately to prevent webview from NOT loading
+#if defined( Q_OS_MACOS )
+        tabWidget->setCurrentIndex(1);
+#endif
+
 //        // enable chat widgets
 //        butSend->setEnabled(true);
 //        edtLocalInputText->setEnabled(true);
