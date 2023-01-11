@@ -91,11 +91,11 @@ build_app_compile_universal()
     # local app_mode="${1}"
     # # DEFINES+=APPSTORE - for switch in main.cpp
     # # CONFIG+=appstore - for switch in qmake proj - entitlements file
-    # if [[ ${app_mode} == "appstore" ]]; then
-    #     EXTRADEFINES="DEFINES+=APPSTORE"
+    # if [[ ${build_mode} == "appstore" ]]; then
+    #     # EXTRADEFINES="DEFINES+=APPSTORE"
     #     EXTRACONFIGS="CONFIG+=appstore"
     # else
-    #     EXTRADEFINES=
+    #     # EXTRADEFINES=
     #     EXTRACONFIGS=
     # fi
 
@@ -153,10 +153,10 @@ build_app_package()
 
     # copy in provisioning profile - BEFORE codesigning with macdeployqt
     # ONLY do this if we are doing non-legacy build....
-    if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
-        echo ">>> Adding embedded.provisionprofile to ${build_path}/${client_target_name}.app/Contents/"
-        cp ~/embedded.provisionprofile_adhoc ${build_path}/${client_target_name}.app/Contents/embedded.provisionprofile
-    fi
+    # if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
+    #     echo ">>> Adding embedded.provisionprofile to ${build_path}/${client_target_name}.app/Contents/"
+    #     cp ~/embedded.provisionprofile_adhoc ${build_path}/${client_target_name}.app/Contents/embedded.provisionprofile
+    # fi
 
     # Add Qt deployment dependencies
     # we do this here for signed / notarized dmg
