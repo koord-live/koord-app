@@ -32,8 +32,12 @@ Name: "{group}\Koord"; Filename: "{app}\Koord.exe"; WorkingDir: "{app}"
 Name: "{group}\KoordASIO Control"; Filename: "{app}\KoordASIOControl.exe"; WorkingDir: "{app}"
 
 [Run]
-Filename: "{app}\KoordASIOControl.exe"; Description: "Run KoordASIO Control (set up sound devices)"; Flags: postinstall nowait skipifsilent
-; Filename: "{app}\Koord.exe"; Description: "Launch Koord"; Flags: postinstall nowait skipifsilent unchecked
+; make sure we have SOME working default configuration after installation
+Filename: "{app}\KoordASIOControl.exe"; Parameters: "-defaults"; Description: "Set KoordASIO defaults"; Flags: nowait
+; also allow user to configure immediately after installation ?
+; Filename: "{app}\KoordASIOControl.exe"; Description: "Run KoordASIO Control"; Flags: postinstall nowait skipifsilent
+; Launch Koord by default after installation
+Filename: "{app}\Koord.exe"; Description: "Launch Koord"; Flags: postinstall nowait skipifsilent
 
 ; install reg key to locate KoordASIOControl.exe at runtime
 [Registry]
