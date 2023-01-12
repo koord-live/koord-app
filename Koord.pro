@@ -120,22 +120,13 @@ win32 {
 
     QMAKE_INFO_PLIST = mac/Info-xcode.plist
 
-    contains(CONFIG, "legacy") {
-        OSX_ENTITLEMENTS.files = mac/Koord_legacy.entitlements
-        OSX_ENTITLEMENTS.path = Contents/Resources
-        QMAKE_BUNDLE_DATA += OSX_ENTITLEMENTS
-        XCODE_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
-        XCODE_ENTITLEMENTS.value = mac/Koord_legacy.entitlements
-        QMAKE_MAC_XCODE_SETTINGS += XCODE_ENTITLEMENTS
-    } else {
-        OSX_ENTITLEMENTS.files = mac/Koord.entitlements
-        OSX_ENTITLEMENTS.path = Contents/Resources
-        QMAKE_BUNDLE_DATA += OSX_ENTITLEMENTS
-        XCODE_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
-        XCODE_ENTITLEMENTS.value = mac/Koord.entitlements
-        QMAKE_MAC_XCODE_SETTINGS += XCODE_ENTITLEMENTS
-    }
-
+    OSX_ENTITLEMENTS.files = mac/Koord.entitlements
+    OSX_ENTITLEMENTS.path = Contents/Resources
+    QMAKE_BUNDLE_DATA += OSX_ENTITLEMENTS
+    XCODE_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
+    XCODE_ENTITLEMENTS.value = mac/Koord.entitlements
+    QMAKE_MAC_XCODE_SETTINGS += XCODE_ENTITLEMENTS
+   
     MACOSX_BUNDLE_ICON.path = Contents/Resources
     QMAKE_BUNDLE_DATA += MACOSX_BUNDLE_ICON
 
