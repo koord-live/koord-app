@@ -338,9 +338,10 @@ elif [[ "${build_mode}" == "appstore" ]]; then
     ## SINGLEAPPLICATION / POSIX hackery ###########
     # patch the Entitlements file with APP GROUP ID stuff
     # needed for POSIX/AppStore shared mem to work - with singleapplication
-    echo "Patching Koord.entitlements with Application Groups..."
-    patch -u ${GITHUB_WORKSPACE}/mac/Koord.entitlements \
-        -i ${GITHUB_WORKSPACE}/mac/appstore_entitlements.patch
+    echo "Replacing Koord.entitlements with appstore version, with Application Groups etc..."
+    # patch -u ${GITHUB_WORKSPACE}/mac/Koord.entitlements \
+    #     -i ${GITHUB_WORKSPACE}/mac/appstore_entitlements.patch
+    mv ${GITHUB_WORKSPACE}/mac/Koord_appstore.entitlements ${GITHUB_WORKSPACE}/mac/Koord.entitlements
 
     echo "Patching SingleApplication for POSIX/AppStore compliance ..."
     # note: patch made as per:
