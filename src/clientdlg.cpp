@@ -2742,10 +2742,11 @@ void CClientDlg::OnAliasTextChanged ( const QString& strNewName )
         // refresh internal name parameter
         pClient->ChannelInfo.strName = strNewName;
 
-        // reset videoUrl so that Jitsi/QML is updated
-        strVideoUrl = strVideoHost + "#userInfo.displayName=\"" + pClient->ChannelInfo.strName + "\"";
-        // tell the QML side that value is updated
-        emit videoUrlChanged();
+        //FIXME - not working currently
+//        // reset videoUrl so that Jitsi/QML is updated
+//        strVideoUrl = strVideoHost + "#userInfo.displayName=\"" + pClient->ChannelInfo.strName + "\"";
+//        // tell the QML side that value is updated
+//        emit videoUrlChanged();
 
         // update channel info at the server
         pClient->SetRemoteInfo();
