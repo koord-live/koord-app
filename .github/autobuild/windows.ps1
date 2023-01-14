@@ -59,6 +59,9 @@ Function installQt
     # add vcredist and cmake - for Koord build
     aqt install-tool windows desktop --outputdir C:\Qt tools_vcredist qt.tools.vcredist_msvc2019_x64
     aqt install-tool windows desktop --outputdir C:\Qt tools_cmake qt.tools.cmake
+
+    # add openssl 1.1
+    aqt install-tool windows desktop --outputdir C:\Qt tools_openssl_x64
 }
 
 Function ensureQt
