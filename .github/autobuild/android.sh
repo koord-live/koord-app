@@ -136,16 +136,20 @@ pass_artifact_to_job() {
     local ARCH_ABI="${1}"
     echo ">>> Deploying .aab file for ${ARCH_ABI}...."
 
-    if [ "${ARCH_ABI}" == "armeabi-v7a" ]; then
+    # if [ "${ARCH_ABI}" == "armeabi-v7a" ]; then
+    if [ "${ARCH_ABI}" == "android_armv7" ]; then
         NUM="1"
         BUILDNAME="arm"
-    elif [ "${ARCH_ABI}" == "arm64-v8a" ]; then
+    # elif [ "${ARCH_ABI}" == "arm64-v8a" ]; then
+    elif [ "${ARCH_ABI}" == "android_arm64_v8a" ]; then
         NUM="2"
         BUILDNAME="arm64"
-    elif [ "${ARCH_ABI}" == "x86" ]; then
+    # elif [ "${ARCH_ABI}" == "x86" ]; then
+    elif [ "${ARCH_ABI}" == "android_x86" ]; then
         NUM="3"
         BUILDNAME="x86"
-    elif [ "${ARCH_ABI}" == "x86_64" ]; then
+    # elif [ "${ARCH_ABI}" == "x86_64" ]; then
+    elif [ "${ARCH_ABI}" == "android_x86_64" ]; then
         NUM="4"
         BUILDNAME="x86_64"
     fi
@@ -170,24 +174,36 @@ case "${1:-}" in
         install_android_openssl
         ;;
     build)
-        # Build all targets in sequence
-        build_app "armeabi-v7a"
-        build_aab "armeabi-v7a"
+        ## Build all targets in sequence
+        # build_app "armeabi-v7a"
+        # build_aab "armeabi-v7a"
+        build_app "android_armv7"
+        build_aab "android_armv7"
         build_make_clean
-        build_app "arm64-v8a"
-        build_aab "arm64-v8a"
+        # build_app "arm64-v8a"
+        # build_aab "arm64-v8a"
+        build_app "android_arm64_v8a"
+        build_aab "android_arm64_v8a"
         build_make_clean
-        build_app "x86"
-        build_aab "x86"
+        # build_app "x86"
+        # build_aab "x86"
+        build_app "android_x86"
+        build_aab "android_x86"
         build_make_clean
-        build_app "x86_64"
-        build_aab "x86_64"
+        # build_app "x86_64"
+        # build_aab "x86_64"
+        build_app "android_x86_64"
+        build_aab "android_x86_64"
         ;;
     get-artifacts)
-        pass_artifact_to_job "armeabi-v7a"
-        pass_artifact_to_job "arm64-v8a"
-        pass_artifact_to_job "x86"
-        pass_artifact_to_job "x86_64"
+        # pass_artifact_to_job "armeabi-v7a"
+        pass_artifact_to_job "android_armv7"
+        # pass_artifact_to_job "arm64-v8a"
+        pass_artifact_to_job "android_arm64_v8a"
+        # pass_artifact_to_job "x86"
+        pass_artifact_to_job "android_x86"
+        # pass_artifact_to_job "x86_64"
+        pass_artifact_to_job "android_x86_64"
         ;;
     *)
         echo "Unknown stage '${1:-}'"
