@@ -147,33 +147,8 @@ build_app_compile_universal()
     fi
 }
 
-build_app_package() 
+add_openssl()
 {
-    # local target_name=$(sed -nE 's/^QMAKE_TARGET *= *(.*)$/\1/p' "${build_path}/Makefile")
-
-    # copy in provisioning profile - BEFORE codesigning with macdeployqt
-    # ONLY do this if we are doing non-legacy build....
-    # if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
-    #     echo ">>> Adding embedded.provisionprofile to ${build_path}/${client_target_name}.app/Contents/"
-    #     cp ~/embedded.provisionprofile_adhoc ${build_path}/${client_target_name}.app/Contents/embedded.provisionprofile
-    # fi
-
-    # Add Qt deployment dependencies
-    # we do this here for signed / notarized dmg
-    echo ">>> Doing macdeployqt for notarization ..."
-    # Note: "-appstore-compliant" does NOT do any sandbox-enforcing or anything
-    # it just skips certain plugins/modules - useful to not include all of WebEngine!
-    macdeployqt "${build_path}/${client_target_name}.app" \
-        -verbose=2 \
-        -always-overwrite \
-        -hardened-runtime -timestamp -appstore-compliant \
-        -sign-for-notarization="${macadhoc_cert_name}" \
-        -qmldir="${root_path}/src"
-    
-    # debug:
-    echo ">>> BUILD FINISHED. Listing of ${build_path}/${client_target_name}.app/ :"
-    ls -al ${build_path}/${client_target_name}.app/
-
     #########################################
     ## OpenSSL1.1 - dylib stuff - experimental
     ## Copy in OpenSSL 1.x libs and add to Framework eg http://www.dafscollaborative.org/opencv-deploy.html
@@ -208,6 +183,34 @@ build_app_package()
     otool -L libcrypto.1.1.dylib
     ### END Experimental OpenSSL 1.1 stuff  ##################
     ###########################################################################
+}
+
+build_app_package() 
+{
+    # local target_name=$(sed -nE 's/^QMAKE_TARGET *= *(.*)$/\1/p' "${build_path}/Makefile")
+
+    # copy in provisioning profile - BEFORE codesigning with macdeployqt
+    # ONLY do this if we are doing non-legacy build....
+    # if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
+    #     echo ">>> Adding embedded.provisionprofile to ${build_path}/${client_target_name}.app/Contents/"
+    #     cp ~/embedded.provisionprofile_adhoc ${build_path}/${client_target_name}.app/Contents/embedded.provisionprofile
+    # fi
+
+    # Add Qt deployment dependencies
+    # we do this here for signed / notarized dmg
+    echo ">>> Doing macdeployqt for notarization ..."
+    # Note: "-appstore-compliant" does NOT do any sandbox-enforcing or anything
+    # it just skips certain plugins/modules - useful to not include all of WebEngine!
+    macdeployqt "${build_path}/${client_target_name}.app" \
+        -verbose=2 \
+        -always-overwrite \
+        -hardened-runtime -timestamp -appstore-compliant \
+        -sign-for-notarization="${macadhoc_cert_name}" \
+        -qmldir="${root_path}/src"
+    
+    # debug:
+    echo ">>> BUILD FINISHED. Listing of ${build_path}/${client_target_name}.app/ :"
+    ls -al ${build_path}/${client_target_name}.app/
 
     # copy app bundle to deploy dir to prep for dmg creation
     # leave original in place for pkg signing if necessary 
@@ -320,15 +323,14 @@ if [[ "${build_mode}" == "normal" ]]; then
     echo "Starting NORMAL build ...."
 
     # compile code
-    # if both Intel and AppleSilicon are specified, then build universal
-    # otherwise build normal for legacy mode
-    # if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
     build_app_compile_universal
-    # elif [ "${TARGET_ARCHS}" == "x86_64" ]; then
-    #     build_app_compile_legacy
-    # fi
-    # build .app/ structure
+    
+    # add openssl
+    add_openssl
+
+    # run macdeployqt
     build_app_package 
+    
     # create versioned DMG installer image  
     build_disk_image
 
