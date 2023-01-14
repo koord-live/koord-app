@@ -19,7 +19,7 @@ set -eu
 
 ANDROID_PLATFORM=android-33
 AQTINSTALL_VERSION=3.0.1
-QT_VERSION=6.4.1
+QT_VERSION=6.4.2
 QT_BASEDIR="/opt/Qt"
 BUILD_DIR=build
 ANDROID_NDK_HOST="linux-x86_64"
@@ -48,20 +48,21 @@ setup_qt() {
         echo "Using Qt installation from previous run (actions/cache)"
     else
         echo "Installing Qt..."
-        # python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
-        # # icu needs explicit installation 
-        # # otherwise: "qmake: error while loading shared libraries: libicui18n.so.56: cannot open shared object file: No such file or directory"
-        # python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux desktop "${QT_VERSION}" \
-        #     --archives qtbase qtdeclarative qtsvg qttools icu
+        # ## Install Qt from aqt
+        python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
+        # icu needs explicit installation 
+        # otherwise: "qmake: error while loading shared libraries: libicui18n.so.56: cannot open shared object file: No such file or directory"
+        python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux desktop "${QT_VERSION}" \
+            --archives qtbase qtdeclarative qtsvg qttools icu
 
         mkdir -p ${QT_BASEDIR}/${QT_VERSION}
 
-        # # Install Qt from Android build release
-        wget -q https://github.com/koord-live/koord-app/releases/download/androidqt_${QT_VERSION}/qt_android_${QT_VERSION}.tar.gz \
-            -O /tmp/qt_android_${QT_VERSION}.tar.gz
-        tar xf /tmp/qt_android_${QT_VERSION}.tar.gz -C ${QT_BASEDIR}/${QT_VERSION}
-        rm /tmp/qt_android_${QT_VERSION}.tar.gz
-        # qt android now installed in QT_BASEDIR/
+        # # # Install Qt from Android build release
+        # wget -q https://github.com/koord-live/koord-app/releases/download/androidqt_${QT_VERSION}/qt_android_${QT_VERSION}.tar.gz \
+        #     -O /tmp/qt_android_${QT_VERSION}.tar.gz
+        # tar xf /tmp/qt_android_${QT_VERSION}.tar.gz -C ${QT_BASEDIR}/${QT_VERSION}
+        # rm /tmp/qt_android_${QT_VERSION}.tar.gz
+        # # qt android now installed in QT_BASEDIR/
     fi
 }
 

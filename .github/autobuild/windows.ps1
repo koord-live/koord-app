@@ -16,7 +16,7 @@ $ErrorActionPreference = "Stop"
 
 $QtDir = 'C:\Qt'
 $ChocoCacheDir = 'C:\ChocoCache'
-$Qt64Version = "6.4.1"
+$Qt64Version = "6.4.2"
 $AqtinstallVersion = "3.0.1"
 $Msvc64Version = "win64_msvc2019_64"
 $JomVersion = "1.1.2"

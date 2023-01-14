@@ -3,7 +3,7 @@ set -eu
 
 QT_DIR=/usr/local/opt/qt
 QT_POSIX_DIR=/usr/local/opt/qt_posix
-# QT_POSIX_VER=6.4.1
+# QT_POSIX_VER=6.4.2
 
 # The following version pinnings are semi-automatically checked for
 # updates. Verify .github/workflows/bump-dependencies.yaml when changing those manually:

@@ -40,7 +40,7 @@ build_qt() {
     ## Get Qt source -
     # 1) From archives
     # cd ${GITHUB_WORKSPACE}
-    # MAJOR_VER=$(echo ${QT_VERSION} | cut -c -3) # get eg "6.3" when QT_VERSION=6.4.1
+    # MAJOR_VER=$(echo ${QT_VERSION} | cut -c -3) # get eg "6.4" when QT_VERSION=6.4.2
     # echo ">>> Downloading Qt source ..."
     # wget -q https://download.qt.io/archive/qt/${MAJOR_VER}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz
     # echo ">>> Unzipping qt-everywhere tar.xz file ..."
