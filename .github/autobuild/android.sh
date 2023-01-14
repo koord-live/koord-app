@@ -48,6 +48,7 @@ setup_qt() {
         echo "Using Qt installation from previous run (actions/cache)"
     else
         echo "Installing Qt..."
+
         # ## Install Qt from aqt
         python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
         # icu needs explicit installation 
@@ -55,9 +56,26 @@ setup_qt() {
         python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux desktop "${QT_VERSION}" \
             --archives qtbase qtdeclarative qtsvg qttools icu
 
-        mkdir -p ${QT_BASEDIR}/${QT_VERSION}
+        # Install Qt for android X86 and ARM targets
+        # x86
+        python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_x86 \
+            --archives qtbase qtdeclarative qtsvg qttools \
+            --modules qtwebview 
+        # x86_64
+        python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_x86_64 \
+            --archives qtbase qtdeclarative qtsvg qttools \
+            --modules qtwebview 
+        # arm64_v8a - 64bit - required for Play Store
+        python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_arm64_v8a \
+            --archives qtbase qtdeclarative qtsvg qttools \
+            --modules qtwebview 
+        # arm_v7 - 32bit 
+        python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_armv7 \
+            --archives qtbase qtdeclarative qtsvg qttools \
+            --modules qtwebview 
 
         # # # Install Qt from Android build release
+        # mkdir -p ${QT_BASEDIR}/${QT_VERSION}
         # wget -q https://github.com/koord-live/koord-app/releases/download/androidqt_${QT_VERSION}/qt_android_${QT_VERSION}.tar.gz \
         #     -O /tmp/qt_android_${QT_VERSION}.tar.gz
         # tar xf /tmp/qt_android_${QT_VERSION}.tar.gz -C ${QT_BASEDIR}/${QT_VERSION}
