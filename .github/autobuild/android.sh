@@ -19,7 +19,7 @@ set -eu
 
 ANDROID_PLATFORM=android-33
 AQTINSTALL_VERSION=3.0.1
-QT_VERSION=6.4.2
+QT_VERSION=6.4.1
 QT_BASEDIR="/opt/Qt"
 BUILD_DIR=build
 ANDROID_NDK_HOST="linux-x86_64"
@@ -48,39 +48,20 @@ setup_qt() {
         echo "Using Qt installation from previous run (actions/cache)"
     else
         echo "Installing Qt..."
+        # python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
+        # # icu needs explicit installation 
+        # # otherwise: "qmake: error while loading shared libraries: libicui18n.so.56: cannot open shared object file: No such file or directory"
+        # python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux desktop "${QT_VERSION}" \
+        #     --archives qtbase qtdeclarative qtsvg qttools icu
 
-        # ## Install Qt from aqt
-        python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
-        # icu needs explicit installation 
-        # otherwise: "qmake: error while loading shared libraries: libicui18n.so.56: cannot open shared object file: No such file or directory"
-        python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux desktop "${QT_VERSION}" \
-            --archives qtbase qtdeclarative qtsvg qttools icu
+        mkdir -p ${QT_BASEDIR}/${QT_VERSION}
 
-        # Install Qt for android X86 and ARM targets
-        # x86
-        python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_x86 \
-            --archives qtbase qtdeclarative qtsvg qttools \
-            --modules qtwebview 
-        # x86_64
-        python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_x86_64 \
-            --archives qtbase qtdeclarative qtsvg qttools \
-            --modules qtwebview 
-        # arm64_v8a - 64bit - required for Play Store
-        python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_arm64_v8a \
-            --archives qtbase qtdeclarative qtsvg qttools \
-            --modules qtwebview 
-        # arm_v7 - 32bit 
-        python3 -m aqt install-qt --outputdir "${QT_BASEDIR}" linux android "${QT_VERSION}" android_armv7 \
-            --archives qtbase qtdeclarative qtsvg qttools \
-            --modules qtwebview 
-
-        # # # Install Qt from Android build release
-        # mkdir -p ${QT_BASEDIR}/${QT_VERSION}
-        # wget -q https://github.com/koord-live/koord-app/releases/download/androidqt_${QT_VERSION}/qt_android_${QT_VERSION}.tar.gz \
-        #     -O /tmp/qt_android_${QT_VERSION}.tar.gz
-        # tar xf /tmp/qt_android_${QT_VERSION}.tar.gz -C ${QT_BASEDIR}/${QT_VERSION}
-        # rm /tmp/qt_android_${QT_VERSION}.tar.gz
-        # # qt android now installed in QT_BASEDIR/
+        # # Install Qt from Android build release
+        wget -q https://github.com/koord-live/koord-app/releases/download/androidqt_${QT_VERSION}/qt_android_${QT_VERSION}.tar.gz \
+            -O /tmp/qt_android_${QT_VERSION}.tar.gz
+        tar xf /tmp/qt_android_${QT_VERSION}.tar.gz -C ${QT_BASEDIR}/${QT_VERSION}
+        rm /tmp/qt_android_${QT_VERSION}.tar.gz
+        # qt android now installed in QT_BASEDIR/
     fi
 }
 
@@ -136,20 +117,16 @@ pass_artifact_to_job() {
     local ARCH_ABI="${1}"
     echo ">>> Deploying .aab file for ${ARCH_ABI}...."
 
-    # if [ "${ARCH_ABI}" == "armeabi-v7a" ]; then
-    if [ "${ARCH_ABI}" == "android_armv7" ]; then
+    if [ "${ARCH_ABI}" == "armeabi-v7a" ]; then
         NUM="1"
         BUILDNAME="arm"
-    # elif [ "${ARCH_ABI}" == "arm64-v8a" ]; then
-    elif [ "${ARCH_ABI}" == "android_arm64_v8a" ]; then
+    elif [ "${ARCH_ABI}" == "arm64-v8a" ]; then
         NUM="2"
         BUILDNAME="arm64"
-    # elif [ "${ARCH_ABI}" == "x86" ]; then
-    elif [ "${ARCH_ABI}" == "android_x86" ]; then
+    elif [ "${ARCH_ABI}" == "x86" ]; then
         NUM="3"
         BUILDNAME="x86"
-    # elif [ "${ARCH_ABI}" == "x86_64" ]; then
-    elif [ "${ARCH_ABI}" == "android_x86_64" ]; then
+    elif [ "${ARCH_ABI}" == "x86_64" ]; then
         NUM="4"
         BUILDNAME="x86_64"
     fi
@@ -174,36 +151,24 @@ case "${1:-}" in
         install_android_openssl
         ;;
     build)
-        ## Build all targets in sequence
-        # build_app "armeabi-v7a"
-        # build_aab "armeabi-v7a"
-        build_app "android_armv7"
-        build_aab "android_armv7"
+        # Build all targets in sequence
+        build_app "armeabi-v7a"
+        build_aab "armeabi-v7a"
         build_make_clean
-        # build_app "arm64-v8a"
-        # build_aab "arm64-v8a"
-        build_app "android_arm64_v8a"
-        build_aab "android_arm64_v8a"
+        build_app "arm64-v8a"
+        build_aab "arm64-v8a"
         build_make_clean
-        # build_app "x86"
-        # build_aab "x86"
-        build_app "android_x86"
-        build_aab "android_x86"
+        build_app "x86"
+        build_aab "x86"
         build_make_clean
-        # build_app "x86_64"
-        # build_aab "x86_64"
-        build_app "android_x86_64"
-        build_aab "android_x86_64"
+        build_app "x86_64"
+        build_aab "x86_64"
         ;;
     get-artifacts)
-        # pass_artifact_to_job "armeabi-v7a"
-        pass_artifact_to_job "android_armv7"
-        # pass_artifact_to_job "arm64-v8a"
-        pass_artifact_to_job "android_arm64_v8a"
-        # pass_artifact_to_job "x86"
-        pass_artifact_to_job "android_x86"
-        # pass_artifact_to_job "x86_64"
-        pass_artifact_to_job "android_x86_64"
+        pass_artifact_to_job "armeabi-v7a"
+        pass_artifact_to_job "arm64-v8a"
+        pass_artifact_to_job "x86"
+        pass_artifact_to_job "x86_64"
         ;;
     *)
         echo "Unknown stage '${1:-}'"
