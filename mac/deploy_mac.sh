@@ -174,28 +174,35 @@ build_app_package()
     echo ">>> BUILD FINISHED. Listing of ${build_path}/${client_target_name}.app/ :"
     ls -al ${build_path}/${client_target_name}.app/
 
-    # ## Copy in OpenSSL 1.x libs and add to Framework eg http://www.dafscollaborative.org/opencv-deploy.html
-    # mkdir -p ${build_path}/${client_target_name}.app/Contents/Frameworks/
-    # # Copy in SSL libs - from Homebrew installation 
-    # cp /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib ${build_path}/${client_target_name}.app/Contents/Frameworks/
-    # cp /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib ${build_path}/${client_target_name}.app/Contents/Frameworks/
+    #########################################
+    ## OpenSSL1.1 - dylib stuff - experimental
+    ## Copy in OpenSSL 1.x libs and add to Framework eg http://www.dafscollaborative.org/opencv-deploy.html
+    mkdir -p ${build_path}/${client_target_name}.app/Contents/Frameworks/
+    ## Copy in SSL libs - from Homebrew installation 
+    cp /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib ${build_path}/${client_target_name}.app/Contents/Frameworks/
+    cp /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib ${build_path}/${client_target_name}.app/Contents/Frameworks/
+
+    echo "debug: otool -L output for libssl / libcrypto "
+    cd ${build_path}/${client_target_name}.app/Contents/Frameworks/
+    otool -L libssl.1.1.dylib
+    otool -L libcrypto.1.1.dylib
 
     # # Update Framework registration stuff - to fix libcrypto/libssl errors - not working yet
     # # Firstly updating IDs:
-    # install_name_tool -id @executable_path/../Frameworks/libssl.1.1.dylib \
-    #     "${build_path}/${client_target_name}.app/Contents/Frameworks/libssl.1.1.dylib"
-    # install_name_tool -id @executable_path/../Frameworks/libcrypto.1.1.dylib \
-    #     "${build_path}/${client_target_name}.app/Contents/Frameworks/libcrypto.1.1.dylib"
+    install_name_tool -id @executable_path/../Frameworks/libssl.1.1.dylib  libssl.1.1.dylib
+    install_name_tool -id @executable_path/../Frameworks/libcrypto.1.1.dylib libcrypto.1.1.dylib
 
     # # Changing libraries references:
-    # install_name_tool -change lib/libssl.1.1.dylib @executable_path/../Frameworks/libssl.1.1.dylib \
-    #     "${build_path}/${client_target_name}.app/Contents/MacOS/${client_target_name}"
-    # install_name_tool -change lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib \
-    #     "${build_path}/${client_target_name}.app/Contents/MacOS/${client_target_name}"
+    install_name_tool -change \
+        /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib \
+        @executable_path/../Frameworks/libcrypto.1.1.dylib \
+        libssl.1.1.dylib
 
-    # # # Changing internal libraries cross-references: - necessary ????
-    # # install_name_tool -change lib/libopencv_core.2.3.dylib @executable_path/../Frameworks/libopencv_core.2.3.dylib \
-    # #     "${build_path}/${client_target_name}.app/Contents/Frameworks/libopencv_highgui.2.3.dylib"
+    echo "debug: RERUN OF otool -L output for libssl / libcrypto "
+    otool -L libssl.1.1.dylib
+    otool -L libcrypto.1.1.dylib
+    ### END Experimental OpenSSL 1.1 stuff  ##################
+    ###########################################################################
 
     # copy app bundle to deploy dir to prep for dmg creation
     # leave original in place for pkg signing if necessary 
