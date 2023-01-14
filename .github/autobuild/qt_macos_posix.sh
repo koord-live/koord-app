@@ -18,25 +18,7 @@ set -eu
 ## REQUIREMENTS (provided by Github macos build image):
 # - cmake 
 
-build_qt() {
-    # echo "DOING a DF..."
-    # df -h
-    # echo
-
-    # echo "DOING DU of /Applications"
-    # du -sh /Applications/*
-    # du -sh /usr/local/*
-    # du -sh /Users/runner/*
-
-    # rm -fr /Users/runner/Library/Android/
-    # rm -fr "/Applications/Visual Studio 2019.app"
-    # rm -fr "/Applications/Visual Studio.app"
-
-    # echo "DOING ANOTHER DF..."
-    # df -h
-    # echo
-
-
+clone_qt() {
     ## Get Qt source -
     # 1) From archives
     # cd ${GITHUB_WORKSPACE}
@@ -52,7 +34,11 @@ build_qt() {
     # 2) From Git
     cd $HOME
     git clone git://code.qt.io/qt/qt5.git  # maybe add:  --depth 1 --shallow-submodules --no-single-branch
-    cd qt5
+}
+
+build_qt() {
+
+    cd $HOME/qt5
     git checkout ${QT_VERSION}
     perl init-repository --module-subset=qtbase,qtwebview,qtshadertools,qtdeclarative,qtsvg # get submodule source code
 
@@ -95,10 +81,14 @@ pass_artifacts_to_job() {
 
 case "${1:-}" in
     build)
+        clone_qt
         build_qt
         ;;
     get-artifacts)
         pass_artifacts_to_job
+        ;;
+    localbuild)
+        build_qt
         ;;
     *)
         echo "Unknown stage '${1:-}'"
