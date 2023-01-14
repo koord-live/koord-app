@@ -28,6 +28,8 @@ QT_BASEDIR="/opt/Qt"
 
 setup() {
     # Install build deps from apt
+    sudo apt-get update
+
     sudo apt-get install -y --no-install-recommends \
         ninja-build \
         flex bison \
@@ -65,12 +67,15 @@ setup() {
     # get submodule source code
     perl init-repository --module-subset=qtbase,qtwebview,qtshadertools,qtdeclarative,qtsvg 
 
+}
+
+patch_android_webview()
+{
     # Patch the QtAndroidWebViewController
     # note: patch made as per:
     #    diff -Naur QtAndroidWebViewController_orig.java QtAndroidWebViewController.java > webview_perms.patch
     patch -u qtwebview/src/jar/src/org/qtproject/qt/android/view/QtAndroidWebViewController.java -i \
         ${GITHUB_WORKSPACE}/android/qt_build_fix/webview_perms.patch
-
 }
 
 build_qt() {
@@ -116,6 +121,8 @@ pass_artifacts_to_job() {
 case "${1:-}" in
     build)
         setup
+        #TEMP: leave out patch for testing with 6.4.2
+        # patch_android_webview
         build_qt "armeabi-v7a"
         build_qt "arm64-v8a"
         build_qt "x86"
