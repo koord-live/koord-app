@@ -198,6 +198,11 @@ build_app_package()
         @executable_path/../Frameworks/libcrypto.1.1.dylib \
         libssl.1.1.dylib
 
+    install_name_tool -change \
+        /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libcrypto.1.1.dylib \
+        @executable_path/../Frameworks/libcrypto.1.1.dylib \
+        libssl.1.1.dylib
+
     echo "debug: RERUN OF otool -L output for libssl / libcrypto "
     otool -L libssl.1.1.dylib
     otool -L libcrypto.1.1.dylib
