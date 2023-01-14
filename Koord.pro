@@ -190,7 +190,8 @@ win32 {
 
     # by default is 23 apparently = Android 6 !
     # BUT: crashes on Android 9, sdk=28
-    ANDROID_MIN_SDK_VERSION = 29
+    # Update: try with min Android 8.1 - sdk27
+    ANDROID_MIN_SDK_VERSION = 27
     ANDROID_TARGET_SDK_VERSION = 32
     ANDROID_VERSION_NAME = $$VERSION
 
