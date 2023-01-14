@@ -325,8 +325,8 @@ if [[ "${build_mode}" == "normal" ]]; then
     # compile code
     build_app_compile_universal
     
-    # add openssl
-    add_openssl
+    # # add openssl
+    # add_openssl
 
     # run macdeployqt
     build_app_package 
