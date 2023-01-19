@@ -1,0 +1,35 @@
+--- qdarwinwebview.mm	2023-01-19 19:37:31.684554900 +0200
++++ qdarwinwebview_permshack.mm	2023-01-19 18:40:27.709764100 +0200
+@@ -90,6 +90,10 @@
+ - (void)handleError:(NSError *)error;
+ 
+ // protocol:
++- (void)webView:(WKWebView *)webView
++     requestMediaCapturePermissionForOrigin:(WKSecurityOrigin *)origin
++     initiatedByFrame:(WKFrameInfo *)frame type:(WKMediaCaptureType)type
++     decisionHandler:(void (^)(WKPermissionDecision decision))decisionHandler;
+ - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation;
+ - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation;
+ - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation
+@@ -126,7 +130,20 @@
+                 QWebViewLoadRequestPrivate(url, QWebView::LoadFailedStatus,
+                                            QString::fromNSString(errorString)));
+ }
+-z
++
++// HACK: auto-allow device use permissions, eg Camera
++// Permissions already set in Info.plist !
++// https://developer.apple.com/documentation/webkit/wkuidelegate/3763087-webview?language=objc
++// https://stackoverflow.com/questions/66363074/ios-wkwebview-always-allow-camera-permission
++- (void) webView:(WKWebView *)webView
++     requestMediaCapturePermissionForOrigin:(WKSecurityOrigin *)origin
++     initiatedByFrame:(WKFrameInfo *)frame type:(WKMediaCaptureType)type
++     decisionHandler:(void (^)(WKPermissionDecision decision))decisionHandler
++    //  API_AVAILABLE(ios(15.0))
++{
++    decisionHandler(WKPermissionDecisionGrant);
++}
++
+ - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation
+ {
+     Q_UNUSED(webView);

@@ -43,15 +43,15 @@ build_qt() {
     git checkout ${QT_VERSION}
     perl init-repository --module-subset=qtbase,qtwebview,qtshadertools,qtdeclarative,qtsvg # get submodule source code
 
+    ## PATCH webview
+    patch -u qtwebview/src/plugins/darwin/qdarwinwebview.mm \
+            -i ${GITHUB_WORKSPACE}/mac/qdarwinwebview.patch
+
     ## Configure Qt
-    ## to build Qt with POSIX shared memory, instead of System V shared memory:
-        # ./configure -feature-ipc_posix
     ## for universal build:
         # ./configure -- -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
     # By default, Qt is configured for installation in the /usr/local/Qt-${QT_VERSION} directory,
-    # but this can be changed by using the -prefix option.
-    # also need  -feature-appstore-compliant for ... App Store compliance
-    ./configure -feature-ipc_posix -feature-appstore-compliant -nomake examples -nomake tests -- -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+    ./configure -nomake examples -nomake tests -- -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
 
     # build:
     cmake --build . --parallel
@@ -62,9 +62,9 @@ build_qt() {
     # Create archive
     echo ">>> Archiving QT installation..."
     cd /usr/local/Qt-${QT_VERSION}
-    tar cf ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_appstore.tar  .
+    tar cf ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_sysV.tar  .
     cd ${GITHUB_WORKSPACE}
-    gzip qt_mac_${QT_VERSION}_appstore.tar
+    gzip qt_mac_${QT_VERSION}_sysV.tar
 
     # Output: ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_appstore.tar.gz
 
@@ -73,10 +73,10 @@ build_qt() {
 pass_artifacts_to_job() {
     mkdir -p ${GITHUB_WORKSPACE}/deploy
     
-    mv -v ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_appstore.tar.gz ${GITHUB_WORKSPACE}/deploy/qt_mac_${QT_VERSION}_appstore.tar.gz
+    mv -v ${GITHUB_WORKSPACE}/qt_mac_${QT_VERSION}_sysV.tar.gz ${GITHUB_WORKSPACE}/deploy/qt_mac_${QT_VERSION}_sysV.tar.gz
 
-    echo ">>> Setting output as such: name=artifact_1::qt_mac_${QT_VERSION}_appstore.tar.gz"
-    echo "artifact_1=qt_mac_${QT_VERSION}_appstore.tar.gz" >> "$GITHUB_OUTPUT"
+    echo ">>> Setting output as such: name=artifact_1::qt_mac_${QT_VERSION}_sysV.tar.gz"
+    echo "artifact_1=qt_mac_${QT_VERSION}_sysV.tar.gz" >> "$GITHUB_OUTPUT"
 
 }
 
