@@ -1,5 +1,5 @@
---- qdarwinwebview.mm	2023-01-19 19:37:31.684554900 +0200
-+++ qdarwinwebview_permshack.mm	2023-01-19 18:40:27.709764100 +0200
+--- qdarwinwebview.mm	2023-01-20 14:39:23.610842800 +0200
++++ /home/dan/danzv/Desktop/qdarwinwebview_patched.mm	2023-01-20 14:35:44.907822500 +0200
 @@ -90,6 +90,10 @@
  - (void)handleError:(NSError *)error;
  
@@ -11,12 +11,10 @@
  - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation;
  - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation;
  - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation
-@@ -126,7 +130,20 @@
-                 QWebViewLoadRequestPrivate(url, QWebView::LoadFailedStatus,
+@@ -127,6 +131,19 @@
                                             QString::fromNSString(errorString)));
  }
--z
-+
+ 
 +// HACK: auto-allow device use permissions, eg Camera
 +// Permissions already set in Info.plist !
 +// https://developer.apple.com/documentation/webkit/wkuidelegate/3763087-webview?language=objc
