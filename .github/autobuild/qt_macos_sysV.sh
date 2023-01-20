@@ -56,7 +56,7 @@ build_qt() {
     # build:
     cmake --build . --parallel
 
-    # install:
+    # install to /usr/local/Qt-${QT_VERSION}:
     cmake --install .
 
     # Create archive
