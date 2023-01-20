@@ -140,7 +140,7 @@ win32 {
         -framework AppKit
 
     # attempt avoid macOS error: qt.tlsbackend.ossl: Failed to load libssl/libcrypto.
-    LIBS += /usr/local/opt/openssl@1.1/lib/libssl.a /usr/local/opt/openssl@1.1/lib/libcrypto.a
+#    LIBS += /usr/local/opt/openssl@1.1/lib/libssl.a /usr/local/opt/openssl@1.1/lib/libcrypto.a
 
     # defo use CoreAudio and not Jack
     message(Using CoreAudio.)
@@ -261,8 +261,8 @@ win32 {
     SOURCES += $$OBOE_SOURCES
     DISTFILES += $$DISTFILES_OBOE
 
-    # add for OpenSSL 1 support
-    include(android_openssl/openssl.pri)
+#    # add for OpenSSL 1 support
+#    include(android_openssl/openssl.pri)
 } else:unix {
     # we want to compile with C++11
     CONFIG += c++11

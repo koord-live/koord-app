@@ -147,43 +147,43 @@ build_app_compile_universal()
     fi
 }
 
-add_openssl()
-{
-    #########################################
-    ## OpenSSL1.1 - dylib stuff - experimental
-    ## Copy in OpenSSL 1.x libs and add to Framework eg http://www.dafscollaborative.org/opencv-deploy.html
-    mkdir -p ${build_path}/${client_target_name}.app/Contents/Frameworks/
-    ## Copy in SSL libs - from Homebrew installation 
-    cp /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib ${build_path}/${client_target_name}.app/Contents/Frameworks/
-    cp /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib ${build_path}/${client_target_name}.app/Contents/Frameworks/
+# add_openssl()
+# {
+#     #########################################
+#     ## OpenSSL1.1 - dylib stuff - experimental
+#     ## Copy in OpenSSL 1.x libs and add to Framework eg http://www.dafscollaborative.org/opencv-deploy.html
+#     mkdir -p ${build_path}/${client_target_name}.app/Contents/Frameworks/
+#     ## Copy in SSL libs - from Homebrew installation 
+#     cp /usr/local/opt/openssl@1.1/lib/libssl.1.1.dylib ${build_path}/${client_target_name}.app/Contents/Frameworks/
+#     cp /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib ${build_path}/${client_target_name}.app/Contents/Frameworks/
 
-    echo "debug: otool -L output for libssl / libcrypto "
-    cd ${build_path}/${client_target_name}.app/Contents/Frameworks/
-    otool -L libssl.1.1.dylib
-    otool -L libcrypto.1.1.dylib
+#     echo "debug: otool -L output for libssl / libcrypto "
+#     cd ${build_path}/${client_target_name}.app/Contents/Frameworks/
+#     otool -L libssl.1.1.dylib
+#     otool -L libcrypto.1.1.dylib
 
-    # # Update Framework registration stuff - to fix libcrypto/libssl errors - not working yet
-    # # Firstly updating IDs:
-    install_name_tool -id @executable_path/../Frameworks/libssl.1.1.dylib  libssl.1.1.dylib
-    install_name_tool -id @executable_path/../Frameworks/libcrypto.1.1.dylib libcrypto.1.1.dylib
+#     # # Update Framework registration stuff - to fix libcrypto/libssl errors - not working yet
+#     # # Firstly updating IDs:
+#     install_name_tool -id @executable_path/../Frameworks/libssl.1.1.dylib  libssl.1.1.dylib
+#     install_name_tool -id @executable_path/../Frameworks/libcrypto.1.1.dylib libcrypto.1.1.dylib
 
-    # # Changing libraries references:
-    install_name_tool -change \
-        /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib \
-        @executable_path/../Frameworks/libcrypto.1.1.dylib \
-        libssl.1.1.dylib
+#     # # Changing libraries references:
+#     install_name_tool -change \
+#         /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib \
+#         @executable_path/../Frameworks/libcrypto.1.1.dylib \
+#         libssl.1.1.dylib
 
-    install_name_tool -change \
-        /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libcrypto.1.1.dylib \
-        @executable_path/../Frameworks/libcrypto.1.1.dylib \
-        libssl.1.1.dylib
+#     install_name_tool -change \
+#         /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libcrypto.1.1.dylib \
+#         @executable_path/../Frameworks/libcrypto.1.1.dylib \
+#         libssl.1.1.dylib
 
-    echo "debug: RERUN OF otool -L output for libssl / libcrypto "
-    otool -L libssl.1.1.dylib
-    otool -L libcrypto.1.1.dylib
-    ### END Experimental OpenSSL 1.1 stuff  ##################
-    ###########################################################################
-}
+#     echo "debug: RERUN OF otool -L output for libssl / libcrypto "
+#     otool -L libssl.1.1.dylib
+#     otool -L libcrypto.1.1.dylib
+#     ### END Experimental OpenSSL 1.1 stuff  ##################
+#     ###########################################################################
+# }
 
 build_app_package() 
 {

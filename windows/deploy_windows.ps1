@@ -308,12 +308,12 @@ Function BuildApp
     Move-Item -Path "$RootPath\KoordASIO\src\out\install\x64-Release\bin\portaudio.dll" -Destination "$DeployPath\$BuildArch" -Force
     Move-Item -Path "$RootPath\KoordASIO\src\out\install\x64-Release\bin\PortAudioDevices.exe" -Destination "$DeployPath\$BuildArch" -Force
     Move-Item -Path "$RootPath\KoordASIO\src\out\install\x64-Release\bin\sndfile.dll" -Destination "$DeployPath\$BuildArch" -Force
-    # add openssl 1.1.x libs
-    Copy-Item -Path "$QtPath\Tools\OpenSSL\Win_x64\bin\libssl-1_1-x64.dll" -Destination "$DeployPath\$BuildArch" -Force
-    Copy-Item -Path "$QtPath\Tools\OpenSSL\Win_x64\bin\libcrypto-1_1-x64.dll" -Destination "$DeployPath\$BuildArch" -Force
-    #FIXME - copy or make symlinks? or just single file without x64 suffix?
-    Copy-Item -Path "$DeployPath\$BuildArch\libssl-1_1-x64.dll" -Destination "$DeployPath\$BuildArch\libssl-1_1.dll" -Force
-    Copy-Item -Path "$DeployPath\$BuildArch\libcrypto-1_1-x64.dll" -Destination "$DeployPath\$BuildArch\libcrypto-1_1.dll" -Force
+    # # add openssl 1.1.x libs
+    # Copy-Item -Path "$QtPath\Tools\OpenSSL\Win_x64\bin\libssl-1_1-x64.dll" -Destination "$DeployPath\$BuildArch" -Force
+    # Copy-Item -Path "$QtPath\Tools\OpenSSL\Win_x64\bin\libcrypto-1_1-x64.dll" -Destination "$DeployPath\$BuildArch" -Force
+    # #FIXME - copy or make symlinks? or just single file without x64 suffix?
+    # Copy-Item -Path "$DeployPath\$BuildArch\libssl-1_1-x64.dll" -Destination "$DeployPath\$BuildArch\libssl-1_1.dll" -Force
+    # Copy-Item -Path "$DeployPath\$BuildArch\libcrypto-1_1-x64.dll" -Destination "$DeployPath\$BuildArch\libcrypto-1_1.dll" -Force
 
     # move InnoSetup script to deploy dir
     Move-Item -Path "$WindowsPath\kdinstaller.iss" -Destination "$RootPath" -Force
