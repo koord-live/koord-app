@@ -2008,7 +2008,13 @@ void CClientDlg::Connect ( const QString& strSelectedAddress, const QString& str
 
                 // set the video url and update QML side
 #if defined(Q_OS_MACOS) || defined(Q_OS_IOS)
+// revert to WebEngineView for
+#if defined(MAC_LEGACY)
+                quickView->setSource(QUrl("qrc:/webengineview.qml"));
+#else
                 quickView->setSource(QUrl("qrc:/webview.qml"));
+#endif
+
 #elif defined(Q_OS_ANDROID)
 //                quickWidget->setSource(QUrl("qrc:/androidwebview.qml"));
 #else

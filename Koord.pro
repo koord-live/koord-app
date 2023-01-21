@@ -110,6 +110,10 @@ win32 {
         windows/ASIOSDK2/host/pc
 
 } else:macx {
+    defined(MAC_LEGACY) {
+        QT += webenginequick
+    }
+
     MACOSX_BUNDLE_ICON.files = mac/mac-mainicon.icns
 
     HEADERS += src/mac/activity.h src/mac/badgelabel.h

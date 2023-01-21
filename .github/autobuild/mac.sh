@@ -33,8 +33,9 @@ setup() {
         # no need for webengine in Mac! At all! Like iOS
         python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
             --archives qtbase qtdeclarative qtsvg qttools \
-            --modules qtwebview 
-            # --modules qtwebview qtwebengine
+            --modules qtwebview qtwebengine
+            # --modules qtwebview 
+            
 
         ## POSIX QT - for AppStore and SingleApplication compatibility
         # Install Qt from POSIX build release
