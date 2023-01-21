@@ -204,7 +204,7 @@ build_app_package()
     macdeployqt "${build_path}/${client_target_name}.app" \
         -verbose=2 \
         -always-overwrite \
-        -hardened-runtime -timestamp -appstore-compliant \
+        -hardened-runtime -timestamp \
         -sign-for-notarization="${macadhoc_cert_name}" \
         -qmldir="${root_path}/src"
     
