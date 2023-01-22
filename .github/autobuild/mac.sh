@@ -36,7 +36,6 @@ setup() {
             --modules qtwebview qtwebengine qtwebchannel qtpositioning
             # --modules qtwebview 
             
-
         # ## POSIX QT - for AppStore and SingleApplication compatibility
         # # Install Qt from POSIX build release
         # echo "Installing AppStore Qt ..."
