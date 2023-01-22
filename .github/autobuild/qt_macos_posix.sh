@@ -95,3 +95,8 @@ case "${1:-}" in
         echo "Unknown stage '${1:-}'"
         exit 1
 esac
+
+## For Local build:
+# export QT_VERSION=6.4.2
+# export PATH=$HOME/Qt/Tools/CMake/CMake.app/Contents/bin:$HOME/Qt/Tools/Ninja
+# sudo ./qt_macos_posix.sh localbuild

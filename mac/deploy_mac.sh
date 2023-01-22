@@ -201,11 +201,9 @@ build_app_package()
     echo ">>> Doing macdeployqt for notarization ..."
     # Note: "-appstore-compliant" does NOT do any sandbox-enforcing or anything
     # it just skips certain plugins/modules - useful to not include all of WebEngine!
+    APPSTORE_COMPLIANT=""  # for legacy case - we want webengine fully loaded
     if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
         APPSTORE_COMPLIANT="-appstore-compliant"
-    else
-        # this is legacy build - allow webengine to be fully loaded 
-        APPSTORE_COMPLIANT=""
     fi
     macdeployqt "${build_path}/${client_target_name}.app" \
         -verbose=2 \
