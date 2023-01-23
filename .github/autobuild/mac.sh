@@ -32,9 +32,9 @@ setup() {
         python3 -m pip install "aqtinstall==${AQTINSTALL_VERSION}"
         # no need for webengine in Mac! At all! Like iOS
         # except for Legacy version :/
-        WEBENGINE_MODS = ""
+        WEBENGINE_MODS=""
         if [ "${TARGET_ARCHS}" == "x86_64" ]; then
-            WEBENGINE_MODS = "qtwebengine qtwebchannel qtpositioning"
+            WEBENGINE_MODS="qtwebengine qtwebchannel qtpositioning"
         fi
         python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
             --archives qtbase qtdeclarative qtsvg qttools \
