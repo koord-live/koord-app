@@ -11,9 +11,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleVersion</key>
-	<string>${QMAKE_FULL_VERSION}</string>
+	<string>1${QMAKE_FULL_VERSION}</string>
 	<key>CFBundleShortVersionString</key>
-	<string>${QMAKE_FULL_VERSION}</string>
+	<string>1${QMAKE_FULL_VERSION}</string>
 	<key>CFBundleSupportedPlatforms</key>
 	<array>
 		<string>MacOSX</string>
