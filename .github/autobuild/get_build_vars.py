@@ -11,7 +11,6 @@ import subprocess
 
 REPO_PATH = os.path.join(os.path.dirname(__file__), '..', '..')
 
-
 def get_version_from_koord_pro():
     with open(REPO_PATH + '/Koord.pro', 'r') as f:
         pro_content = f.read()
