@@ -1,4 +1,3 @@
-# set Version at 4 for AppleStore reasons for now
 VERSION = 1.4.46
 
 # use target name which does not use a capital letter at the beginning
