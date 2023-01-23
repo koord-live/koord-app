@@ -737,9 +737,11 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     // init driver button
 #if defined( _WIN32 ) && !defined( WITH_JACK )
     butDriverSetup->setText ( tr ( "ASIO Device Settings" ) );
+    driverSetupWidget->show();
 #else
     // no use for this button for MacOS/Linux right now or when using JACK -> hide it
     butDriverSetup->hide();
+    driverSetupWidget->hide();
 #endif
 
     // init audio in fader
