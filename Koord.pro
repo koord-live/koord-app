@@ -6,19 +6,19 @@ contains(CONFIG, "noupcasename") {
     TARGET = koord
 }
 
-# allow detailed version info for intermediate builds (#475)
-contains(VERSION, .*dev.*) {
-    exists(".git/config") {
-        GIT_DESCRIPTION=$$system(git describe --match=xxxxxxxxxxxxxxxxxxxx --always --abbrev --dirty) # the match should never match
-        VERSION = "$$VERSION"-$$GIT_DESCRIPTION
-        message("building version \"$$VERSION\" (intermediate in git repository)")
-    } else {
-        VERSION = "$$VERSION"-nogit
-        message("building version \"$$VERSION\" (intermediate without git repository)")
-    }
-} else {
-    message("building version \"$$VERSION\" (release)")
-}
+## allow detailed version info for intermediate builds (#475)
+#contains(VERSION, .*dev.*) {
+#    exists(".git/config") {
+#        GIT_DESCRIPTION=$$system(git describe --match=xxxxxxxxxxxxxxxxxxxx --always --abbrev --dirty) # the match should never match
+#        VERSION = "$$VERSION"-$$GIT_DESCRIPTION
+#        message("building version \"$$VERSION\" (intermediate in git repository)")
+#    } else {
+#        VERSION = "$$VERSION"-nogit
+#        message("building version \"$$VERSION\" (intermediate without git repository)")
+#    }
+#} else {
+#    message("building version \"$$VERSION\" (release)")
+#}
 
 CONFIG += qt \
     thread \
@@ -61,8 +61,7 @@ DEFINES += QT_NO_DEPRECATED_WARNINGS
 
 win32 {
     # Windows desktop does not have native web runtime, need to package
-    QT += quick \
-        webenginecore
+    QT += quick webenginequick
 
     DEFINES -= UNICODE # fixes issue with ASIO SDK (asiolist.cpp is not unicode compatible)
     DEFINES += NOMINMAX # solves a compiler error with std::min/max
@@ -192,8 +191,7 @@ win32 {
     # if ANDROID_ABIS is passed as env var to qmake, will override this
     # !defined(ANDROID_ABIS, var):ANDROID_ABIS = arm64-v8a
 
-    # by default is 23 apparently = Android 6 !
-    # BUT: crashes on Android 9, sdk=28
+    # by default is 23 = Android 6 !
     # Update: try with min Android 8.1 - sdk27
     ANDROID_MIN_SDK_VERSION = 27
     ANDROID_TARGET_SDK_VERSION = 32
@@ -269,12 +267,10 @@ win32 {
 #    include(android_openssl/openssl.pri)
 } else:unix {
     # we want to compile with C++11
-    CONFIG += c++11
+    CONFIG += c++17
 
     # Linux desktop does not have native web runtime, need to package
-    QT += webenginecore
-    # ??
-    #QT += webenginequick
+    QT += webenginequick
 
     # --as-needed avoids linking the final binary against unnecessary runtime
     # libs. Most g++ versions already do that by default.
