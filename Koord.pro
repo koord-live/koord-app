@@ -1,4 +1,9 @@
-VERSION = 1.4.46
+# set Version at 4 for AppleStore reasons for now
+MAJVER = 1
+macx || ios {
+    MAJVER = 4
+}
+VERSION = $${MAJVER}.4.46
 
 # use target name which does not use a capital letter at the beginning
 contains(CONFIG, "noupcasename") {
