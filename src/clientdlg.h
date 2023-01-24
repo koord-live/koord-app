@@ -56,8 +56,11 @@
 #include "audiomixerboard.h"
 #include "analyzerconsole.h"
 #include "ui_clientdlgbase.h"
-#if defined( Q_OS_MACOS )
-#    include "mac/badgelabel.h"
+//#if defined( Q_OS_MACOS )
+//#    include "mac/badgelabel.h"
+//#endif
+#if defined( _WIN32 )
+#include "toml.h"
 #endif
 #include <QQuickWidget>
 #include <QQuickView>
@@ -103,6 +106,7 @@ public:
     void UpdateSettingsDisplay();
     void UpdateSoundDeviceChannelSelectionFrame();
     void SetEnableFeedbackDetection ( bool enable );
+    void SetKoordASIOWarning();
 
     // for QML
     QString getVideoUrl() const {
@@ -214,6 +218,9 @@ protected:
     bool         bListFilterWasActive;
     bool         bShowAllMusicians;
 //    bool         bEnableIPv6;
+
+    // for Windows KoordASIO stuff
+    QString fullpath = QDir::homePath() + "/.KoordASIO.toml";
 
     // for urlhandler
 //    UrlHandler* url_handler;
@@ -385,6 +392,7 @@ public slots:
 #if defined( _WIN32 ) && !defined( WITH_JACK )
     // Only include this slot for Windows when JACK is NOT used
     void OnDriverSetupClicked();
+    void OnSoundcardReactivate();
 #endif
     // end of settings stuff ===================================
 

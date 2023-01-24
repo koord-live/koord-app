@@ -601,7 +601,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
 #if defined( _WIN32 ) && !defined( WITH_JACK )
     butDriverSetup->setWhatsThis ( strSndCardDriverSetup );
-    butDriverSetup->setAccessibleName ( tr ( "ASIO Device Settings push button" ) );
+    butDriverSetup->setAccessibleName ( tr ( "Driver Setup push button" ) );
     butDriverSetup->setToolTip ( strSndCardDriverSetupTT );
 #endif
 
@@ -736,7 +736,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
     // init driver button
 #if defined( _WIN32 ) && !defined( WITH_JACK )
-    butDriverSetup->setText ( tr ( "ASIO Device Settings" ) );
+//    butDriverSetup->setText ( tr ( "Driver Setup" ) );
     driverSetupWidget->show();
 #else
     // no use for this button for MacOS/Linux right now or when using JACK -> hide it
@@ -1180,6 +1180,8 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 #if defined( _WIN32 ) && !defined( WITH_JACK )
     // Driver Setup button is only available for Windows when JACK is not used
     QObject::connect ( butDriverSetup, &QPushButton::clicked, this, &CClientDlg::OnDriverSetupClicked );
+    // make driver refresh button reload the currently selected sound card
+    QObject::connect ( driverRefresh, &QPushButton::clicked, this, &CClientDlg::OnSoundcardReactivate );
 #endif
 
     // misc
@@ -2541,6 +2543,59 @@ void CClientDlg::UpdateSoundDeviceChannelSelectionFrame()
     // for other OS, no sound card channel selection is supported
     FrameSoundcardChannelSelection->setVisible ( false );
 #endif
+
+#if defined( _WIN32 )
+    koordASIOWarningBox->hide();
+    SetKoordASIOWarning();
+#endif
+}
+
+void CClientDlg::SetKoordASIOWarning() {
+    if ( cbxSoundcard->currentText() == "KoordASIO" ) {
+
+        // parse .KoordASIO.toml file
+        std::ifstream ifs;
+        ifs.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
+        try {
+            ifs.open(fullpath.toStdString(), std::ifstream::in);
+            toml::ParseResult pr = toml::parse(ifs);
+//            qDebug("Attempted to parse toml file...");
+            ifs.close();
+            if (!pr.valid()) {
+  //              setDefaults();
+                qInfo() << "Toml file not valid???";
+            } else {
+                const toml::Value& v = pr.value;
+
+                // get bufferSize
+                const toml::Value* bss = v.find( "bufferSizeSamples" );
+
+                // get input stream stuff
+                const toml::Value* input_dev = v.find( "input.device" );
+                const QString in_dev = QString::fromStdString( input_dev->as<std::string>() );
+                const toml::Value* input_excl = v.find("input.wasapiExclusiveMode");
+                bool in_ex = input_excl->as<bool>();
+
+                // get output stream stuff
+                const toml::Value* output_dev = v.find("output.device");
+                QString out_dev = QString::fromStdString(output_dev->as<std::string>());
+                const toml::Value* output_excl = v.find("output.wasapiExclusiveMode");
+                bool out_ex = output_excl->as<bool>();
+
+                // Simple test for USB devices - will typically contain string "usb" somewhere in device name
+                if ( !in_dev.contains("usb", Qt::CaseInsensitive) || !out_dev.contains("usb", Qt::CaseInsensitive)) {
+                    qInfo() << "in_dev: " << in_dev << " , out_dev: " << out_dev;
+                    koordASIOWarningBox->show();
+                }
+            }
+        }
+        catch (std::ifstream::failure e) {
+            qDebug("Failed to open KoordASIO config file ...");
+        }
+    } else {
+        // KoordASIO is not selected - hide warning box if it's shown
+        koordASIOWarningBox->hide();
+    }
 }
 
 void CClientDlg::SetEnableFeedbackDetection ( bool enable )
@@ -2551,6 +2606,10 @@ void CClientDlg::SetEnableFeedbackDetection ( bool enable )
 
 #if defined( _WIN32 ) && !defined( WITH_JACK )
 void CClientDlg::OnDriverSetupClicked() { pClient->OpenSndCrdDriverSetup(); }
+void CClientDlg::OnSoundcardReactivate() {
+    // simply set again the currently-set soundcard
+    OnSoundcardActivated(cbxSoundcard->currentIndex());
+}
 #endif
 
 void CClientDlg::OnNetBufValueChanged ( int value )
@@ -2568,6 +2627,13 @@ void CClientDlg::OnNetBufServerValueChanged ( int value )
 void CClientDlg::OnSoundcardActivated ( int iSndDevIdx )
 {
     pClient->SetSndCrdDev ( cbxSoundcard->itemText ( iSndDevIdx ) );
+
+    // do KoordASIO - USB Check
+#if defined( _WIN32 )
+    if ( cbxSoundcard->itemText( iSndDevIdx ) == "KoordASIO" ) {
+        SetKoordASIOWarning();
+    }
+#endif
 
     UpdateSoundDeviceChannelSelectionFrame();
     UpdateDisplay();

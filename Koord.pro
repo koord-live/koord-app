@@ -335,7 +335,8 @@ HEADERS += src/buffer.h \
     src/signalhandler.h \
     src/kdapplication.h \
     src/urlhandler.h \
-    src/messagereceiver.h
+    src/messagereceiver.h \
+    src/toml.h
 
 !contains(CONFIG, "serveronly") {
     HEADERS += src/client.h \
