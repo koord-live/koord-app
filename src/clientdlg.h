@@ -56,9 +56,9 @@
 #include "audiomixerboard.h"
 #include "analyzerconsole.h"
 #include "ui_clientdlgbase.h"
-//#if defined( Q_OS_MACOS )
-//#    include "mac/badgelabel.h"
-//#endif
+#if defined( Q_OS_MACOS )
+#    include "mac/badgelabel.h"
+#endif
 #if defined( _WIN32 )
 #include "toml.h"
 #endif
