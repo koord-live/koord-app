@@ -431,7 +431,8 @@ jobs:
       - name:                       Validate and Upload macOS Storesign Pkg
         if:                         >-
                                     steps.build.outputs.macos_signed == 'true' &&
-                                    needs.create_release.outputs.publish_to_release == 'true'
+                                    needs.create_release.outputs.publish_to_release == 'true' &&
+                                    steps.get-build-vars.outputs.IS_PRERELEASE == 'false'
         id:                         macos_validate_upload
         run:                        ${{ matrix.config.base_command }} validate_and_upload
         env:
@@ -447,7 +448,8 @@ jobs:
         id:                         ios_build_signed_archive
         if:                         >-
                                     steps.build.outputs.ios_signed == 'true' &&
-                                    needs.create_release.outputs.publish_to_release == 'true'
+                                    needs.create_release.outputs.publish_to_release == 'true' &&
+                                    steps.get-build-vars.outputs.IS_PRERELEASE == 'false'
         uses:                       yukiarrr/ios-build-action@v1.5.0
         with:
           project-path:             Koord.xcodeproj
@@ -463,7 +465,8 @@ jobs:
         id:                         ios_testflight_upload
         if:                         >-
                                     steps.build.outputs.ios_signed == 'true' &&
-                                    needs.create_release.outputs.publish_to_release == 'true'
+                                    needs.create_release.outputs.publish_to_release == 'true' &&
+                                    steps.get-build-vars.outputs.IS_PRERELEASE == 'false'
         run:                        ${{ matrix.config.base_command }} validate_and_upload
         env: 
           ARTIFACT_PATH:            build/Koord.ipa
@@ -479,7 +482,8 @@ jobs:
       - name:                       Publish all ABI Android builds to Play Store
         if:                         >-
                                     needs.create_release.outputs.publish_to_release == 'true' &&
-                                    matrix.config.target_os == 'android'
+                                    matrix.config.target_os == 'android' &&
+                                    steps.get-build-vars.outputs.IS_PRERELEASE == 'false'
         id:                         publish_android
         uses:                       r0adkll/upload-google-play@v1
         with:
@@ -497,7 +501,8 @@ jobs:
       # - name:                       Publish msix Windows build to Store
       #   if:                         >-
       #                               needs.create_release.outputs.publish_to_release == 'true' &&
-      #                               matrix.config.target_os == 'windows'
+      #                               matrix.config.target_os == 'windows' &&
+      #                               steps.get-build-vars.outputs.IS_PRERELEASE == 'false'
       #   id:                         publish_windows
       #   uses:                       isaacrlevin/windows-store-action@1.0
       #   with:
