@@ -99,7 +99,9 @@ win32 {
 
     # Important: Keep those ASIO includes local to this build target in
     # order to avoid poisoning other builds license-wise.
-    HEADERS += src/sound/asio/sound.h
+    # Note: Also add toml.h for KoordASIO config parsing
+    HEADERS += src/sound/asio/sound.h \
+            src/toml.h
     SOURCES += src/sound/asio/sound.cpp \
         windows/ASIOSDK2/common/asio.cpp \
         windows/ASIOSDK2/host/asiodrivers.cpp \
@@ -335,8 +337,7 @@ HEADERS += src/buffer.h \
     src/signalhandler.h \
     src/kdapplication.h \
     src/urlhandler.h \
-    src/messagereceiver.h \
-    src/toml.h
+    src/messagereceiver.h
 
 !contains(CONFIG, "serveronly") {
     HEADERS += src/client.h \
