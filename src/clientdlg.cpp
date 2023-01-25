@@ -368,6 +368,9 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     // init reverb channel
     UpdateRevSelection();
 
+    // ensure KoordASIO USB warning box is hidden by default
+    koordASIOWarningBox->hide();
+
     // set window title (with no clients connected -> "0")
     SetMyWindowTitle ( 0 );
 
