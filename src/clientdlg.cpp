@@ -2556,6 +2556,7 @@ void CClientDlg::UpdateSoundDeviceChannelSelectionFrame()
 #endif
 }
 
+#if defined( _WIN32 )
 void CClientDlg::SetKoordASIOWarning() {
     if ( cbxSoundcard->currentText() == "KoordASIO" ) {
 
@@ -2603,6 +2604,7 @@ void CClientDlg::SetKoordASIOWarning() {
         koordASIOWarningBox->hide();
     }
 }
+#endif
 
 void CClientDlg::SetEnableFeedbackDetection ( bool enable )
 {
