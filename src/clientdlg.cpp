@@ -486,8 +486,9 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
 #    if defined( _WIN32 )
     // set Windows specific tool tip
-    cbxSoundcard->setToolTip ( tr ( "Use the KoordASIO driver if you do not have a special driver for your "
-                                    "device. Use ASIO Settings panel to change to Exclusive mode for best "
+    cbxSoundcard->setToolTip ( tr ( "Select the ASIO driver for your external interface. "
+                                    "If you don't have a special ASIO driver, use the default KoordASIO driver."
+                                    "Use Driver Setup to change to Exclusive mode for best "
                                     "performance. " ) +
                                "<br>" +
                                TOOLTIP_COM_END_TEXT );
@@ -548,7 +549,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
                                      "from within %1. "
                                      "In this case the buffer delay setting is disabled and has to be "
                                      "changed using the sound card driver. On Windows, use the "
-                                     "ASIO Device Settings button to open the driver settings panel. On Linux, "
+                                     "Driver Setup button to open the driver settings panel. On Linux, "
                                      "use the JACK configuration tool to change the buffer size." )
                                     .arg ( APP_NAME ) +
                                 "<br>" +
@@ -570,7 +571,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     QString strSndCrdBufDelayTT = tr ( "If the buffer delay settings are "
                                        "disabled, it is prohibited by the audio driver to modify this "
                                        "setting from within %1. "
-                                       "On Windows, press the ASIO Device Settings button to open the "
+                                       "On Windows, press the Driver Setup button to open the "
                                        "driver settings panel. On Linux, use the JACK configuration tool to "
                                        "change the buffer size." )
                                       .arg ( APP_NAME ) +
@@ -587,6 +588,10 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
                                           .arg ( APP_NAME )
                                           .arg ( SYSTEM_SAMPLE_RATE_HZ ) +
                                       TOOLTIP_COM_END_TEXT;
+
+    QString strSndCardDriverRefresh = tr ( "Refreshes the driver settings. Useful after you change KoordASIO "
+                                           "configuration! (and possibly other ASIO drivers too) " ) +
+                                        TOOLTIP_COM_END_TEXT;
 #endif
 
     rbtBufferDelayPreferred->setWhatsThis ( strSndCrdBufDelay );
@@ -603,6 +608,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     butDriverSetup->setWhatsThis ( strSndCardDriverSetup );
     butDriverSetup->setAccessibleName ( tr ( "Driver Setup push button" ) );
     butDriverSetup->setToolTip ( strSndCardDriverSetupTT );
+    driverRefresh->setToolTip ( strSndCardDriverRefresh );
 #endif
 
     // fancy skin
