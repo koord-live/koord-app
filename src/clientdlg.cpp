@@ -122,8 +122,6 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 //    // setup timers
     TimerInitialSort.setSingleShot ( true ); // only once after list request
 
-
-
 // FIXME - exception for Android
 // - QuickView does NOT work as for other OS - when setSource is changed from "nosession" to webview, view goes full-screen
 #if defined(Q_OS_ANDROID)
@@ -1253,7 +1251,8 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
     // do Koord version check - non-appstore versions only
     // check for existence of INSTALL_DIR/nonstore_donotdelete.txt
-    OnCheckForUpdate();
+    if (!bStoreInstallation)
+        OnCheckForUpdate();
 
     // Send the request to two servers for redundancy if either or both of them
     // has a higher release version number, the reply will trigger the notification.
@@ -2206,7 +2205,7 @@ void CClientDlg::OnCheckForUpdate()
 #if defined( Q_OS_MACOS ) && defined ( MAC_LEGACY )
                                             if (dl_url.endsWith("legacy.dmg")) new_download_url = dl_url;
 #elif defined( Q_OS_MACOS ) && !defined ( MAC_LEGACY )
-                                            if (dl_url.endsWith(".dmg")) new_download_url = dl_url;
+                                            if (dl_url.endsWith(".dmg") && !dl_url.contains("legacy")) new_download_url = dl_url;
 #elif defined ( Q_OS_WINDOWS )
                                             if (dl_url.endsWith(".exe")) new_download_url = dl_url;
 #elif defined ( Q_OS_LINUX )

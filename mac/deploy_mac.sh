@@ -199,6 +199,10 @@ build_app_package()
     # Add Qt deployment dependencies
     # we do this here for signed / notarized dmg
     echo ">>> Doing macdeployqt for notarization ..."
+
+    # Insert flagfile for update-checker (non-appstore versions)
+    touch "${build_path}/${client_target_name}.app/nonstore_donotdelete.txt"
+
     # Note: "-appstore-compliant" does NOT do any sandbox-enforcing or anything
     # it just skips certain plugins/modules - useful to not include all of WebEngine!
     APPSTORE_COMPLIANT=""  # for legacy case - we want webengine fully loaded
@@ -241,6 +245,9 @@ build_installer_pkg()
     # copy in provisioning profile - BEFORE codesigning with macdeployqt
     echo ">>> Adding embedded.provisionprofile to ${build_path}_storesign/${target_name}.app/Contents/"
     cp ~/embedded.provisionprofile_store ${build_path}_storesign/${target_name}.app/Contents/embedded.provisionprofile
+
+    # Remove the update-checker flagile we put in earlier - we don't it in our appstore pkg
+    rm -f "${build_path}/${client_target_name}.app/nonstore_donotdelete.txt"
 
     # Add Qt deployment deps and codesign the app for App Store submission
     macdeployqt "${build_path}_storesign/${target_name}.app" \

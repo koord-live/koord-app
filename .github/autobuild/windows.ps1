@@ -144,17 +144,17 @@ Function passExeArtifactToJob
 
 Function passMsixArtifactToJob
 {
-    $artifact = "Koord_${KoordVersion}.msix"
+    $artifact = "Koord_${KoordVersion}.msixupload"
 
     Write-Output "Copying artifact to ${artifact}"
     # "deploy" is dir of MakeAppx output
 
     # make special dir for store upload
     New-Item -Path  ".\publish" -ItemType Directory
-    # Copy-Item .msix artifact to publish/ dir
-    Copy-Item ".\deploy\Koord.msix" ".\publish\${artifact}"
+    # Copy-Item .msixupload artifact to publish/ dir
+    Copy-Item ".\deploy\Koord.msixupload" ".\publish\${artifact}"
 
-    Move-Item ".\deploy\Koord.msix" ".\deploy\${artifact}"
+    Move-Item ".\deploy\Koord.msixupload" ".\deploy\${artifact}"
     if ( !$? )
     {
         throw "Move-Item failed with exit code $LastExitCode"

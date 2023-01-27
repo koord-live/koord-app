@@ -377,3 +377,6 @@ bool GetNumericArgument ( int     argc,
                           double& rValue );
 
 bool event (QEvent *event);
+
+// flagfile for check-update function
+bool bStoreInstallation;

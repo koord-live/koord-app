@@ -59,6 +59,8 @@ cp -v src/webview.qml appdir_gui
 # ... we have to include the libs that libnss is packaged with eg softokn, - otherwise app crashes
 mkdir -p appdir_gui/usr/lib/
 cp -r /usr/lib/x86_64-linux-gnu/nss appdir_gui/usr/lib/
+# add flagfile for check-update
+touch appdir_gui/nonstore_donotdelete.txt
 # include libssl v1, we need to ship to stop breakage on systems expecting v3
 linuxdeploy --desktop-file linux/koordrt.desktop \
             --icon-file linux/koordrt.png \

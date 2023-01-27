@@ -308,12 +308,9 @@ Function BuildApp
     Move-Item -Path "$RootPath\KoordASIO\src\out\install\x64-Release\bin\portaudio.dll" -Destination "$DeployPath\$BuildArch" -Force
     Move-Item -Path "$RootPath\KoordASIO\src\out\install\x64-Release\bin\PortAudioDevices.exe" -Destination "$DeployPath\$BuildArch" -Force
     Move-Item -Path "$RootPath\KoordASIO\src\out\install\x64-Release\bin\sndfile.dll" -Destination "$DeployPath\$BuildArch" -Force
-    # # add openssl 1.1.x libs
-    # Copy-Item -Path "$QtPath\Tools\OpenSSL\Win_x64\bin\libssl-1_1-x64.dll" -Destination "$DeployPath\$BuildArch" -Force
-    # Copy-Item -Path "$QtPath\Tools\OpenSSL\Win_x64\bin\libcrypto-1_1-x64.dll" -Destination "$DeployPath\$BuildArch" -Force
-    # #FIXME - copy or make symlinks? or just single file without x64 suffix?
-    # Copy-Item -Path "$DeployPath\$BuildArch\libssl-1_1-x64.dll" -Destination "$DeployPath\$BuildArch\libssl-1_1.dll" -Force
-    # Copy-Item -Path "$DeployPath\$BuildArch\libcrypto-1_1-x64.dll" -Destination "$DeployPath\$BuildArch\libcrypto-1_1.dll" -Force
+    
+    # Add update-checker flagfile - for non-appstore version
+    ＄null > "$DeployPath\$BuildArch\nonstore_donotdelete.txt"
 
     # move InnoSetup script to deploy dir
     Move-Item -Path "$WindowsPath\kdinstaller.iss" -Destination "$RootPath" -Force
@@ -352,6 +349,7 @@ Function BuildInstaller
 # Build MSIX / MSIX Package
 Function BuildMsixPackage
 {
+    Set-Location -Path "$RootPath"
 
     # make sure we have valid app package manifest file named AppxManifest.xml in the content dir
     Copy-Item -Path "${WindowsPath}\AppxManifest.xml" -Destination "${DeployPath}\x86_64\"
@@ -359,16 +357,19 @@ Function BuildMsixPackage
     Copy-Item -Path "${RootPath}\src\res\main-ico-1024.png" -Destination "${DeployPath}\x86_64\mainicon.png"
     Copy-Item -Path "${RootPath}\windows\StoreAssets\*" -Destination "${DeployPath}\x86_64\"
 
+    # remove the non-appstore flagfile for update checker - updates happen in appstore
+    Remove-Item "${DeployPath}\x86_64\nonstore_donotdelete.txt" -Force
+
     Invoke-Native-Command -Command "MakeAppx" `
         -Arguments ("pack", "/nv", "/d", "${DeployPath}\x86_64\", `
         "/p", "${DeployPath}\Koord.msix")
 
-    ## Make app package upload
-    # mkdir bundle
-    # cp Koord.msix bundle/
-    # cd bundle
-    # zip * somearchivename.zip
-    # mv somearchivename.zip somearchivename.msixupload
+    ## Make msixupload file (smaller DL for users)
+    New-Item -ItemType Directory -Name "$RootPath\bundle"
+    Copy-Item -Path "${DeployPath}\Koord.msix" -Destination ".\bundle\Koord.msix" 
+    Set-Location -Path "$RootPath\bundle"
+    & 'C:\Program Files\7-Zip\7z' a -tzip Koord.msix.zip *
+    Move-Item -Path ".\Koord.msix.zip" -Destination "${DeployPath}\Koord.msixupload" -Force
 
 }
 
