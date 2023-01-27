@@ -365,10 +365,10 @@ Function BuildMsixPackage
         "/p", "${DeployPath}\Koord.msix")
 
     ## Make msixupload file (smaller DL for users)
-    New-Item -ItemType Directory -Name "$RootPath\bundle"
+    New-Item -ItemType Directory -Name "${RootPath}\bundle"
     Copy-Item -Path "${DeployPath}\Koord.msix" -Destination ".\bundle\Koord.msix" 
-    Set-Location -Path "$RootPath\bundle"
-    & 'C:\Program Files\7-Zip\7z' a -tzip Koord.msix.zip *
+    Set-Location -Path "${RootPath}\bundle"
+    7z a -tzip Koord.msix.zip *
     Move-Item -Path ".\Koord.msix.zip" -Destination "${DeployPath}\Koord.msixupload" -Force
 
 }
