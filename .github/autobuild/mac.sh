@@ -57,10 +57,6 @@ setup() {
         # patch -u ${GITHUB_WORKSPACE}/singleapplication/singleapplication_p.cpp \
         #     -i ${GITHUB_WORKSPACE}/mac/macOS_posix.patch
 
-        ###################################
-        ## Install other deps eg OpenSSL
-        ###################################
-        # brew install openssl@1.1 # 1.1 already installed !
     fi
 }
 
