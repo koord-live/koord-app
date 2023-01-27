@@ -1253,17 +1253,11 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     // check for existence of INSTALL_DIR/nonstore_donotdelete.txt
 
     // check for existence of update-checker flagfile - to NOT use in stores (Apple in particular doesn't like)
-    QString check_file_path = QApplication::applicationDirPath() +  "/nonstore_donotdelete.txt";
-    qInfo() << "CHECKFILEPATH: " << check_file_path;
-    QFileInfo check_file(check_file_path);
-    if (!check_file.exists()) {
-        qInfo() << "FILESYSPATH: " << check_file.filesystemAbsoluteFilePath();
-    }
+//    QString check_file_path = QApplication::applicationDirPath() +  "/nonstore_donotdelete.txt";
+    QFileInfo check_file(QApplication::applicationDirPath() +  "/nonstore_donotdelete.txt");
     if (check_file.exists() && check_file.isFile()) {
         OnCheckForUpdate();
     }
-    qInfo() << "CHECK FILE: " << check_file.path();
-    qInfo() << "INSTPATH: " << QApplication::applicationDirPath();
 
     // Send the request to two servers for redundancy if either or both of them
     // has a higher release version number, the reply will trigger the notification.
@@ -2169,7 +2163,6 @@ void CClientDlg::OnCheckForUpdate()
     // connect reply pointer with callback for finished signal
     QObject::connect(reply, &QNetworkReply::finished, this, [=]()
         {
-
             // DL installer URL to download if required
             QString new_download_url;
             QString err = reply->errorString();
@@ -2225,23 +2218,10 @@ void CClientDlg::OnCheckForUpdate()
                                         }
                                     }
                                 }
-//                                foreach(const QString &key, DLObj.keys()) {
-//                                    qInfo() << DLObj.value(key);
-//                                }
-//                                foreach(const QJsonValue &val, releaseObj.find("assets")) {
-//                                    qInfo() << val.toObject().value("host").toString();
-//                                }
-
-//                                downloadLinkButton->setVisible(true);
-//                                QToolTip::showText( checkUpdateButton->mapToGlobal( QPoint( 0, 0 ) ), "Update Available!" );
-//                                downloadLinkButton->setText(QString("Download Version %1").arg(latestVersion));
                                 QMessageBox updateMessage = QMessageBox(this);
-//                                updateMessage.setDetailedText(QString("You need to update to %1").arg(latestVersion));
                                 updateMessage.setText(QString("There is an update available! Version: %1").arg(latestVersion));
-                                updateMessage.setInformativeText(QString("It's really important to stay up to date "
-                                                                         "for performance and security reasons! :)"));
-//                                updateMessage.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-//                                updateMessage.addButton("Ok Let's Download!", QMessageBox::Ok);
+                                updateMessage.setInformativeText(QString("It's highly recommended to stay up to date "
+                                                                         "with all the fixes and enhancements. Shall we get the update?"));
                                 QAbstractButton *dlButton = updateMessage.addButton(QString("Download Update"), QMessageBox::AcceptRole);
                                 QAbstractButton *cancelButton = updateMessage.addButton(QString("Later"), QMessageBox::RejectRole);
                                 updateMessage.setDefaultButton(QMessageBox::Ok);
@@ -2261,7 +2241,7 @@ void CClientDlg::OnCheckForUpdate()
                     }
                 }
             }
-            QToolTip::showText( checkUpdateButton->mapToGlobal( QPoint( 0, 0 ) ), "No Update Found" );
+//            QToolTip::showText( checkUpdateButton->mapToGlobal( QPoint( 0, 0 ) ), "No Update Found" );
         });
 
 }
