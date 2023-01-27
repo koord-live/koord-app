@@ -2205,11 +2205,11 @@ void CClientDlg::OnCheckForUpdate()
                                             QString dl_url = dlObject.value(dlkey).toString();
 #if defined( Q_OS_MACOS ) && defined ( MAC_LEGACY )
                                             if (dl_url.endsWith("legacy.dmg")) new_download_url = dl_url;
-#elif defined( Q_OS_MACOS ) && defined ( MAC_LEGACY )
+#elif defined( Q_OS_MACOS ) && !defined ( MAC_LEGACY )
                                             if (dl_url.endsWith(".dmg")) new_download_url = dl_url;
-#elif defined ( _WIN32 )
+#elif defined ( Q_OS_WINDOWS )
                                             if (dl_url.endsWith(".exe")) new_download_url = dl_url;
-#elif defined ( LINUX )
+#elif defined ( Q_OS_LINUX )
                                             if (dl_url.endsWith(".AppImage")) new_download_url = dl_url;
 #endif
                                         }
