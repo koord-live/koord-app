@@ -201,7 +201,7 @@ build_app_package()
     echo ">>> Doing macdeployqt for notarization ..."
 
     # Insert flagfile for update-checker (non-appstore versions)
-    touch "${build_path}/${client_target_name}.app/Contents/nonstore_donotdelete.txt"
+    touch "${build_path}/${client_target_name}.app/Contents/MacOS/nonstore_donotdelete.txt"
 
     # Note: "-appstore-compliant" does NOT do any sandbox-enforcing or anything
     # it just skips certain plugins/modules - useful to not include all of WebEngine!
