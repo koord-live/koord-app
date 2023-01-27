@@ -1251,6 +1251,10 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     // chance and the update check is not time-critical at all)
     CHostAddress UpdateServerHostAddress;
 
+    // do Koord version check - non-appstore versions only
+    // check for existence of INSTALL_DIR/nonstore_donotdelete.txt
+    OnCheckForUpdate();
+
     // Send the request to two servers for redundancy if either or both of them
     // has a higher release version number, the reply will trigger the notification.
 
@@ -2155,6 +2159,9 @@ void CClientDlg::OnCheckForUpdate()
     // connect reply pointer with callback for finished signal
     QObject::connect(reply, &QNetworkReply::finished, this, [=]()
         {
+
+            // DL installer URL to download if required
+            QString new_download_url;
             QString err = reply->errorString();
             QString contents = QString::fromUtf8(reply->readAll());
             if ( reply->error() != QNetworkReply::NoError)
@@ -2168,12 +2175,12 @@ void CClientDlg::OnCheckForUpdate()
             QJsonArray jsonArray = jsonResponse.array();
 
             for (int jsIndex = 0; jsIndex < jsonArray.size(); ++jsIndex) {
-                QJsonObject jsObject = jsonArray[jsIndex].toObject();
-                foreach(const QString& key, jsObject.keys()) {
+                QJsonObject releaseObj = jsonArray[jsIndex].toObject();
+                foreach(const QString& key, releaseObj.keys()) {
                     if ( key == "tag_name")
                     {
-                        QJsonValue value = jsObject.value(key);
-                        //qInfo() << "Key = " << key << ", Value = " << value.toString();
+                        QJsonValue value = releaseObj.value(key);
+                        qInfo() << "Key = " << key << ", Value = " << value.toString();
                         QRegularExpression rx_release("^r[0-9]+_[0-9]+_[0-9]+$");
                         QRegularExpressionMatch rel_match = rx_release.match(value.toString());
                         if (rel_match.hasMatch()) {
@@ -2182,15 +2189,64 @@ void CClientDlg::OnCheckForUpdate()
                                                        .replace("_", ".");
                             if ( APP_VERSION == latestVersion )
                             {
-                                //qInfo() << "WE HAVE A MATCH - no update necessary";
+                                qInfo() << "WE HAVE A MATCH - no update necessary";
                                 QToolTip::showText( checkUpdateButton->mapToGlobal( QPoint( 0, 0 ) ), "Up to date!" );
                             }
                             else
                             {
-                                //qInfo() << "Later version available: " << latestVersion;
-                                downloadLinkButton->setVisible(true);
-                                QToolTip::showText( checkUpdateButton->mapToGlobal( QPoint( 0, 0 ) ), "Update Available!" );
-                                downloadLinkButton->setText(QString("Download Version %1").arg(latestVersion));
+                                qInfo() << "Later version available: " << latestVersion;
+                                // get download URL
+                                QJsonArray DLArray = releaseObj.value("assets").toArray();
+                                qInfo() << DLArray.size();
+                                for (int dlIndex = 0; dlIndex < DLArray.size(); ++dlIndex) {
+                                    QJsonObject dlObject =  DLArray[dlIndex].toObject();
+                                    foreach(const QString& dlkey, dlObject.keys()) {
+                                        if ( dlkey == "browser_download_url") {
+                                            QString dl_url = dlObject.value(dlkey).toString();
+#if defined( Q_OS_MACOS ) && defined ( MAC_LEGACY )
+                                            if (dl_url.endsWith("legacy.dmg")) new_download_url = dl_url;
+#elif defined( Q_OS_MACOS ) && defined ( MAC_LEGACY )
+                                            if (dl_url.endsWith(".dmg")) new_download_url = dl_url;
+#elif defined ( _WIN32 )
+                                            if (dl_url.endsWith(".exe")) new_download_url = dl_url;
+#elif defined ( LINUX )
+                                            if (dl_url.endsWith(".AppImage")) new_download_url = dl_url;
+#endif
+                                        }
+                                    }
+                                }
+//                                foreach(const QString &key, DLObj.keys()) {
+//                                    qInfo() << DLObj.value(key);
+//                                }
+//                                foreach(const QJsonValue &val, releaseObj.find("assets")) {
+//                                    qInfo() << val.toObject().value("host").toString();
+//                                }
+
+//                                downloadLinkButton->setVisible(true);
+//                                QToolTip::showText( checkUpdateButton->mapToGlobal( QPoint( 0, 0 ) ), "Update Available!" );
+//                                downloadLinkButton->setText(QString("Download Version %1").arg(latestVersion));
+                                QMessageBox updateMessage = QMessageBox(this);
+//                                updateMessage.setDetailedText(QString("You need to update to %1").arg(latestVersion));
+                                updateMessage.setText(QString("There is an update available! Version: %1").arg(latestVersion));
+                                updateMessage.setInformativeText(QString("It's really important to stay up to date "
+                                                                         "for performance and security reasons! :)"));
+                                updateMessage.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+                                updateMessage.setDefaultButton(QMessageBox::Ok);
+                                updateMessage.setButtonText(1, QString("Download"));
+                                int ret = updateMessage.exec();
+                                switch (ret) {
+                                  case QMessageBox::Ok:
+                                      // Ok was clicked, download the URL
+                                      QDesktopServices::openUrl(QUrl(new_download_url, QUrl::TolerantMode));
+                                      break;
+                                  case QMessageBox::Cancel:
+                                      // Cancel was clicked
+                                      break;
+                                  default:
+                                      // should never be reached
+                                      break;
+                                }
+
                             };
                             // IF we have a match, then that is the latest version
                             // Github returns array with latest releases at start of index
