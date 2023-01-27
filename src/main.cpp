@@ -1030,14 +1030,6 @@ int main ( int argc, char** argv )
             CClientSettings Settings ( &Client, strIniFileName );
             Settings.Load ( CommandLineOptions );
 
-            // check for existence of update-checker flagfile - to NOT use in stores (Apple in particular doesn't like)
-            QFileInfo check_file(QApplication::applicationDirPath() + "/nonstore_donotdelete.txt");
-            if (check_file.exists() && check_file.isFile()) {
-                bStoreInstallation = true;
-            } else {
-                bStoreInstallation = false;
-            }
-
             // load translation
             if ( bUseGUI && bUseTranslation )
             {

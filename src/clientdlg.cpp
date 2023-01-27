@@ -1251,8 +1251,19 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
     // do Koord version check - non-appstore versions only
     // check for existence of INSTALL_DIR/nonstore_donotdelete.txt
-    if (!bStoreInstallation)
+
+    // check for existence of update-checker flagfile - to NOT use in stores (Apple in particular doesn't like)
+    QString check_file_path = QApplication::applicationDirPath() +  "/nonstore_donotdelete.txt";
+    qInfo() << "CHECKFILEPATH: " << check_file_path;
+    QFileInfo check_file(check_file_path);
+    if (!check_file.exists()) {
+        qInfo() << "FILESYSPATH: " << check_file.filesystemAbsoluteFilePath();
+    }
+    if (check_file.exists() && check_file.isFile()) {
         OnCheckForUpdate();
+    }
+    qInfo() << "CHECK FILE: " << check_file.path();
+    qInfo() << "INSTPATH: " << QApplication::applicationDirPath();
 
     // Send the request to two servers for redundancy if either or both of them
     // has a higher release version number, the reply will trigger the notification.
@@ -2229,21 +2240,16 @@ void CClientDlg::OnCheckForUpdate()
                                 updateMessage.setText(QString("There is an update available! Version: %1").arg(latestVersion));
                                 updateMessage.setInformativeText(QString("It's really important to stay up to date "
                                                                          "for performance and security reasons! :)"));
-                                updateMessage.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+//                                updateMessage.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+//                                updateMessage.addButton("Ok Let's Download!", QMessageBox::Ok);
+                                QAbstractButton *dlButton = updateMessage.addButton(QString("Download Update"), QMessageBox::AcceptRole);
+                                QAbstractButton *cancelButton = updateMessage.addButton(QString("Later"), QMessageBox::RejectRole);
                                 updateMessage.setDefaultButton(QMessageBox::Ok);
-                                updateMessage.setButtonText(1, QString("Download"));
-                                int ret = updateMessage.exec();
-                                switch (ret) {
-                                  case QMessageBox::Ok:
-                                      // Ok was clicked, download the URL
-                                      QDesktopServices::openUrl(QUrl(new_download_url, QUrl::TolerantMode));
-                                      break;
-                                  case QMessageBox::Cancel:
-                                      // Cancel was clicked
-                                      break;
-                                  default:
-                                      // should never be reached
-                                      break;
+                                updateMessage.exec();
+                                if (updateMessage.clickedButton() == dlButton) {
+                                    QDesktopServices::openUrl(QUrl(new_download_url, QUrl::TolerantMode));
+                                } else if (updateMessage.clickedButton() == cancelButton) {
+                                    return;
                                 }
 
                             };
