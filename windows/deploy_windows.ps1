@@ -389,7 +389,7 @@ Function SignExe
         "/p", $WindowsOVCertPwd, `
         "/tr", "http://timestamp.sectigo.com", `
         "/td", "SHA256", "/fd", "SHA256", `
-        "Output\Koord-$APP_BUILD_VERSION.exe" )
+        "Output\Koord-${APP_BUILD_VERSION}.exe" )
 }
 
 
