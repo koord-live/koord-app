@@ -59,6 +59,9 @@ Function installQt
     # add vcredist and cmake - for Koord build
     aqt install-tool windows desktop --outputdir C:\Qt tools_vcredist qt.tools.vcredist_msvc2019_x64
     aqt install-tool windows desktop --outputdir C:\Qt tools_cmake qt.tools.cmake
+
+    # # add openssl 1.1
+    # aqt install-tool windows desktop --outputdir C:\Qt tools_openssl_x64
 }
 
 Function ensureQt
@@ -95,8 +98,8 @@ Function setupCodeSignCertificate
     $WindowsOVCert = [Convert]::FromBase64String($B64Cert)
     [IO.File]::WriteAllBytes('C:\KoordOVCert.pfx', $WindowsOVCert)
     ls 'C:\KoordOVCert.pfx'
-    # Write-Output "debug: CodeSign cert :"
-    # cat 'C:\KoordOVCert.pfx'
+    Write-Output "debug: CodeSign cert :"
+    cat 'C:\KoordOVCert.pfx'
 
     # write Windows OV CodeSIgn cert password to file
     Write-Output "Writing CodeSign password to C:\KoordOVCertPwd ..."
@@ -104,8 +107,8 @@ Function setupCodeSignCertificate
     # New-Item 'C:\KoordOVCertPwd'
     # Set-Content 'C:\KoordOVCertPwd' $Env:WINDOWS_CODESIGN_PWD
     ls 'C:\KoordOVCertPwd'
-    # Write-Output "debug: CodeSign password :"
-    # cat 'C:\KoordOVCertPwd'
+    Write-Output "debug: CodeSign password :"
+    cat 'C:\KoordOVCertPwd'
 }
 
 Function buildAppWithInstaller
@@ -141,17 +144,17 @@ Function passExeArtifactToJob
 
 Function passMsixArtifactToJob
 {
-    $artifact = "Koord_${KoordVersion}.msixupload"
+    $artifact = "Koord_${KoordVersion}.msix"
 
     Write-Output "Copying artifact to ${artifact}"
     # "deploy" is dir of MakeAppx output
 
     # make special dir for store upload
     New-Item -Path  ".\publish" -ItemType Directory
-    # Copy-Item .msixupload artifact to publish/ dir
-    Copy-Item ".\deploy\Koord.msixupload" ".\publish\${artifact}"
+    # Copy-Item .msix artifact to publish/ dir
+    Copy-Item ".\deploy\Koord.msix" ".\publish\${artifact}"
 
-    Move-Item ".\deploy\Koord.msixupload" ".\deploy\${artifact}"
+    Move-Item ".\deploy\Koord.msix" ".\deploy\${artifact}"
     if ( !$? )
     {
         throw "Move-Item failed with exit code $LastExitCode"
