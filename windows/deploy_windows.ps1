@@ -315,6 +315,9 @@ Function BuildApp
     # Copy-Item -Path "$DeployPath\$BuildArch\libssl-1_1-x64.dll" -Destination "$DeployPath\$BuildArch\libssl-1_1.dll" -Force
     # Copy-Item -Path "$DeployPath\$BuildArch\libcrypto-1_1-x64.dll" -Destination "$DeployPath\$BuildArch\libcrypto-1_1.dll" -Force
 
+    # make flagfile for update checker
+    $null > "$DeployPath\$BuildArch\nonstore_donotdelete.txt"
+
     # move InnoSetup script to deploy dir
     Move-Item -Path "$WindowsPath\kdinstaller.iss" -Destination "$RootPath" -Force
 
@@ -353,23 +356,30 @@ Function BuildInstaller
 Function BuildMsixPackage
 {
 
+    Set-Location -Path "$RootPath"
+
     # make sure we have valid app package manifest file named AppxManifest.xml in the content dir
     Copy-Item -Path "${WindowsPath}\AppxManifest.xml" -Destination "${DeployPath}\x86_64\"
     # copy in images
     Copy-Item -Path "${RootPath}\src\res\main-ico-1024.png" -Destination "${DeployPath}\x86_64\mainicon.png"
     Copy-Item -Path "${RootPath}\windows\StoreAssets\*" -Destination "${DeployPath}\x86_64\"
 
+    # remove the non-appstore flagfile for update checker - updates happen in appstore
+    Remove-Item "${DeployPath}\x86_64\nonstore_donotdelete.txt" -Force
+
     Invoke-Native-Command -Command "MakeAppx" `
         -Arguments ("pack", "/nv", "/d", "${DeployPath}\x86_64\", `
         "/p", "${DeployPath}\Koord.msix")
 
-    ## Make app package upload
-    # mkdir bundle
-    # cp Koord.msix bundle/
-    # cd bundle
-    # zip * somearchivename.zip
-    # mv somearchivename.zip somearchivename.msixupload
-
+    ## Make msixupload file (smaller DL for users)
+    New-Item -ItemType Directory -Name "${RootPath}\bundle"
+    Copy-Item -Path "${DeployPath}\Koord.msix" -Destination ".\bundle\Koord.msix" 
+    Set-Location -Path "${RootPath}\bundle"
+    Write-Output "Listing the contents of the bundle dir ..."
+    Get-ChildItem *
+    7z a -tzip Koord.msix.zip *
+    Move-Item -Path ".\Koord.msix.zip" -Destination "${DeployPath}\Koord.msixupload" -Force
+    
 }
 
 Function SignExe
@@ -386,7 +396,7 @@ Function SignExe
         "/p", $WindowsOVCertPwd, `
         "/tr", "http://timestamp.sectigo.com", `
         "/td", "SHA256", "/fd", "SHA256", `
-        "Output\Koord-$APP_BUILD_VERSION.exe" )
+        "Output\Koord-${APP_BUILD_VERSION}.exe" )
 }
 
 # Function SignMsix
