@@ -368,6 +368,8 @@ Function BuildMsixPackage
     New-Item -ItemType Directory -Name "${RootPath}\bundle"
     Copy-Item -Path "${DeployPath}\Koord.msix" -Destination ".\bundle\Koord.msix" 
     Set-Location -Path "${RootPath}\bundle"
+    Write-Output "Listing the contents of the bundle dir ..."
+    Get-ChildItem *
     7z a -tzip Koord.msix.zip *
     Move-Item -Path ".\Koord.msix.zip" -Destination "${DeployPath}\Koord.msixupload" -Force
 
@@ -390,14 +392,6 @@ Function SignExe
         "Output\Koord-$APP_BUILD_VERSION.exe" )
 }
 
-# Function SignMsix
-# {
-#     Invoke-Native-Command -Command "SignTool" `
-#         -Arguments ("sign", "/a", "/f", "C:\KoordOVCert.pfx", `
-#         "/p", "passwordhere", `
-#         "/fd", "SHA256", `
-#         "${DeployPath}\Koord.msix")
-# }
 
 Clean-Build-Environment
 Install-Dependencies
@@ -405,4 +399,3 @@ BuildAppVariants
 BuildInstaller -BuildOption $BuildOption
 SignExe
 BuildMsixPackage
-#SignMsix
