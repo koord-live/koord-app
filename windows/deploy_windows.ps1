@@ -371,14 +371,14 @@ Function BuildMsixPackage
         -Arguments ("pack", "/nv", "/d", "${DeployPath}\x86_64\", `
         "/p", "${DeployPath}\Koord.msix")
 
-    ## Make msixupload file (smaller DL for users)
-    New-Item -ItemType Directory -Path "${RootPath}" -Name "bundle"
-    Copy-Item -Path "${DeployPath}\Koord.msix" -Destination "${RootPath}\bundle\Koord.msix" 
-    Set-Location -Path "${RootPath}\bundle"
-    Write-Output "Listing the contents of the bundle dir ..."
-    Get-ChildItem *
-    7z a -tzip Koord.msix.zip *
-    Move-Item -Path ".\Koord.msix.zip" -Destination "${DeployPath}\Koord.msixupload" -Force
+    # ## Make msixupload file (smaller DL for users)
+    # New-Item -ItemType Directory -Path "${RootPath}" -Name "bundle"
+    # Copy-Item -Path "${DeployPath}\Koord.msix" -Destination "${RootPath}\bundle\Koord.msix" 
+    # Set-Location -Path "${RootPath}\bundle"
+    # Write-Output "Listing the contents of the bundle dir ..."
+    # Get-ChildItem *
+    # 7z a -tzip Koord.msix.zip *
+    # Move-Item -Path ".\Koord.msix.zip" -Destination "${DeployPath}\Koord.msixupload" -Force
     
 }
 
