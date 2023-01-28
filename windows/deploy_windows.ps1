@@ -383,13 +383,15 @@ Function SignExe
     (Get-Command SignTool).Path
     
     $WindowsOVCertPwd = Get-Content "C:\KoordOVCertPwd" 
+    SignTool sign /f C:\KoordOVCert.pfx /p ${WindowsOVCertPwd} /tr http://timestamp.sectigo.com `
+        /td SHA256 /fd SHA256 Output\Koord-${APP_BUILD_VERSION}.exe
 
-    Invoke-Native-Command -Command "SignTool" `
-        -Arguments ("sign", "/f", "C:\KoordOVCert.pfx", `
-        "/p", $WindowsOVCertPwd, `
-        "/tr", "http://timestamp.sectigo.com", `
-        "/td", "SHA256", "/fd", "SHA256", `
-        "Output\Koord-${APP_BUILD_VERSION}.exe" )
+    # Invoke-Native-Command -Command "SignTool" `
+    #     -Arguments ("sign", "/f", "C:\KoordOVCert.pfx", `
+    #     "/p", $WindowsOVCertPwd, `
+    #     "/tr", "http://timestamp.sectigo.com", `
+    #     "/td", "SHA256", "/fd", "SHA256", `
+    #     "Output\Koord-${APP_BUILD_VERSION}.exe" )
 }
 
 
