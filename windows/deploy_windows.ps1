@@ -372,8 +372,8 @@ Function BuildMsixPackage
         "/p", "${DeployPath}\Koord.msix")
 
     ## Make msixupload file (smaller DL for users)
-    New-Item -ItemType Directory -Name "${RootPath}\bundle"
-    Copy-Item -Path "${DeployPath}\Koord.msix" -Destination ".\bundle\Koord.msix" 
+    New-Item -ItemType Directory -Path "${RootPath}" -Name "bundle"
+    Copy-Item -Path "${DeployPath}\Koord.msix" -Destination "${RootPath}\bundle\Koord.msix" 
     Set-Location -Path "${RootPath}\bundle"
     Write-Output "Listing the contents of the bundle dir ..."
     Get-ChildItem *
