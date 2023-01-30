@@ -38,6 +38,17 @@
       </uap:VisualElements>
     </Application>
   </Applications>
+  <Extensions>
+    <com:Extension Category="windows.comInterface">
+      <com:ComInterface>
+        <com:TypeLib Id="42dcba0a-ba58-4ba7-918f-d34a121f9e8d">
+          <com:Version VersionNumber="2.1" >
+            <com:Win64Path Path="KoordASIO.dll" />
+          </com:Version>
+        </com:TypeLib>
+      </com:ComInterface>
+    </com:Extension>
+  </Extensions>
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
