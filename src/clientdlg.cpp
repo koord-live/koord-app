@@ -2222,9 +2222,9 @@ void CClientDlg::OnCheckForUpdate()
                                 updateMessage.setText(QString("There is an update available! Version: %1").arg(latestVersion));
                                 updateMessage.setInformativeText(QString("It's highly recommended to stay up to date "
                                                                          "with all the fixes and enhancements. Shall we get the update?"));
-                                QAbstractButton *dlButton = updateMessage.addButton(QString("Download Update"), QMessageBox::AcceptRole);
-                                QAbstractButton *cancelButton = updateMessage.addButton(QString("Later"), QMessageBox::RejectRole);
-                                updateMessage.setDefaultButton(QMessageBox::Ok);
+                                QPushButton *dlButton = updateMessage.addButton(QString("Download Update"), QMessageBox::AcceptRole);
+                                QPushButton *cancelButton = updateMessage.addButton(QString("Later"), QMessageBox::RejectRole);
+                                updateMessage.setDefaultButton(dlButton);
                                 updateMessage.exec();
                                 if (updateMessage.clickedButton() == dlButton) {
                                     QDesktopServices::openUrl(QUrl(new_download_url, QUrl::TolerantMode));
