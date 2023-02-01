@@ -52,7 +52,7 @@ jobs:
     runs-on:                        ubuntu-20.04
     outputs:
       publish_to_release:           ${{ steps.get-build-vars.outputs.PUBLISH_TO_RELEASE }}
-      upload_url:                   ${{ steps.create-release.outputs.upload_url }}
+      # upload_url:                   ${{ steps.create-release.outputs.upload_url }}
       build_version:                ${{ steps.get-build-vars.outputs.BUILD_VERSION }}
       build_all_targets:            ${{ steps.decide-build-targets.outputs.build_all_targets }}
       pre_release:                  ${{ steps.get-build-vars.outputs.IS_PRERELEASE }}
@@ -81,19 +81,19 @@ jobs:
         env:
           GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
 
-      - name:                       Create Release ${{steps.get-build-vars.outputs.RELEASE_TAG}}  ${{steps.get-build-vars.outputs.RELEASE_TITLE}}
-        if:                         steps.get-build-vars.outputs.PUBLISH_TO_RELEASE == 'true'
-        id:                         create-release
-        # uses:                       actions/create-release@v1
-        uses:                       softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name:                 ${{ steps.get-build-vars.outputs.RELEASE_TAG }}
-          name:                     ${{ steps.get-build-vars.outputs.RELEASE_TITLE }}
-          # body_path:                ${{ env.release_changelog_path }}
-          prerelease:               ${{ steps.get-build-vars.outputs.IS_PRERELEASE }}
-          draft:                    false
+      # - name:                       Create Release ${{steps.get-build-vars.outputs.RELEASE_TAG}}  ${{steps.get-build-vars.outputs.RELEASE_TITLE}}
+      #   if:                         steps.get-build-vars.outputs.PUBLISH_TO_RELEASE == 'true'
+      #   id:                         create-release
+      #   # uses:                       actions/create-release@v1
+      #   uses:                       softprops/action-gh-release@v1
+      #   env:
+      #     GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name:                 ${{ steps.get-build-vars.outputs.RELEASE_TAG }}
+      #     name:                     ${{ steps.get-build-vars.outputs.RELEASE_TITLE }}
+      #     # body_path:                ${{ env.release_changelog_path }}
+      #     prerelease:               ${{ steps.get-build-vars.outputs.IS_PRERELEASE }}
+      #     draft:                    false
 
       - name:                       Decide which targets to build for
         id:                         decide-build-targets
@@ -397,40 +397,75 @@ jobs:
       ## - Windows exe (unsigned!)
       ## - Linux AppImage - direct DL only until AppImageHub drops requirement on Ubuntu 18.04 glibc<2.31
       ## Step: release artifact1 only to release, just for dmg,exe,appimage
-      - name:                       Upload Artifact 1 to Release
-        # Every build job has at least one artifact. Therefore, no `if artifact_1` condition here.
-        # If the artifact is missing, this should fail.
+      
+      # - name:                       Upload Artifact 1 to Release
+      #   # Every build job has at least one artifact. Therefore, no `if artifact_1` condition here.
+      #   # If the artifact is missing, this should fail.
+      #   if:                         >-
+      #                               needs.create_release.outputs.publish_to_release == 'true' &&
+      #                               (matrix.config.target_os == 'macos' || 
+      #                               matrix.config.target_os == 'windows' ||
+      #                               matrix.config.target_os == 'linux')
+      #   id:                         upload-release-asset1
+      #   uses:                       actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url:               ${{ needs.create_release.outputs.upload_url }}
+      #     asset_path:               deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
+      #     asset_name:               ${{ steps.get-artifacts.outputs.artifact_1 }}
+      #     asset_content_type:       application/octet-stream
+      - name:                       Create Release1 ${{steps.get-build-vars.outputs.RELEASE_TAG}}  ${{steps.get-build-vars.outputs.RELEASE_TITLE}}
         if:                         >-
                                     needs.create_release.outputs.publish_to_release == 'true' &&
                                     (matrix.config.target_os == 'macos' || 
                                     matrix.config.target_os == 'windows' ||
                                     matrix.config.target_os == 'linux')
-        id:                         upload-release-asset1
-        uses:                       actions/upload-release-asset@v1
+        id:                         create-release-n-upload1
+        uses:                       softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url:               ${{ needs.create_release.outputs.upload_url }}
-          asset_path:               deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
-          asset_name:               ${{ steps.get-artifacts.outputs.artifact_1 }}
-          asset_content_type:       application/octet-stream
+          tag_name:                 ${{ steps.get-build-vars.outputs.RELEASE_TAG }}
+          name:                     ${{ steps.get-build-vars.outputs.RELEASE_TITLE }}
+          # body_path:                ${{ env.release_changelog_path }}
+          prerelease:               ${{ steps.get-build-vars.outputs.IS_PRERELEASE }}
+          draft:                    false
+          files:                    deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
+
 
       ## In general, "Artifact 2" should be for Store upload only - do not put into Release
       ## ... but for now we need Windows msix as artifact for manual upload to Store :/
-      - name:                       Upload Artifact 2 to Release
+      # - name:                       Upload Artifact 2 to Release
+        # if:                         >-
+        #                             steps.get-artifacts.outputs.artifact_2 != '' &&
+        #                             matrix.config.target_os == 'windows' &&
+        #                             needs.create_release.outputs.publish_to_release == 'true'
+      #   id:                         upload-release-asset2
+      #   uses:                       actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url:               ${{ needs.create_release.outputs.upload_url }}
+      #     asset_path:               deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
+      #     asset_name:               ${{ steps.get-artifacts.outputs.artifact_2 }}
+      #     asset_content_type:       application/octet-stream
+      - name:                       Create Release2 ${{steps.get-build-vars.outputs.RELEASE_TAG}}  ${{steps.get-build-vars.outputs.RELEASE_TITLE}}
         if:                         >-
                                     steps.get-artifacts.outputs.artifact_2 != '' &&
                                     matrix.config.target_os == 'windows' &&
                                     needs.create_release.outputs.publish_to_release == 'true'
-        id:                         upload-release-asset2
-        uses:                       actions/upload-release-asset@v1
+        id:                         create-release-n-upload2
+        uses:                       softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url:               ${{ needs.create_release.outputs.upload_url }}
-          asset_path:               deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
-          asset_name:               ${{ steps.get-artifacts.outputs.artifact_2 }}
-          asset_content_type:       application/octet-stream
+          tag_name:                 ${{ steps.get-build-vars.outputs.RELEASE_TAG }}
+          name:                     ${{ steps.get-build-vars.outputs.RELEASE_TITLE }}
+          # body_path:                ${{ env.release_changelog_path }}
+          prerelease:               ${{ steps.get-build-vars.outputs.IS_PRERELEASE }}
+          draft:                    false
+          files:                    deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
 
       ## RELEASE PROCEDURE FOR:
       ## - macOS App Store - storesign pkg
