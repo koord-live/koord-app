@@ -74,7 +74,7 @@ jobs:
       - name:                       Remove release ${{steps.get-build-vars.outputs.RELEASE_TAG}}, if existing
         if:                         steps.get-build-vars.outputs.PUBLISH_TO_RELEASE == 'true'
         continue-on-error:          true
-        uses:                       dev-drprasad/delete-tag-and-release@v0.2.0
+        uses:                       dev-drprasad/delete-tag-and-release@master
         with:
           delete_release:           true
           tag_name:                 ${{ steps.get-build-vars.outputs.RELEASE_TAG }}
@@ -84,12 +84,13 @@ jobs:
       - name:                       Create Release ${{steps.get-build-vars.outputs.RELEASE_TAG}}  ${{steps.get-build-vars.outputs.RELEASE_TITLE}}
         if:                         steps.get-build-vars.outputs.PUBLISH_TO_RELEASE == 'true'
         id:                         create-release
-        uses:                       actions/create-release@v1
+        # uses:                       actions/create-release@v1
+        uses:                       softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN:             ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name:                 ${{ steps.get-build-vars.outputs.RELEASE_TAG }}
-          release_name:             ${{ steps.get-build-vars.outputs.RELEASE_TITLE }}
+          name:                     ${{ steps.get-build-vars.outputs.RELEASE_TITLE }}
           # body_path:                ${{ env.release_changelog_path }}
           prerelease:               ${{ steps.get-build-vars.outputs.IS_PRERELEASE }}
           draft:                    false
