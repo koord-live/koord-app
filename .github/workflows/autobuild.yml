@@ -55,6 +55,7 @@ jobs:
       upload_url:                   ${{ steps.create-release.outputs.upload_url }}
       build_version:                ${{ steps.get-build-vars.outputs.BUILD_VERSION }}
       build_all_targets:            ${{ steps.decide-build-targets.outputs.build_all_targets }}
+      pre_release:                  ${{ steps.get-build-vars.outputs.IS_PRERELEASE }}
     # env:
     #   release_changelog_path:       ./.github_release_changelog.md
 
@@ -73,7 +74,7 @@ jobs:
       - name:                       Remove release ${{steps.get-build-vars.outputs.RELEASE_TAG}}, if existing
         if:                         steps.get-build-vars.outputs.PUBLISH_TO_RELEASE == 'true'
         continue-on-error:          true
-        uses:                       dev-drprasad/delete-tag-and-release@085c6969f18bad0de1b9f3fe6692a3cd01f64fe5
+        uses:                       dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release:           true
           tag_name:                 ${{ steps.get-build-vars.outputs.RELEASE_TAG }}
@@ -288,7 +289,7 @@ jobs:
       - name:                       Set up build dependencies for ${{ matrix.config.config_name }}
         run:                        ${{ matrix.config.base_command }} setup
         env:
-          KOORD_BUILD_VERSION:    ${{ needs.create_release.outputs.build_version }}
+          KOORD_BUILD_VERSION:      ${{ needs.create_release.outputs.build_version }}
 
       - name:                       Initialize CodeQL
         if:                         matrix.config.run_codeql
@@ -343,12 +344,12 @@ jobs:
         id:                         get-artifacts
         run:                        ${{ matrix.config.base_command }} get-artifacts
         env:
-          KOORD_BUILD_VERSION:    ${{ needs.create_release.outputs.build_version }}
+          KOORD_BUILD_VERSION:      ${{ needs.create_release.outputs.build_version }}
 
       - name:                       Upload Artifact 1 to Job
         # builds such as iOS with signing produce no artifact to upload
         if:                         steps.get-artifacts.outputs.artifact_1
-        uses:                       actions/upload-artifact@v2
+        uses:                       actions/upload-artifact@v3
         with:
           name:                     ${{ steps.get-artifacts.outputs.artifact_1 }}
           path:                     deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
@@ -369,7 +370,9 @@ jobs:
                                     steps.build.outputs.macos_signed == 'true' &&
                                     needs.create_release.outputs.publish_to_release == 'true'
         id:                         notarize-macOS-app
-        uses:                       devbotsxyz/xcode-notarize@v1
+        # uses:                       devbotsxyz/xcode-notarize@v1
+        #Testing fork of main xcode-notarize with recent updates
+        uses:                       SmartBear/xcode-notarize@26f21422cd6d6a5e3952609119021ff9f7a63599
         with:
           product-path:             deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
           primary-bundle-id:        live.koord.Koord-RT
@@ -382,7 +385,9 @@ jobs:
                                     steps.build.outputs.macos_signed == 'true' &&
                                     needs.create_release.outputs.publish_to_release == 'true'
         id:                         staple-macOS-app
-        uses:                       devbotsxyz/xcode-staple@ae68b22ca35d15864b7f7923e1a166533b2944bf
+        # uses:                       devbotsxyz/xcode-staple@ae68b22ca35d15864b7f7923e1a166533b2944bf
+        #Testing fork of main xcode-staple with recent updates
+        uses:                       BoundfoxStudios/action-xcode-staple@cd6c16fb6a3dfb365203a41343926f81e813afad
         with:
           product-path:             deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
 
@@ -432,14 +437,14 @@ jobs:
         if:                         >-
                                     steps.build.outputs.macos_signed == 'true' &&
                                     needs.create_release.outputs.publish_to_release == 'true' &&
-                                    steps.get-build-vars.outputs.IS_PRERELEASE == 'false'
+                                    needs.create_release.outputs.pre_release == 'false'
         id:                         macos_validate_upload
         run:                        ${{ matrix.config.base_command }} validate_and_upload
         env:
           ARTIFACT_PATH:            deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
           NOTARIZATION_USERNAME:    ${{ secrets.NOTARIZATION_USERNAME }}
           NOTARIZATION_PASSWORD:    ${{ secrets.NOTARIZATION_PASSWORD }}
-          KOORD_BUILD_VERSION:    ${{ needs.create_release.outputs.build_version }}
+          KOORD_BUILD_VERSION:      ${{ needs.create_release.outputs.build_version }}
           APPLE_TEAM_ID:            "TXZ4FR95HG"
 
       ## RELEASE PROCEDURE FOR:
@@ -449,7 +454,7 @@ jobs:
         if:                         >-
                                     steps.build.outputs.ios_signed == 'true' &&
                                     needs.create_release.outputs.publish_to_release == 'true' &&
-                                    steps.get-build-vars.outputs.IS_PRERELEASE == 'false'
+                                    needs.create_release.outputs.pre_release == 'false'
         uses:                       yukiarrr/ios-build-action@v1.5.0
         with:
           project-path:             Koord.xcodeproj
@@ -466,13 +471,13 @@ jobs:
         if:                         >-
                                     steps.build.outputs.ios_signed == 'true' &&
                                     needs.create_release.outputs.publish_to_release == 'true' &&
-                                    steps.get-build-vars.outputs.IS_PRERELEASE == 'false'
+                                    needs.create_release.outputs.pre_release == 'false'
         run:                        ${{ matrix.config.base_command }} validate_and_upload
         env: 
           ARTIFACT_PATH:            build/Koord.ipa
           NOTARIZATION_USERNAME:    ${{ secrets.NOTARIZATION_USERNAME }}
           NOTARIZATION_PASSWORD:    ${{ secrets.NOTARIZATION_PASSWORD }}
-          KOORD_BUILD_VERSION:    ${{ needs.create_release.outputs.build_version }}
+          KOORD_BUILD_VERSION:      ${{ needs.create_release.outputs.build_version }}
 
       ## RELEASE PROCEDURE FOR:
       ## - Android Play Store - aab
@@ -481,9 +486,9 @@ jobs:
       ## - Google Cloud console -> IAM & Admin -> Service Accounts -> Create (Wizard). Then create JSON key and export/save
       - name:                       Publish all ABI Android builds to Play Store
         if:                         >-
-                                    needs.create_release.outputs.publish_to_release == 'true' &&
                                     matrix.config.target_os == 'android' &&
-                                    steps.get-build-vars.outputs.IS_PRERELEASE == 'false'
+                                    needs.create_release.outputs.publish_to_release == 'true' &&
+                                    needs.create_release.outputs.pre_release == 'false'
         id:                         publish_android
         uses:                       r0adkll/upload-google-play@v1
         with:
@@ -502,7 +507,7 @@ jobs:
       #   if:                         >-
       #                               needs.create_release.outputs.publish_to_release == 'true' &&
       #                               matrix.config.target_os == 'windows' &&
-      #                               steps.get-build-vars.outputs.IS_PRERELEASE == 'false'
+      #                               needs.create_release.outputs.pre_release == 'false'
       #   id:                         publish_windows
       #   uses:                       isaacrlevin/windows-store-action@1.0
       #   with:
