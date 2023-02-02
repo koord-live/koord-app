@@ -56,6 +56,8 @@ jobs:
       build_version:                ${{ steps.get-build-vars.outputs.BUILD_VERSION }}
       build_all_targets:            ${{ steps.decide-build-targets.outputs.build_all_targets }}
       pre_release:                  ${{ steps.get-build-vars.outputs.IS_PRERELEASE }}
+      release_title:                ${{steps.get-build-vars.outputs.RELEASE_TITLE}}
+      release_tag:                  ${{steps.get-build-vars.outputs.RELEASE_TAG}}
     # env:
     #   release_changelog_path:       ./.github_release_changelog.md
 
@@ -415,7 +417,7 @@ jobs:
       #     asset_path:               deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
       #     asset_name:               ${{ steps.get-artifacts.outputs.artifact_1 }}
       #     asset_content_type:       application/octet-stream
-      - name:                       Create Release1 ${{steps.get-build-vars.outputs.RELEASE_TAG}}  ${{steps.get-build-vars.outputs.RELEASE_TITLE}}
+      - name:                       Create Release1 ${{needs.create_release.outputs.release_tag}}  ${{needs.create_release.outputs.release_title}}
         if:                         >-
                                     needs.create_release.outputs.publish_to_release == 'true' &&
                                     (matrix.config.target_os == 'macos' || 
