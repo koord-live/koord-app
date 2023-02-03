@@ -3778,6 +3778,7 @@ void CClientDlg::UpdateDirectoryServerComboBox()
     }
 }
 
+#if defined ( Q_OS_WINDOWS )
 // for kdasio_builtin stuff
 void CClientDlg::kdasio_setup() {
     // init mmcpl proc
@@ -4061,5 +4062,6 @@ void CClientDlg::outputAudioSettClicked()
     mmcplProc = new QProcess(this);
     mmcplProc->start("control", QStringList() << outputAudioSettPath);
 }
-
+#endif
+// end Windows-only built-in asio config stuff
 

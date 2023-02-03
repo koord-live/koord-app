@@ -228,13 +228,8 @@ protected:
     bool         bShowAllMusicians;
 //    bool         bEnableIPv6;
 
-    // for Windows KoordASIO stuff
-//    QString fullpath = QDir::homePath() + "/.KoordASIO.toml";
-
-    // for urlhandler
-//    UrlHandler* url_handler;
-
-    // for built-in ASIO
+// for Windows builtin kdasio stuff
+#if defined( Q_OS_WINDOWS )
     QAudioDevice m_inputDeviceInfo;
     QAudioDevice m_outputDeviceInfo;
     QAudioDevice::Mode input_mode = QAudioDevice::Input;
@@ -250,6 +245,7 @@ protected:
     QString outputAudioSettPath = "mmsys.cpl";
     QList<int> bufferSizes = { 32, 64, 128, 256, 512, 1024, 2048 };
     QProcess *mmcplProc;
+#endif
 
 public slots:
     void OnConnectDisconBut();
@@ -440,6 +436,7 @@ public slots:
     void OnConnectFromURLHandler(const QString& connect_url);
 //    void setDefaultSingleUserMode(const QString& value);
 
+#if defined( Q_OS_WINDOWS )
     // for built-in ASIO
     void kdasio_setup();
     void setKdasio_builtinDefaults();
@@ -457,6 +454,7 @@ public slots:
     void outputAudioSettClicked();
     void updateInputsList();
     void updateOutputsList();
+#endif
 
 signals:
     void SendTabChange ( int iTabIdx );
