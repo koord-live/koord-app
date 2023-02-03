@@ -61,7 +61,7 @@ DEFINES += QT_NO_DEPRECATED_WARNINGS
 
 win32 {
     # Windows desktop does not have native web runtime, need to package
-    QT += quick webenginequick
+    QT += quick webenginequick multimedia
 
     DEFINES -= UNICODE # fixes issue with ASIO SDK (asiolist.cpp is not unicode compatible)
     DEFINES += NOMINMAX # solves a compiler error with std::min/max

@@ -60,6 +60,11 @@
 #    include "mac/badgelabel.h"
 #endif
 #if defined( _WIN32 )
+#include <QAudioDevice>
+#include <QMediaDevices>
+#include <QStringConverter>
+#include <QDir>
+#include <QProcess>
 #include "toml.h"
 #endif
 #include <QQuickWidget>
@@ -224,10 +229,27 @@ protected:
 //    bool         bEnableIPv6;
 
     // for Windows KoordASIO stuff
-    QString fullpath = QDir::homePath() + "/.KoordASIO.toml";
+//    QString fullpath = QDir::homePath() + "/.KoordASIO.toml";
 
     // for urlhandler
 //    UrlHandler* url_handler;
+
+    // for built-in ASIO
+    QAudioDevice m_inputDeviceInfo;
+    QAudioDevice m_outputDeviceInfo;
+    QAudioDevice::Mode input_mode = QAudioDevice::Input;
+    QAudioDevice::Mode output_mode = QAudioDevice::Output;
+    QMediaDevices *m_devices = nullptr;
+    QAudioFormat m_settings;
+    int bufferSize;
+    bool exclusive_mode;
+    QString outputDeviceName;
+    QString inputDeviceName;
+    QString fullpath = QDir::homePath() + "/.kdasio_builtin.toml";
+    QString inputAudioSettPath = "mmsys.cpl,,1";
+    QString outputAudioSettPath = "mmsys.cpl";
+    QList<int> bufferSizes = { 32, 64, 128, 256, 512, 1024, 2048 };
+    QProcess *mmcplProc;
 
 public slots:
     void OnConnectDisconBut();
@@ -418,6 +440,24 @@ public slots:
     void OnConnectFromURLHandler(const QString& connect_url);
 //    void setDefaultSingleUserMode(const QString& value);
 
+    // for built-in ASIO
+    void kdasio_setup();
+    void setKdasio_builtinDefaults();
+        //FIXME make these private slots ??
+    void bufferSizeChanged(int idx);
+    void bufferSizeDisplayChange(int idx);
+    void setOperationMode();
+    void sharedModeSet();
+    void exclusiveModeSet();
+    void writeTomlFile();
+    void inputDeviceChanged(int idx);
+    void outputDeviceChanged(int idx);
+    void setValuesFromToml(std::ifstream *ifs, toml::ParseResult *pr);
+    void inputAudioSettClicked();
+    void outputAudioSettClicked();
+    void updateInputsList();
+    void updateOutputsList();
+
 signals:
     void SendTabChange ( int iTabIdx );
     void NewLocalInputText ( QString strNewText );
@@ -440,4 +480,5 @@ signals:
 
     // custom macOS url handler stuff
     void EventJoinConnectClicked( const QString &url );
+
 };
