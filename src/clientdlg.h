@@ -123,6 +123,7 @@ public:
     bool    GetServerListItemWasChosen() const { return bServerListItemWasChosen; }
     QString GetSelectedAddress() const { return strSelectedAddress; }
     QString GetSelectedServerName() const { return strSelectedServerName; }
+    void SetSelectedAddress( const QString nu_addr ) { strSelectedAddress = nu_addr; }
 
 protected:
     void SetGUIDesign ( const EGUIDesign eNewDesign );
@@ -137,6 +138,7 @@ protected:
     void ShowAnalyzerConsole();
     void UpdateAudioFaderSlider();
     void UpdateRevSelection();
+    void CompleteConnection();
     void Connect ( const QString& strSelectedAddress, const QString& strMixerBoardLabel );
     void Disconnect();
     void ManageDragNDrop ( QDropEvent* Event, const bool bCheckAccept );
@@ -175,6 +177,8 @@ protected:
     QQuickView*     quickView;
 #endif
     QNetworkAccessManager*   qNam;
+    QScopedPointer<QNetworkReply, QScopedPointerDeleteLater> endpoint_reply;
+
 
     virtual void closeEvent ( QCloseEvent* Event );
     virtual void dragEnterEvent ( QDragEnterEvent* Event ) { ManageDragNDrop ( Event, true ); }
@@ -338,7 +342,8 @@ public slots:
     void OnJoinCancelClicked();
     void OnEventJoinConnectClicked ( const QString& url );
     void OnJoinConnectClicked();
-//    void OnBasicConnectDlgAccepted();
+    void GetKoordAddress();
+    //    void OnBasicConnectDlgAccepted();
 //    void OnConnectDlgAccepted();
     void OnDisconnected() { Disconnect(); }
     void OnGUIDesignChanged();

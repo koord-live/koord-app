@@ -83,6 +83,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
     // set up net manager for https requests
     qNam = new QNetworkAccessManager;
+    qNam->setRedirectPolicy(QNetworkRequest::ManualRedirectPolicy);
 
     // regionChecker stuff
 //    // setup dir servers
@@ -1224,6 +1225,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
 //    QObject::connect ( pcbxSkill, static_cast<void ( QComboBox::* ) ( int )> ( &QComboBox::activated ), this, &CClientDlg::OnSkillActivated );
 
+
     // Timers ------------------------------------------------------------------
     // start timer for status bar
     TimerStatus.start ( DISPLAY_UPDATE_TIME );
@@ -1366,41 +1368,48 @@ void CClientDlg::OnEventJoinConnectClicked( const QString& url )
     OnJoinConnectClicked();
 }
 
+void CClientDlg::GetKoordAddress()
+{
+    QString err = endpoint_reply->errorString();
+    int statusCode = endpoint_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QString contents = QString::fromUtf8(endpoint_reply->readAll());
+    qDebug() << "statuscode: " << statusCode;
+    qDebug() << "endpoint reply: " << err;
+    qDebug() << "contents of reply: " << contents;
+    // response should be url style "koord://<host>:<port>" so assign this directly
+    QString fixedAddress = NetworkUtil::FixAddress( contents.toUtf8() );
+    qDebug() << "strSelectedAddress: " << fixedAddress;
+    SetSelectedAddress( fixedAddress );
+    CompleteConnection();
+}
+
+
 void CClientDlg::OnJoinConnectClicked()
 {
     // process if user has entered [https://]koord.live/kd/?ks={hash} style url
     QRegularExpression rx("koord.live/kd/\\?ks=(.*)");
     QRegularExpressionMatch rx_match = rx.match(joinFieldEdit->text());
     if (rx_match.hasMatch()) {
-//        QString sessHash = rx_match.captured(1);
-        // look up session address from endpoint
+        // We have http[s]::/koord.live/ style address, so look up session address from endpoint
+        //        QString sessHash = rx_match.captured(1);
         // call https://koord.live/kd/?ks={hash}
         // MUST replace http with https to get SINGLE redirect from service
-        QNetworkRequest request(QUrl(joinFieldEdit->text().replace("http://", "https://")));
-        // send request and assign reply pointer
-        qInfo() << "Gonna get url : " << joinFieldEdit->text();
-        // Note: set Network Access Manager to NOT open redirected URL, otherwise 302 redirect fails
-        qNam->setRedirectPolicy(QNetworkRequest::ManualRedirectPolicy);
-        QNetworkReply *endpoint_reply = qNam->get(request);
-        QObject::connect(endpoint_reply, &QNetworkReply::finished, this, [=]()
-            {
-                QString err = endpoint_reply->errorString();
-                int statusCode = endpoint_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-                qDebug() << "statuscode: " << statusCode;
-                qDebug() << "endpoint reply: " << err;
-                QString contents = QString::fromUtf8(endpoint_reply->readAll());
-                qDebug() << "contents of reply: " << contents;
-                // response should be url style "koord://<host>:<port>" so assign this directly
-                strSelectedAddress = NetworkUtil::FixAddress( contents.toUtf8() );
-                qDebug() << "strSelectedAddress: " << strSelectedAddress;
-            });
-        // reset NetworkAccessManager to default behaviour - follow http[s] redirects
-        qNam->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
+        QString https_url = joinFieldEdit->text().replace("http://", "https://");
+        qInfo() << "Requesting koord url from : " << https_url;
+
+        // ACTUALLY make the request
+        endpoint_reply.reset(qNam->get(QNetworkRequest( https_url )));
+        //FIXME - not sure why we need to connect here
+        connect( endpoint_reply.get(), &QNetworkReply::finished, this, &CClientDlg::GetKoordAddress );
     } else {
         // clean up address
         strSelectedAddress = NetworkUtil::FixAddress ( joinFieldEdit->text() );
+        CompleteConnection();
     }
+}
 
+void CClientDlg::CompleteConnection()
+{
     // update joinFieldEdit with corrected address
     joinFieldEdit->setText(strSelectedAddress);
 
