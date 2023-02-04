@@ -59,6 +59,11 @@
         <file>res/Video04.png</file>
         <file>res/MainSession.png</file>
         <file>res/logo_land.png</file>
+        <file>res/EXCLUSIVE OFF BTN.png</file>
+        <file>res/EXCLUSIVE ON BTN.png</file>
+        <file>res/SHARED OFF BTN.png</file>
+        <file>res/SHARED ON BTN.png</file>
+        <file>res/winaudioctrl.png</file>
     </qresource>
     <qresource prefix="/">
         <file>webview.qml</file>

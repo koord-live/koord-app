@@ -90,6 +90,9 @@ protected:
     bool            CheckSampleTypeSupportedForCHMixing ( const ASIOSampleType SamType );
     void            ResetChannelMapping();
 
+    // for asio lib loading
+    bool flexASIOInited = false;
+
     int iASIOBufferSizeMono;
     int iASIOBufferSizeStereo;
 

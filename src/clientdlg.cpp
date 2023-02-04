@@ -85,6 +85,11 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     qNam = new QNetworkAccessManager;
     qNam->setRedirectPolicy(QNetworkRequest::ManualRedirectPolicy);
 
+#if defined( Q_OS_WINDOWS )
+    kdasio_setup();
+#endif
+
+
     // regionChecker stuff
 //    // setup dir servers
 //    // set up list view for connected clients (note that the last column size
@@ -487,6 +492,8 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     cbxSoundcard->setAccessibleName ( tr ( "Sound card device selector combo box" ) );
 
 #    if defined( _WIN32 )
+    // on Windows it's always ASIO so be real
+    lblSoundcardDevice->setText("ASIO Driver");
     // set Windows specific tool tip
     cbxSoundcard->setToolTip ( tr ( "Select the ASIO driver for your external interface. "
                                     "If you don't have a special ASIO driver, use the default KoordASIO driver."
@@ -610,7 +617,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     butDriverSetup->setWhatsThis ( strSndCardDriverSetup );
     butDriverSetup->setAccessibleName ( tr ( "Driver Setup push button" ) );
     butDriverSetup->setToolTip ( strSndCardDriverSetupTT );
-    driverRefresh->setToolTip ( strSndCardDriverRefresh );
+//    driverRefresh->setToolTip ( strSndCardDriverRefresh );
 #endif
 
     // fancy skin
@@ -1189,7 +1196,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     // Driver Setup button is only available for Windows when JACK is not used
     QObject::connect ( butDriverSetup, &QPushButton::clicked, this, &CClientDlg::OnDriverSetupClicked );
     // make driver refresh button reload the currently selected sound card
-    QObject::connect ( driverRefresh, &QPushButton::clicked, this, &CClientDlg::OnSoundcardReactivate );
+//    QObject::connect ( driverRefresh, &QPushButton::clicked, this, &CClientDlg::OnSoundcardReactivate );
 #endif
 
     // misc
@@ -2562,12 +2569,12 @@ void CClientDlg::UpdateSoundDeviceChannelSelectionFrame()
     if ( ( iNumInChannels < MIN_IN_CHANNELS ) || ( iNumOutChannels < MIN_OUT_CHANNELS ) )
     {
         // as defined, make settings invisible
-        FrameSoundcardChannelSelection->setVisible ( false );
+        GroupBoxSoundcardChannelSelection->setVisible ( false );
     }
     else
     {
         // update combo boxes
-        FrameSoundcardChannelSelection->setVisible ( true );
+        GroupBoxSoundcardChannelSelection->setVisible ( true );
 
         // input
         cbxLInChan->clear();
@@ -2600,61 +2607,38 @@ void CClientDlg::UpdateSoundDeviceChannelSelectionFrame()
     }
 #else
     // for other OS, no sound card channel selection is supported
-    FrameSoundcardChannelSelection->setVisible ( false );
+    GroupBoxSoundcardChannelSelection->setVisible ( false );
 #endif
 
 #if defined( _WIN32 )
     koordASIOWarningBox->hide();
-    SetKoordASIOWarning();
+    SetupBuiltinASIOBox();
 #endif
 }
 
 #if defined( _WIN32 )
-void CClientDlg::SetKoordASIOWarning() {
-    if ( cbxSoundcard->currentText() == "KoordASIO" ) {
+void CClientDlg::SetupBuiltinASIOBox() {
+    if ( cbxSoundcard->currentText() == "Built-in" ) {
+        // show config box
+        kdAsioGroupBox->show();
+        // hide Driver Setup button - not needed
+        driverSetupWidget->hide();
+        // also hide buffer delay widget - it's confusing here
+        grbSoundCrdBufDelay->hide();
 
-        // parse .KoordASIO.toml file
-        std::ifstream ifs;
-        ifs.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
-        try {
-            ifs.open(fullpath.toStdString(), std::ifstream::in);
-            toml::ParseResult pr = toml::parse(ifs);
-//            qDebug("Attempted to parse toml file...");
-            ifs.close();
-            if (!pr.valid()) {
-  //              setDefaults();
-                qInfo() << "Toml file not valid???";
-            } else {
-                const toml::Value& v = pr.value;
-
-                // get bufferSize
-                const toml::Value* bss = v.find( "bufferSizeSamples" );
-
-                // get input stream stuff
-                const toml::Value* input_dev = v.find( "input.device" );
-                const QString in_dev = QString::fromStdString( input_dev->as<std::string>() );
-                const toml::Value* input_excl = v.find("input.wasapiExclusiveMode");
-                bool in_ex = input_excl->as<bool>();
-
-                // get output stream stuff
-                const toml::Value* output_dev = v.find("output.device");
-                QString out_dev = QString::fromStdString(output_dev->as<std::string>());
-                const toml::Value* output_excl = v.find("output.wasapiExclusiveMode");
-                bool out_ex = output_excl->as<bool>();
-
-                // Simple test for USB devices - will typically contain string "usb" somewhere in device name
-                if ( !in_dev.contains("usb", Qt::CaseInsensitive) || !out_dev.contains("usb", Qt::CaseInsensitive)) {
-                    qInfo() << "in_dev: " << in_dev << " , out_dev: " << out_dev;
-                    koordASIOWarningBox->show();
-                }
-            }
-        }
-        catch (std::ifstream::failure e) {
-            qDebug("Failed to open KoordASIO config file ...");
+        // Simple test for USB devices - will typically contain string "usb" somewhere in device name
+        if ( !inputDeviceName.contains("usb", Qt::CaseInsensitive) || !outputDeviceName.contains("usb", Qt::CaseInsensitive)) {
+            qInfo() << "in_dev: " << inputDeviceName << " , out_dev: " << outputDeviceName;
+            koordASIOWarningBox->show();
         }
     } else {
+        // hide config box
+        kdAsioGroupBox->hide();
         // KoordASIO is not selected - hide warning box if it's shown
-        koordASIOWarningBox->hide();
+//        koordASIOWarningBox->hide();
+        // hide Driver Setup button - not needed
+        driverSetupWidget->show();
+        grbSoundCrdBufDelay->show();
     }
 }
 #endif
@@ -2691,8 +2675,8 @@ void CClientDlg::OnSoundcardActivated ( int iSndDevIdx )
 
     // do KoordASIO - USB Check
 #if defined( _WIN32 )
-    if ( cbxSoundcard->itemText( iSndDevIdx ) == "KoordASIO" ) {
-        SetKoordASIOWarning();
+    if ( cbxSoundcard->itemText( iSndDevIdx ) == "Built-in" ) {
+        SetupBuiltinASIOBox();
     }
 #endif
 
@@ -3798,7 +3782,8 @@ void CClientDlg::kdasio_setup() {
     // for device refresh
     connect(m_devices, &QMediaDevices::audioInputsChanged, this, &CClientDlg::updateInputsList);
     connect(m_devices, &QMediaDevices::audioOutputsChanged, this, &CClientDlg::updateOutputsList);
-
+    // for win ctrl panel
+    connect(winCtrlPanelButton, &QPushButton::clicked, this, &CClientDlg::openWinCtrlPanel);
 
     // populate input device choices
     inputDeviceBox->clear();
@@ -3976,6 +3961,8 @@ void CClientDlg::writeTomlFile()
     out << "wasapiExclusiveMode = " << (exclusive_mode ? "true" : "false") << "\n";
 //    qDebug("Just wrote toml file...");
 
+    // force driver settings refresh
+    OnSoundcardReactivate();
 }
 
 void CClientDlg::bufferSizeChanged(int idx)
@@ -4041,26 +4028,31 @@ void CClientDlg::outputDeviceChanged(int idx)
     writeTomlFile();
 }
 
-void CClientDlg::inputAudioSettClicked()
-{
-    // open Windows audio input settings control panel
-    //FIXME - this process control does NOT work as Windows forks+kills the started process immediately? or something
-    if (mmcplProc != nullptr) {
-        mmcplProc->kill();
-    }
-    mmcplProc = new QProcess(this);
-    mmcplProc->start("control", QStringList() << inputAudioSettPath);
-}
+//void CClientDlg::inputAudioSettClicked()
+//{
+//    // open Windows audio input settings control panel
+//    //FIXME - this process control does NOT work as Windows forks+kills the started process immediately? or something
+//    if (mmcplProc != nullptr) {
+//        mmcplProc->kill();
+//    }
+//    mmcplProc = new QProcess(this);
+//    mmcplProc->start("control", QStringList() << inputAudioSettPath);
+//}
 
-void CClientDlg::outputAudioSettClicked()
+//void CClientDlg::outputAudioSettClicked()
+//{
+//    // open Windows audio output settings control panel
+//    //FIXME - this process control does NOT work as Windows forks+kills the started process immediately? or something
+//    if (mmcplProc != nullptr) {
+//        mmcplProc->kill();
+//    }
+//    mmcplProc = new QProcess(this);
+//    mmcplProc->start("control", QStringList() << outputAudioSettPath);
+//}
+
+void CClientDlg::openWinCtrlPanel()
 {
-    // open Windows audio output settings control panel
-    //FIXME - this process control does NOT work as Windows forks+kills the started process immediately? or something
-    if (mmcplProc != nullptr) {
-        mmcplProc->kill();
-    }
-    mmcplProc = new QProcess(this);
-    mmcplProc->start("control", QStringList() << outputAudioSettPath);
+    QDesktopServices::openUrl(QUrl("ms-settings:sound-devices", QUrl::TolerantMode));
 }
 #endif
 // end Windows-only built-in asio config stuff

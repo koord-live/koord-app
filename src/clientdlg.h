@@ -111,7 +111,7 @@ public:
     void UpdateSettingsDisplay();
     void UpdateSoundDeviceChannelSelectionFrame();
     void SetEnableFeedbackDetection ( bool enable );
-    void SetKoordASIOWarning();
+    void SetupBuiltinASIOBox();
 
     // for QML
     QString getVideoUrl() const {
@@ -450,8 +450,9 @@ public slots:
     void inputDeviceChanged(int idx);
     void outputDeviceChanged(int idx);
     void setValuesFromToml(std::ifstream *ifs, toml::ParseResult *pr);
-    void inputAudioSettClicked();
-    void outputAudioSettClicked();
+//    void inputAudioSettClicked();
+//    void outputAudioSettClicked();
+    void openWinCtrlPanel();
     void updateInputsList();
     void updateOutputsList();
 #endif

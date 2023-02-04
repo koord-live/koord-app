@@ -268,10 +268,10 @@ Function BuildApp
         echo "Building with nmake (install Qt jom if you want parallel builds)"
         Invoke-Native-Command -Command "nmake" -Arguments ("$BuildConfig")
     }
-    Invoke-Native-Command -Command "$Env:QtWinDeployPath" `
-        -Arguments ("--$BuildConfig", "--no-compiler-runtime", "--dir=$DeployPath\$BuildArch", `
-        "--no-system-d3d-compiler",  "--no-opengl-sw", `
-        "$BuildPath\$BuildConfig\kdasioconfig\KoordASIOControl.exe")
+    # Invoke-Native-Command -Command "$Env:QtWinDeployPath" `
+    #     -Arguments ("--$BuildConfig", "--no-compiler-runtime", "--dir=$DeployPath\$BuildArch", `
+    #     "--no-system-d3d-compiler",  "--no-opengl-sw", `
+    #     "$BuildPath\$BuildConfig\kdasioconfig\KoordASIOControl.exe")
     
     ## Run windeployqt for Koord.exe
     Invoke-Native-Command -Command "$Env:QtWinDeployPath" `
@@ -300,7 +300,7 @@ Function BuildApp
                     # - KoordASIO.dll
                     # - portaudio.dll 
     # Move KoordASIOControl.exe to deploy dir
-    Move-Item -Path "$BuildPath\$BuildConfig\kdasioconfig\KoordASIOControl.exe" -Destination "$DeployPath\$BuildArch" -Force
+    # Move-Item -Path "$BuildPath\$BuildConfig\kdasioconfig\KoordASIOControl.exe" -Destination "$DeployPath\$BuildArch" -Force
     # Move all KoordASIO dlls and exes to deploy dir
     Move-Item -Path "$RootPath\KoordASIO\src\out\install\x64-Release\bin\ASIOTest.dll" -Destination "$DeployPath\$BuildArch" -Force
     Move-Item -Path "$RootPath\KoordASIO\src\out\install\x64-Release\bin\FlexASIOTest.exe" -Destination "$DeployPath\$BuildArch" -Force

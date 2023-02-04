@@ -33,6 +33,7 @@
 extern AsioDrivers* asioDrivers;
 bool                loadAsioDriver ( char* name );
 extern IASIO*       theAsioDriver;
+IASIO*       flexAsioDriver;
 
 
 // pointer to our sound object
@@ -45,6 +46,8 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
 {
     // find and load driver
     int iDriverIdx = INVALID_INDEX; // initialize with an invalid index
+
+    qInfo() << "Loading driver: " << strDriverName;
 
     for ( int i = 0; i < MAX_NUMBER_SOUND_CARDS; i++ )
     {
@@ -72,9 +75,19 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
     // Hack-load internal ASIO driver, rather than reading from ASIO SDK driver list
     if (strDriverName == "Built-in")
     {
-        auto* const asioDriver = CreateFlexASIO();
-	    if (asioDriver == nullptr) abort();
-        theAsioDriver = asioDriver;
+        // if built-in asioDriver is already loaded, and asio pointer is set...
+        // ... we need to release first to init again
+        if (!flexASIOInited) {
+            flexAsioDriver = CreateFlexASIO();
+            flexASIOInited = true;
+        } else {
+            // already inited, let's release and re-create
+            ReleaseFlexASIO(flexAsioDriver);
+            flexAsioDriver = CreateFlexASIO();
+            flexASIOInited = true;
+        }
+        if (flexAsioDriver == nullptr) abort();
+        theAsioDriver = flexAsioDriver;
     }
     else
     {
@@ -578,15 +591,15 @@ CSound::CSound ( void ( *fpNewCallback ) ( CVector<int16_t>& psData, void* arg )
     lNumDevs = asioDrivers->getDriverNames ( cDriverNames, MAX_NUMBER_SOUND_CARDS );
 
     /* We KNOW we have a driver available now, so we don't need this */
-    // // in case we do not have a driver available, throw error
-    // if ( lNumDevs == 0 )
-    // {
-    //     throw CGenErr ( "<b>" + tr ( "No ASIO audio device driver found." ) + "</b><br><br>" +
-    //                     QString ( tr ( "Please install an ASIO driver before running %1. "
-    //                                    "If you own a device with ASIO support, install its official ASIO driver. "
-    //                                    "If not, you'll need to download and install a universal driver like ASIO4ALL." ) )
-    //                         .arg ( APP_NAME ) );
-    // }
+     // in case we do not have a driver available, throw error
+//     if ( lNumDevs == 0 )
+//     {
+//         throw CGenErr ( "<b>" + tr ( "No ASIO audio device driver found." ) + "</b><br><br>" +
+//                         QString ( tr ( "Please install an ASIO driver before running %1. "
+//                                        "If you own a device with ASIO support, install its official ASIO driver. "
+//                                        "If not, you'll need to download and install a universal driver like ASIO4ALL." ) )
+//                             .arg ( APP_NAME ) );
+//     }
     asioDrivers->removeCurrentDriver();
 
     // copy driver names to base class but internally we still have to use
@@ -595,6 +608,7 @@ CSound::CSound ( void ( *fpNewCallback ) ( CVector<int16_t>& psData, void* arg )
     for ( i = 0; i < lNumDevs; i++ )
     {
         strDriverNames[i + 1] = cDriverNames[i];
+        qInfo() << "index: " << i << " DriverName: " << cDriverNames[i];
     }
     // strDriverNames should look something like:
     // 0 - strDriverNames[0] = "Built-in" --> no cDriverNames entry
