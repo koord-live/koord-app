@@ -155,15 +155,16 @@ int main ( int argc, char** argv )
 //    QSettings kdasio_settings("HKEY_CURRENT_USER\\Software\\Koord\\KoordASIO\\Install", QSettings::NativeFormat);
 //    kdasio_settings.setValue("InstallPath", "Koord");
 
-    QString path = QDir::toNativeSeparators(qApp->applicationFilePath());
-    //FIXME - is this the right registry path? or just \Software\Koord?
-    QSettings url_settings( "HKEY_CURRENT_USER\\Software\\Classes", QSettings::NativeFormat );
-    url_settings.beginGroup( "Koord" );
-    url_settings.setValue( "Default", "URL:Koord Protocol" );
-    url_settings.setValue( "DefaultIcon/Default", path );
-    url_settings.setValue( "URL Protocol", "" );
-    url_settings.setValue( "shell/open/command/Default", QString("\"%1\"").arg(path) + " \"%1\"" );
-    url_settings.endGroup();
+    // Either InnoSetup or MakeAppX should make this registry entry for us - don't do here
+//    QString path = QDir::toNativeSeparators(qApp->applicationFilePath());
+//    //FIXME - is this the right registry path? or just \Software\Koord?
+//    QSettings url_settings( "HKEY_CURRENT_USER\\Software\\Classes", QSettings::NativeFormat );
+//    url_settings.beginGroup( "Koord" );
+//    url_settings.setValue( "Default", "URL:Koord Protocol" );
+//    url_settings.setValue( "DefaultIcon/Default", path );
+//    url_settings.setValue( "URL Protocol", "" );
+//    url_settings.setValue( "shell/open/command/Default", QString("\"%1\"").arg(path) + " \"%1\"" );
+//    url_settings.endGroup();
 
 #endif
 
