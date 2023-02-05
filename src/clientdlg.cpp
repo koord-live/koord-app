@@ -2616,10 +2616,10 @@ void CClientDlg::UpdateSoundDeviceChannelSelectionFrame()
     GroupBoxSoundcardChannelSelection->setVisible ( false );
 #endif
 
-#if defined( _WIN32 )
-    koordASIOWarningBox->hide();
-    SetupBuiltinASIOBox();
-#endif
+//#if defined( _WIN32 )
+//    koordASIOWarningBox->hide();
+//    SetupBuiltinASIOBox();
+//#endif
 }
 
 #if defined( _WIN32 )
@@ -2680,11 +2680,35 @@ void CClientDlg::OnSoundcardActivated ( int iSndDevIdx )
     pClient->SetSndCrdDev ( cbxSoundcard->itemText ( iSndDevIdx ) );
 
     // do KoordASIO - USB Check
-#if defined( _WIN32 )
     if ( cbxSoundcard->itemText( iSndDevIdx ) == "Built-in" ) {
-        SetupBuiltinASIOBox();
-    }
+//        SetupBuiltinASIOBox();
+        // show config box
+        kdAsioGroupBox->show();
+        // hide Driver Setup button - not needed
+        driverSetupWidget->hide();
+        // also hide buffer delay widget - it's confusing here
+        grbSoundCrdBufDelay->hide();
+
+// multimedia stuff is only on Windows for now
+#if defined( Q_OS_WINDOWS )
+        // Simple test for USB devices - will typically contain string "usb" somewhere in device name
+        if ( !inputDeviceName.contains("usb", Qt::CaseInsensitive) || !outputDeviceName.contains("usb", Qt::CaseInsensitive)) {
+            qInfo() << "in_dev: " << inputDeviceName << " , out_dev: " << outputDeviceName;
+            koordASIOWarningBox->show();
+        }
 #endif
+    } else {
+        // hide config box
+        kdAsioGroupBox->hide();
+        // show Driver Setup button
+        driverSetupWidget->show();
+        // show buffer delay box
+        grbSoundCrdBufDelay->show();
+    }
+//#if defined( _WIN32 )
+//    koordASIOWarningBox->hide();
+//    SetupBuiltinASIOBox();
+//#endif
 
     UpdateSoundDeviceChannelSelectionFrame();
     UpdateDisplay();
