@@ -495,10 +495,13 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     // on Windows it's always ASIO so be real
     lblSoundcardDevice->setText("ASIO Driver");
     // set Windows specific tool tip
-    cbxSoundcard->setToolTip ( tr ( "Select the ASIO driver for your external interface. "
-                                    "If you don't have a special ASIO driver, use the default KoordASIO driver."
-                                    "Use Driver Setup to change to Exclusive mode for best "
-                                    "performance. " ) +
+    cbxSoundcard->setToolTip ( tr ( "Select the ASIO driver for your audio device. "
+                                    "If you don't have a special audio device (or ASIO driver), "
+                                    "just stick with the Built-in ASIO driver."
+                                    "Tips: "
+                                    "- use a USB audio adapter if you have one!"
+                                    "- set Exclusive render mode for best latency"
+                                    "- set Buffer to 32, and increase if the audio is stuttering" ) +
                                "<br>" +
                                TOOLTIP_COM_END_TEXT );
 #    endif
