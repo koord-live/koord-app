@@ -432,7 +432,7 @@ jobs:
           name:                     ${{ steps.get-build-vars.outputs.RELEASE_TITLE }}
           # body_path:                ${{ env.release_changelog_path }}
           prerelease:               ${{ steps.get-build-vars.outputs.IS_PRERELEASE }}
-          draft:                    false
+          draft:                    true
           files:                    deploy/${{ steps.get-artifacts.outputs.artifact_1 }}
 
 
@@ -466,7 +466,7 @@ jobs:
           name:                     ${{ steps.get-build-vars.outputs.RELEASE_TITLE }}
           # body_path:                ${{ env.release_changelog_path }}
           prerelease:               ${{ steps.get-build-vars.outputs.IS_PRERELEASE }}
-          draft:                    false
+          draft:                    true
           files:                    deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
 
       ## RELEASE PROCEDURE FOR:
