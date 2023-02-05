@@ -87,6 +87,9 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
 #if defined( Q_OS_WINDOWS )
     kdasio_setup();
+#else
+    // don't show any internal asio stuff
+    kdAsioGroupBox->hide();
 #endif
 
 
