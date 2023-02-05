@@ -29,21 +29,21 @@ Source:"deploy\x86_64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs 
 
 [Icons]
 Name: "{group}\Koord"; Filename: "{app}\Koord.exe"; WorkingDir: "{app}"
-Name: "{group}\KoordASIO Control"; Filename: "{app}\KoordASIOControl.exe"; WorkingDir: "{app}"
+; Name: "{group}\KoordASIO Control"; Filename: "{app}\KoordASIOControl.exe"; WorkingDir: "{app}"
 
 [Run]
 ; make sure we have SOME working default configuration after installation
-Filename: "{app}\KoordASIOControl.exe"; Parameters: "-defaults"; Description: "Set KoordASIO defaults"; Flags: nowait
+; Filename: "{app}\KoordASIOControl.exe"; Parameters: "-defaults"; Description: "Set KoordASIO defaults"; Flags: nowait
 ; also allow user to configure immediately after installation ?
 ; Filename: "{app}\KoordASIOControl.exe"; Description: "Run KoordASIO Control"; Flags: postinstall nowait skipifsilent
 ; Launch Koord by default after installation
 Filename: "{app}\Koord.exe"; Description: "Launch Koord"; Flags: postinstall nowait skipifsilent
 
 ; install reg key to locate KoordASIOControl.exe at runtime
-[Registry]
-Root: HKLM64; Subkey: "Software\Koord"; Flags: uninsdeletekeyifempty
-Root: HKLM64; Subkey: "Software\Koord\KoordASIO"; Flags: uninsdeletekey
-Root: HKLM64; Subkey: "Software\Koord\KoordASIO\Install"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
+; [Registry]
+; Root: HKLM64; Subkey: "Software\Koord"; Flags: uninsdeletekeyifempty
+; Root: HKLM64; Subkey: "Software\Koord\KoordASIO"; Flags: uninsdeletekey
+; Root: HKLM64; Subkey: "Software\Koord\KoordASIO\Install"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
 
 ; install reg keys to setup custom "koord://" or "koord:" URL handling
 [Registry]

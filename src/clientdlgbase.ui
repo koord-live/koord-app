@@ -2792,7 +2792,7 @@ QCheckBox::indicator {
              <x>0</x>
              <y>0</y>
              <width>543</width>
-             <height>2211</height>
+             <height>2212</height>
             </rect>
            </property>
            <property name="sizePolicy">
@@ -3241,8 +3241,8 @@ QSlider::sub-page:horizontal {
                           </property>
                           <property name="sizeHint" stdset="0">
                            <size>
-                            <width>40</width>
-                            <height>20</height>
+                            <width>20</width>
+                            <height>5</height>
                            </size>
                           </property>
                          </spacer>
@@ -3250,12 +3250,7 @@ QSlider::sub-page:horizontal {
                         <item>
                          <widget class="QPushButton" name="winCtrlPanelButton">
                           <property name="text">
-                           <string/>
-                          </property>
-                          <property name="icon">
-                           <iconset>
-                            <normalon>:/png/main/res/winaudioctrl.png</normalon>
-                           </iconset>
+                           <string>--&gt; Open Windows Device Settings</string>
                           </property>
                           <property name="iconSize">
                            <size>
@@ -3264,7 +3259,10 @@ QSlider::sub-page:horizontal {
                            </size>
                           </property>
                           <property name="default">
-                           <bool>true</bool>
+                           <bool>false</bool>
+                          </property>
+                          <property name="flat">
+                           <bool>false</bool>
                           </property>
                          </widget>
                         </item>
