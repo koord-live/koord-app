@@ -49,7 +49,7 @@ Filename: "{app}\Koord.exe"; Description: "Launch Koord"; Flags: postinstall now
 
 ; install reg keys to setup custom "koord://" or "koord:" URL handling
 [Registry]
-Root: HKCR; Subkey: "koord"; ValueType: "string"; ValueData: "URL:Koord Protocol"; Flags: uninsdeletekey
-Root: HKCR; Subkey: "koord"; ValueType: "string"; ValueName: "URL Protocol"; ValueData: ""
-Root: HKCR; Subkey: "koord\DefaultIcon"; ValueType: "string"; ValueData: "{app}\Koord.exe,0"
-Root: HKCR; Subkey: "koord\shell\open\command"; ValueType: "string"; ValueData: """{app}\Koord.exe"" ""%1"""
+Root: HKCU; Subkey: "Software\Classes\koord"; ValueType: "string"; ValueData: "URL:Koord Protocol"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\Classes\koord"; ValueType: "string"; ValueName: "URL Protocol"; ValueData: ""
+Root: HKCU; Subkey: "Software\Classes\koord\DefaultIcon"; ValueType: "string"; ValueData: "{app}\Koord.exe,0"
+Root: HKCU; Subkey: "Software\Classes\koord\shell\open\command"; ValueType: "string"; ValueData: """{app}\Koord.exe"" ""%1"""
