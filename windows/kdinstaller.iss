@@ -33,6 +33,7 @@ Name: "{group}\Koord"; Filename: "{app}\Koord.exe"; WorkingDir: "{app}"
 ; Name: "{group}\KoordASIO Control"; Filename: "{app}\KoordASIOControl.exe"; WorkingDir: "{app}"
 
 [Run]
+; FIXME - remove cruft
 ; make sure we have SOME working default configuration after installation
 ; Filename: "{app}\KoordASIOControl.exe"; Parameters: "-defaults"; Description: "Set KoordASIO defaults"; Flags: nowait
 ; also allow user to configure immediately after installation ?
