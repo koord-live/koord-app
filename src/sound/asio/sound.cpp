@@ -47,7 +47,7 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
     // find and load driver
     int iDriverIdx = INVALID_INDEX; // initialize with an invalid index
 
-    qInfo() << "Loading driver: " << strDriverName;
+    qInfo() << "LoadAndInitializeDriver(): Loading ASIO driver: " << strDriverName;
 
     for ( int i = 0; i < MAX_NUMBER_SOUND_CARDS; i++ )
     {
@@ -75,13 +75,18 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
     // Hack-load internal ASIO driver, rather than reading from ASIO SDK driver list
     if (strDriverName == "Built-in")
     {
+        // to clean up first ?????
+
         // if built-in asioDriver is already loaded, and asio pointer is set...
         // ... we need to release first to init again
         if (!flexASIOInited) {
+            qInfo() << "FlexASIO not inited, creating now ...";
             flexAsioDriver = CreateFlexASIO();
             flexASIOInited = true;
         } else {
-            // already inited, let's release and re-create
+            UnloadCurrentDriver(); // necessary? maybe not
+            qInfo() << "FlexASIO ALREADY inited, releasing and creating now ...";
+            // already inited, let's release and re-create - otherwise ASIOInit fails
             ReleaseFlexASIO(flexAsioDriver);
             flexAsioDriver = CreateFlexASIO();
             flexASIOInited = true;
@@ -99,6 +104,7 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
     // okay...
     memset ( &driverInfo, 0, sizeof driverInfo );
 
+    qInfo() << "Attempting ASIO driver ASIOInit() ...";
     if ( ASIOInit ( &driverInfo ) != ASE_OK )
     {
         // clean up and return error string

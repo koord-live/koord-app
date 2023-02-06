@@ -2640,10 +2640,9 @@ void CClientDlg::SetupBuiltinASIOBox() {
     } else {
         // hide config box
         kdAsioGroupBox->hide();
-        // KoordASIO is not selected - hide warning box if it's shown
-//        koordASIOWarningBox->hide();
-        // hide Driver Setup button - not needed
+        // show Driver Setup button
         driverSetupWidget->show();
+        // show buffer delay widget
         grbSoundCrdBufDelay->show();
     }
 }
@@ -2658,6 +2657,7 @@ void CClientDlg::SetEnableFeedbackDetection ( bool enable )
 #if defined( _WIN32 ) && !defined( WITH_JACK )
 void CClientDlg::OnDriverSetupClicked() { pClient->OpenSndCrdDriverSetup(); }
 void CClientDlg::OnSoundcardReactivate() {
+    qInfo() << "OnSoundcardReactivate(): gonna activate: " << cbxSoundcard->currentIndex();
     // simply set again the currently-set soundcard
     OnSoundcardActivated(cbxSoundcard->currentIndex());
 }
@@ -2695,6 +2695,8 @@ void CClientDlg::OnSoundcardActivated ( int iSndDevIdx )
         if ( !inputDeviceName.contains("usb", Qt::CaseInsensitive) || !outputDeviceName.contains("usb", Qt::CaseInsensitive)) {
             qInfo() << "in_dev: " << inputDeviceName << " , out_dev: " << outputDeviceName;
             koordASIOWarningBox->show();
+        } else {
+            koordASIOWarningBox->hide();
         }
 #endif
     } else {
@@ -3859,6 +3861,7 @@ void CClientDlg::updateInputsList() {
     // write the new resultant config
     inputDeviceName = inputDeviceBox->currentText();
     writeTomlFile();
+//    OnSoundcardReactivate();
 }
 
 void CClientDlg::updateOutputsList() {
@@ -3871,6 +3874,7 @@ void CClientDlg::updateOutputsList() {
     // write the new resultant config
     outputDeviceName = outputDeviceBox->currentText();
     writeTomlFile();
+//    OnSoundcardReactivate();
 }
 
 void CClientDlg::setValuesFromToml(std::ifstream *ifs, toml::ParseResult *pr)
@@ -3931,7 +3935,7 @@ void CClientDlg::setValuesFromToml(std::ifstream *ifs, toml::ParseResult *pr)
 void CClientDlg::setKdasio_builtinDefaults()
 {
     // set defaults
-    qInfo("Setting defaults");
+    qInfo("Setting KdASIO defaults");
     bufferSize = 32;
     exclusive_mode = true;
     // find system audio device defaults
@@ -3969,6 +3973,7 @@ void CClientDlg::writeTomlFile()
         suggestedLatencySeconds = 0.0
         wasapiExclusiveMode = outputExclusiveMode
     */
+    qInfo() << "Opening file for writing: " << fullpath;
     QFile file(fullpath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
         return;
@@ -3976,27 +3981,30 @@ void CClientDlg::writeTomlFile()
     // need to explicitly set UTF-8 for non-ASCII character support
     out.setEncoding(QStringConverter::Utf8);
     // out.setCodec("UTF-8");
+
     //FIXME should really write to intermediate buffer, THEN to file - to make single write on file
-    out << "backend = \"Windows WASAPI\"" << "\n";
-    out << "bufferSizeSamples = " << bufferSize << "\n";
-    out << "\n";
-    out << "[input]" << "\n";
-    out << "device = \"" << inputDeviceName << "\"\n";
-    out << "suggestedLatencySeconds = 0.0" << "\n";
-    out << "wasapiExclusiveMode = " << (exclusive_mode ? "true" : "false") << "\n";
-    out << "\n";
-    out << "[output]" << "\n";
-    out << "device = \"" << outputDeviceName << "\"\n";
-    out << "suggestedLatencySeconds = 0.0" << "\n";
-    out << "wasapiExclusiveMode = " << (exclusive_mode ? "true" : "false") << "\n";
-//    qDebug("Just wrote toml file...");
+    // is this a single write action ???
+    out << "backend = \"Windows WASAPI\"" << "\n"
+        << "bufferSizeSamples = " << bufferSize << "\n"
+        << "\n"
+        << "[input]" << "\n"
+        << "device = \"" << inputDeviceName << "\"\n"
+        << "suggestedLatencySeconds = 0.0" << "\n"
+        << "wasapiExclusiveMode = " << (exclusive_mode ? "true" : "false") << "\n"
+        << "\n"
+        << "[output]" << "\n"
+        << "device = \"" << outputDeviceName << "\"\n"
+        << "suggestedLatencySeconds = 0.0" << "\n"
+        << "wasapiExclusiveMode = " << (exclusive_mode ? "true" : "false") << "\n";
+    qInfo("Just wrote toml file...");
 
     // force driver settings refresh
-    OnSoundcardReactivate();
+//    OnSoundcardReactivate();
 }
 
 void CClientDlg::bufferSizeChanged(int idx)
 {
+    qInfo() << "bufferSizeChanged()";
     // select from 32 , 64, 128, 256, 512, 1024, 2048
     // This a) gives a nice easy UI rather than choosing your own integer
     // AND b) makes it easier to do a live-refresh of the toml file,
@@ -4006,10 +4014,12 @@ void CClientDlg::bufferSizeChanged(int idx)
     // Don't do any latency calculation for now, it is misleading as doesn't account for much of the whole audio chain
 //    latencyLabel->setText(QString::number(double(bufferSize) / 48, 'f', 2));
     writeTomlFile();
+    OnSoundcardReactivate();
 }
 
 void CClientDlg::bufferSizeDisplayChange(int idx)
 {
+    qInfo() << "bufferSizeDisplayChange()";
     bufferSize = bufferSizes[idx];
     bufferSizeDisplay->display(bufferSize);
 }
@@ -4029,6 +4039,7 @@ void CClientDlg::sharedModeSet()
     sharedPushButton->setChecked(true);
     exclusive_mode = false;
     writeTomlFile();
+    OnSoundcardReactivate();
 }
 
 void CClientDlg::exclusiveModeSet()
@@ -4036,26 +4047,31 @@ void CClientDlg::exclusiveModeSet()
     exclusivePushButton->setChecked(true);
     exclusive_mode = true;
     writeTomlFile();
+    OnSoundcardReactivate();
 }
 
 void CClientDlg::inputDeviceChanged(int idx)
 {
+    qInfo() << "inputDeviceChanged()";
     if (inputDeviceBox->count() == 0)
         return;
     // device has changed
     m_inputDeviceInfo = inputDeviceBox->itemData(idx).value<QAudioDevice>();
     inputDeviceName = m_inputDeviceInfo.description();
     writeTomlFile();
+    OnSoundcardReactivate();
 }
 
 void CClientDlg::outputDeviceChanged(int idx)
 {
+    qInfo() << "outputDeviceChanged()";
     if (outputDeviceBox->count() == 0)
         return;
     // device has changed
     m_outputDeviceInfo = outputDeviceBox->itemData(idx).value<QAudioDevice>();
     outputDeviceName = m_outputDeviceInfo.description();
     writeTomlFile();
+    OnSoundcardReactivate();
 }
 
 //void CClientDlg::inputAudioSettClicked()
