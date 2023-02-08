@@ -83,6 +83,7 @@ public:
 
 protected:
     virtual QString LoadAndInitializeDriver ( QString strDriverName, bool bOpenDriverSetup );
+    bool            resetKdASIOConfig();
     virtual void    UnloadCurrentDriver();
     int             GetActualBufferSize ( const int iDesiredBufferSizeMono );
     QString         CheckDeviceCapabilities();

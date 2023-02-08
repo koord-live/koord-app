@@ -87,11 +87,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
 #if defined( Q_OS_WINDOWS )
     kdasio_setup();
-#else
-    // don't show any internal asio stuff
-    kdAsioGroupBox->hide();
 #endif
-
 
     // regionChecker stuff
 //    // setup dir servers
@@ -374,9 +370,6 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
 
     // init reverb channel
     UpdateRevSelection();
-
-    // ensure KoordASIO USB warning box is hidden by default
-    koordASIOWarningBox->hide();
 
     // set window title (with no clients connected -> "0")
     SetMyWindowTitle ( 0 );
@@ -755,16 +748,6 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     chbDetectFeedback->setWhatsThis ( strDetectFeedback );
     chbDetectFeedback->setAccessibleName ( tr ( "Feedback Protection check box" ) );
 
-    // init driver button
-#if defined( _WIN32 ) && !defined( WITH_JACK )
-//    butDriverSetup->setText ( tr ( "Driver Setup" ) );
-    driverSetupWidget->show();
-#else
-    // no use for this button for MacOS/Linux right now or when using JACK -> hide it
-    butDriverSetup->hide();
-    driverSetupWidget->hide();
-#endif
-
     // init audio in fader
 //    sldAudioPan->setRange ( AUD_FADER_IN_MIN, AUD_FADER_IN_MAX );
     panDial->setRange ( AUD_FADER_IN_MIN, AUD_FADER_IN_MAX );
@@ -858,6 +841,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     SndCrdBufferDelayButtonGroup.addButton ( rbtBufferDelaySafe );
 
     UpdateSoundCardFrame();
+    SetupBuiltinASIOBox();
 
     // Add help text to controls -----------------------------------------------
     // Musician Profile
@@ -1142,7 +1126,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
                        static_cast<void ( QComboBox::* ) ( int )> ( &QComboBox::activated ),
                        this,
                        &CClientDlg::OnSoundcardActivated );
-
+   
     QObject::connect ( cbxLInChan,
                        static_cast<void ( QComboBox::* ) ( int )> ( &QComboBox::activated ),
                        this,
@@ -1900,6 +1884,7 @@ void CClientDlg::OnSoundDeviceChanged ( QString strError )
 
     // update the settings
     UpdateSoundDeviceChannelSelectionFrame();
+    SetupBuiltinASIOBox();
 }
 
 void CClientDlg::OnCLPingTimeWithNumClientsReceived ( CHostAddress InetAddr, int iPingTime, int iNumClients )
@@ -2615,15 +2600,11 @@ void CClientDlg::UpdateSoundDeviceChannelSelectionFrame()
     // for other OS, no sound card channel selection is supported
     GroupBoxSoundcardChannelSelection->setVisible ( false );
 #endif
-
-//#if defined( _WIN32 )
-//    koordASIOWarningBox->hide();
-//    SetupBuiltinASIOBox();
-//#endif
 }
 
 #if defined( _WIN32 )
 void CClientDlg::SetupBuiltinASIOBox() {
+
     if ( cbxSoundcard->currentText() == "Built-in" ) {
         // show config box
         kdAsioGroupBox->show();
@@ -2632,17 +2613,22 @@ void CClientDlg::SetupBuiltinASIOBox() {
         // also hide buffer delay widget - it's confusing here
         grbSoundCrdBufDelay->hide();
 
+    // multimedia stuff is only on Windows for now
+#if defined( Q_OS_WINDOWS )
         // Simple test for USB devices - will typically contain string "usb" somewhere in device name
         if ( !inputDeviceName.contains("usb", Qt::CaseInsensitive) || !outputDeviceName.contains("usb", Qt::CaseInsensitive)) {
             qInfo() << "in_dev: " << inputDeviceName << " , out_dev: " << outputDeviceName;
             koordASIOWarningBox->show();
+        } else {
+            koordASIOWarningBox->hide();
         }
+#endif
     } else {
         // hide config box
         kdAsioGroupBox->hide();
         // show Driver Setup button
         driverSetupWidget->show();
-        // show buffer delay widget
+        // show buffer delay box
         grbSoundCrdBufDelay->show();
     }
 }
@@ -2657,7 +2643,7 @@ void CClientDlg::SetEnableFeedbackDetection ( bool enable )
 #if defined( _WIN32 ) && !defined( WITH_JACK )
 void CClientDlg::OnDriverSetupClicked() { pClient->OpenSndCrdDriverSetup(); }
 void CClientDlg::OnSoundcardReactivate() {
-    qInfo() << "OnSoundcardReactivate(): gonna activate: " << cbxSoundcard->currentIndex();
+    qInfo() << "OnSoundcardReactivate(): activating card: " << cbxSoundcard->currentIndex();
     // simply set again the currently-set soundcard
     OnSoundcardActivated(cbxSoundcard->currentIndex());
 }
@@ -2677,42 +2663,11 @@ void CClientDlg::OnNetBufServerValueChanged ( int value )
 
 void CClientDlg::OnSoundcardActivated ( int iSndDevIdx )
 {
+    qInfo() << "CCDlg:OnSoundcardActivated() ... setting sndcarddev: " << cbxSoundcard->itemText ( iSndDevIdx );
     pClient->SetSndCrdDev ( cbxSoundcard->itemText ( iSndDevIdx ) );
 
-    // do KoordASIO - USB Check
-    if ( cbxSoundcard->itemText( iSndDevIdx ) == "Built-in" ) {
-//        SetupBuiltinASIOBox();
-        // show config box
-        kdAsioGroupBox->show();
-        // hide Driver Setup button - not needed
-        driverSetupWidget->hide();
-        // also hide buffer delay widget - it's confusing here
-        grbSoundCrdBufDelay->hide();
-
-// multimedia stuff is only on Windows for now
-#if defined( Q_OS_WINDOWS )
-        // Simple test for USB devices - will typically contain string "usb" somewhere in device name
-        if ( !inputDeviceName.contains("usb", Qt::CaseInsensitive) || !outputDeviceName.contains("usb", Qt::CaseInsensitive)) {
-            qInfo() << "in_dev: " << inputDeviceName << " , out_dev: " << outputDeviceName;
-            koordASIOWarningBox->show();
-        } else {
-            koordASIOWarningBox->hide();
-        }
-#endif
-    } else {
-        // hide config box
-        kdAsioGroupBox->hide();
-        // show Driver Setup button
-        driverSetupWidget->show();
-        // show buffer delay box
-        grbSoundCrdBufDelay->show();
-    }
-//#if defined( _WIN32 )
-//    koordASIOWarningBox->hide();
-//    SetupBuiltinASIOBox();
-//#endif
-
     UpdateSoundDeviceChannelSelectionFrame();
+    SetupBuiltinASIOBox();
     UpdateDisplay();
 }
 
@@ -3836,7 +3791,7 @@ void CClientDlg::kdasio_setup() {
     std::ifstream ifs;
     ifs.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
     try {
-        ifs.open(fullpath.toStdString(), std::ifstream::in);
+        ifs.open(kdasio_config_path.toStdString(), std::ifstream::in);
         toml::ParseResult pr = toml::parse(ifs);
         qDebug("Attempted to parse toml file...");
         ifs.close();
@@ -3973,8 +3928,10 @@ void CClientDlg::writeTomlFile()
         suggestedLatencySeconds = 0.0
         wasapiExclusiveMode = outputExclusiveMode
     */
-    qInfo() << "Opening file for writing: " << fullpath;
-    QFile file(fullpath);
+    qInfo() << "writeTomlFile(): Opening file for writing: " << kdasio_config_path;
+    qInfo() << "writeTomlFile(): input device: " << inputDeviceName;
+    qInfo() << "writeTomlFile(): output device: " << outputDeviceName;
+    QFile file(kdasio_config_path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
         return;
     QTextStream out(&file);

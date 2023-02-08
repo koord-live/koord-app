@@ -27,6 +27,8 @@
 
 #include "sound.h"
 #include "..\KoordASIO\src\flexasio\FlexASIO\cflexasio.h"
+#include <QAudioDevice>
+#include <QMediaDevices>
 
 /* Implementation *************************************************************/
 // external references
@@ -48,7 +50,12 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
     int iDriverIdx = INVALID_INDEX; // initialize with an invalid index
 
     qInfo() << "LoadAndInitializeDriver(): Loading ASIO driver: " << strDriverName;
+    //FIXME - ugly kludge - if strDriverName comes through as "" due to fallback behavior weirdness
+    if (strDriverName.isEmpty()) {
+        strDriverName = "Built-in";
+    }
 
+    // handle for Built-in case
     for ( int i = 0; i < MAX_NUMBER_SOUND_CARDS; i++ )
     {
         if ( strDriverName.compare ( cDriverNames[i] ) == 0 )
@@ -75,10 +82,6 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
     // Hack-load internal ASIO driver, rather than reading from ASIO SDK driver list
     if (strDriverName == "Built-in")
     {
-        // to clean up first ?????
-
-        // if built-in asioDriver is already loaded, and asio pointer is set...
-        // ... we need to release first to init again
         if (!flexASIOInited) {
             qInfo() << "FlexASIO not inited, creating now ...";
             flexAsioDriver = CreateFlexASIO();
@@ -104,16 +107,28 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
     // okay...
     memset ( &driverInfo, 0, sizeof driverInfo );
 
-    qInfo() << "Attempting ASIO driver ASIOInit() ...";
+    qInfo() << "Attempting ASIO driver ASIOInit(): " << strDriverName;
     if ( ASIOInit ( &driverInfo ) != ASE_OK )
     {
-        // clean up and return error string
+        qInfo() << "ASIOInit failed. strDriverName is: " << strDriverName;
+        if (strDriverName == "Built-in") {
+            // we have an invalid config, we need to reset to defaults
+            // recursion? Woah
+            qInfo() << "ASIOInit failed for Built-in driver: calling resetKdASIOConfig() ...";
+            if (resetKdASIOConfig() == true) {
+                LoadAndInitializeDriver("Built-in", false);
+            } else {
+                asioDrivers->removeCurrentDriver();
+                return tr ( "Couldn't initialise the audio driver. Check if your audio hardware is plugged in and verify your driver settings." );
+            }
+        }
         asioDrivers->removeCurrentDriver();
         return tr ( "Couldn't initialise the audio driver. Check if your audio hardware is plugged in and verify your driver settings." );
     }
 
     // check device capabilities if it fulfills our requirements
     const QString strStat = CheckDeviceCapabilities(); // also sets lNumInChan and lNumOutChan
+    qInfo() << "LoadAndInitializeDriver(): strStat is: " << strStat;
 
     // check if device is capable
     if ( strStat.isEmpty() )
@@ -144,9 +159,22 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
     }
     else
     {
+        qInfo() << "CheckDeviceCapabilities() failed. strDriverName: " << strDriverName;
         // if requested, open ASIO driver setup in case of an error
-        if ( bOpenDriverSetup )
+        if (strDriverName == "Built-in") {
+            // we have an invalid config, we need to reset to defaults
+            // recursion? Woah
+            qInfo() << "CheckDeviceCapabilities for Built-in driver Failed: calling resetKdASIOConfig() ...";
+            if (resetKdASIOConfig() == true) {
+                LoadAndInitializeDriver("Built-in", false);
+            } else {
+                asioDrivers->removeCurrentDriver();
+                return tr ( "Couldn't initialise the audio driver. Check if your audio hardware is plugged in and verify your driver settings." );
+            }
+        }
+        else if ( bOpenDriverSetup )
         {
+            qInfo() << "bOpenDriverSetup is true and strDriverName here is: " << strDriverName;
             OpenDriverSetup();
             QMessageBox::question ( nullptr,
                                     APP_NAME,
@@ -159,6 +187,47 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
     }
 
     return strStat;
+}
+
+// FIXME - DRY - this is basically duplicating code in clientdlp.cpp
+bool CSound::resetKdASIOConfig()
+{
+    // we have an invalid config, we need to reset to defaults
+    QAudioDevice inputInfo(QMediaDevices::defaultAudioInput());
+    QString inputDeviceName = inputInfo.description();
+    qInfo() << "resetKdASIOConfig(): input device: " << inputDeviceName;
+    QAudioDevice outputInfo(QMediaDevices::defaultAudioOutput());
+    QString outputDeviceName = outputInfo.description();
+    qInfo() << "resetKdASIOConfig(): output device: " << outputDeviceName;
+    //FIXME !!!!!!!!!!!!!!!!
+    // - introduced for hotfix - using duplicate filepath definition - need to unite this with clientdlg.cpp
+    QString this_config_path = QDir::homePath() + "/.kdasio_builtin.toml";
+    qInfo() << "resetKdASIOConfig(): Opening file for writing: " << this_config_path;
+    QFile file(this_config_path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return false;
+    QTextStream out(&file);
+    // need to explicitly set UTF-8 for non-ASCII character support
+    out.setEncoding(QStringConverter::Utf8);
+    // out.setCodec("UTF-8");
+
+    //FIXME should really write to intermediate buffer, THEN to file - to make single write on file
+    // is this a single write action ???
+    out << "backend = \"Windows WASAPI\"" << "\n"
+        << "bufferSizeSamples = " << 32 << "\n"
+        << "\n"
+        << "[input]" << "\n"
+        << "device = \"" << inputDeviceName << "\"\n"
+        << "suggestedLatencySeconds = 0.0" << "\n"
+        << "wasapiExclusiveMode = " << "false" << "\n"
+        << "\n"
+        << "[output]" << "\n"
+        << "device = \"" << outputDeviceName << "\"\n"
+        << "suggestedLatencySeconds = 0.0" << "\n"
+        << "wasapiExclusiveMode = " << "false" << "\n";
+    qInfo() << "resetKdASIOConfig(): just re-wrote toml config";
+
+    return true;
 }
 
 void CSound::UnloadCurrentDriver()
@@ -213,6 +282,7 @@ QString CSound::CheckDeviceCapabilities()
     ASIOGetChannels ( &lNumInChan, &lNumOutChan );
 
 //    if ( ( lNumInChan < NUM_IN_OUT_CHANNELS ) || ( lNumOutChan < NUM_IN_OUT_CHANNELS ) )
+    qInfo() << "CheckDeviceCapabilities(): lNumInChan << " << lNumInChan << " lNumOutChan: " << lNumOutChan;
     if ( ( lNumInChan < MIN_IN_CHANNELS ) || ( lNumOutChan < MIN_OUT_CHANNELS  ) )
     {
         // return error string

@@ -240,7 +240,7 @@ protected:
     bool exclusive_mode;
     QString outputDeviceName;
     QString inputDeviceName;
-    QString fullpath = QDir::homePath() + "/.kdasio_builtin.toml";
+    QString kdasio_config_path = QDir::homePath() + "/.kdasio_builtin.toml";
     QString inputAudioSettPath = "mmsys.cpl,,1";
     QString outputAudioSettPath = "mmsys.cpl";
     QList<int> bufferSizes = { 32, 64, 128, 256, 512, 1024, 2048 };
