@@ -452,7 +452,7 @@ jobs:
       #     asset_path:               deploy/${{ steps.get-artifacts.outputs.artifact_2 }}
       #     asset_name:               ${{ steps.get-artifacts.outputs.artifact_2 }}
       #     asset_content_type:       application/octet-stream
-      - name:                       Create Release2 ${{steps.get-build-vars.outputs.RELEASE_TAG}}  ${{steps.get-build-vars.outputs.RELEASE_TITLE}}
+      - name:                       Create Release2 ${{needs.create_release.outputs.release_tag}}  ${{needs.create_release.outputs.release_title}}
         if:                         >-
                                     steps.get-artifacts.outputs.artifact_2 != '' &&
                                     matrix.config.target_os == 'windows' &&
