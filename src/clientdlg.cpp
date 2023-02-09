@@ -2671,7 +2671,7 @@ void CClientDlg::OnSoundcardActivated ( int iSndDevIdx )
     pClient->SetSndCrdDev ( cbxSoundcard->itemText ( iSndDevIdx ) );
 
     UpdateSoundDeviceChannelSelectionFrame();
-#if defined( Q_OS _WINDOWS )
+#if defined( Q_OS_WINDOWS )
     SetupBuiltinASIOBox();
 #endif
     UpdateDisplay();
