@@ -111,8 +111,9 @@ public:
     void UpdateSettingsDisplay();
     void UpdateSoundDeviceChannelSelectionFrame();
     void SetEnableFeedbackDetection ( bool enable );
+#if defined( Q_OS_WINDOWS )
     void SetupBuiltinASIOBox();
-
+#endif
     // for QML
     QString getVideoUrl() const {
         qInfo() << ">>> Calling getVideoUrl and returning value: " << strVideoUrl;

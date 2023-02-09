@@ -841,7 +841,9 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     SndCrdBufferDelayButtonGroup.addButton ( rbtBufferDelaySafe );
 
     UpdateSoundCardFrame();
+#if defined ( Q_OS_WINDOWS )
     SetupBuiltinASIOBox();
+#endif
 
     // Add help text to controls -----------------------------------------------
     // Musician Profile
@@ -1884,7 +1886,9 @@ void CClientDlg::OnSoundDeviceChanged ( QString strError )
 
     // update the settings
     UpdateSoundDeviceChannelSelectionFrame();
+#if defined( Q_OS_WINDOWS )
     SetupBuiltinASIOBox();
+#endif
 }
 
 void CClientDlg::OnCLPingTimeWithNumClientsReceived ( CHostAddress InetAddr, int iPingTime, int iNumClients )
@@ -2602,7 +2606,7 @@ void CClientDlg::UpdateSoundDeviceChannelSelectionFrame()
 #endif
 }
 
-#if defined( _WIN32 )
+#if defined( Q_OS_WINDOWS )
 void CClientDlg::SetupBuiltinASIOBox() {
 
     if ( cbxSoundcard->currentText() == "Built-in" ) {
@@ -2667,7 +2671,9 @@ void CClientDlg::OnSoundcardActivated ( int iSndDevIdx )
     pClient->SetSndCrdDev ( cbxSoundcard->itemText ( iSndDevIdx ) );
 
     UpdateSoundDeviceChannelSelectionFrame();
+#if defined( Q_OS _WINDOWS )
     SetupBuiltinASIOBox();
+#endif
     UpdateDisplay();
 }
 
