@@ -13,6 +13,7 @@ AppUpdatesURL=https://github.com/koord-live/koord-app/releases
 AppContact=contact@koord.live
 WizardStyle=modern
 DefaultDirName={autopf}\Koord
+DefaultGroupName=Koord
 AppendDefaultDirName=no
 ArchitecturesInstallIn64BitMode=x64
 ; disk space isn't calculated accurately - set here to 230Mb x 1024 x 1024 bytes
