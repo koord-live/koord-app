@@ -34,33 +34,28 @@ setup() {
         # except for Legacy version :/
         WEBENGINE_MODS=""
         if [ "${TARGET_ARCHS}" == "x86_64" ]; then
+            #### LEGACY MODE 
             # WEBENGINE_MODS="qtwebengine qtwebchannel qtpositioning"
             python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
                 --archives qtbase qtdeclarative qtsvg qttools \
                 --modules qtwebengine        
         else
+            #### NORMAL MODE (Universal, AppStore)
             python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
                 --archives qtbase qtdeclarative qtsvg qttools \
                 --modules qtwebview ${WEBENGINE_MODS}
+
+            ## POSIX QT - for AppStore and SingleApplication compatibility
+            # Install Qt from POSIX build release
+            echo "Installing AppStore Qt ..."
+            wget -q https://github.com/koord-live/koord-app/releases/download/macqt_${QT_VERSION}/qt_mac_${QT_VERSION}_appstore.tar.gz \
+                -O /tmp/qt_mac_${QT_VERSION}_posix.tar.gz
+            echo "Creating QT_POSIX_DIR : ${QT_POSIX_DIR} ... "
+            mkdir ${QT_POSIX_DIR}
+            tar xf /tmp/qt_mac_${QT_VERSION}_posix.tar.gz -C ${QT_POSIX_DIR}
+            rm /tmp/qt_mac_${QT_VERSION}_posix.tar.gz
+            # qt now installed in QT_POSIX_DIR
         fi
-            
-        ## POSIX QT - for AppStore and SingleApplication compatibility
-        # Install Qt from POSIX build release
-        echo "Installing AppStore Qt ..."
-        wget -q https://github.com/koord-live/koord-app/releases/download/macqt_${QT_VERSION}/qt_mac_${QT_VERSION}_appstore.tar.gz \
-            -O /tmp/qt_mac_${QT_VERSION}_posix.tar.gz
-        echo "Creating QT_POSIX_DIR : ${QT_POSIX_DIR} ... "
-        mkdir ${QT_POSIX_DIR}
-        tar xf /tmp/qt_mac_${QT_VERSION}_posix.tar.gz -C ${QT_POSIX_DIR}
-        rm /tmp/qt_mac_${QT_VERSION}_posix.tar.gz
-        # qt now installed in QT_POSIX_DIR
-
-        # echo "Patching SingleApplication for POSIX/AppStore compliance ..."
-        # # note: patch made as per:
-        # #    diff -Naur singleapplication_p_orig.cpp singleapplication_p.cpp > macOS_posix.patch
-        # patch -u ${GITHUB_WORKSPACE}/singleapplication/singleapplication_p.cpp \
-        #     -i ${GITHUB_WORKSPACE}/mac/macOS_posix.patch
-
     fi
 }
 
