@@ -261,7 +261,6 @@ win32 {
 #    # add for OpenSSL 1 support
 #    include(android_openssl/openssl.pri)
 } else:unix {
-    # we want to compile with C++11
     CONFIG += c++17
 
     # Linux desktop does not have native web runtime, need to package

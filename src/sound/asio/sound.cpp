@@ -92,7 +92,6 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
             // already inited, let's release and re-create - otherwise ASIOInit fails
             ReleaseFlexASIO(flexAsioDriver);
             flexAsioDriver = CreateFlexASIO();
-            flexASIOInited = true;
         }
         if (flexAsioDriver == nullptr) abort();
         theAsioDriver = flexAsioDriver;
