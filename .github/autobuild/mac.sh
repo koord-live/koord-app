@@ -37,7 +37,7 @@ setup() {
             #### LEGACY MODE 
             # WEBENGINE_MODS="qtwebengine qtwebchannel qtpositioning"
             python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
-                --archives qtbase qtdeclarative qtsvg qttools \
+                --archives qtbase qtdeclarative qtsvg qttools qtwebview \
                 --modules qtwebengine        
         else
             #### NORMAL MODE (Universal, AppStore)
