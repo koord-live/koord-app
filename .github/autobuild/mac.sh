@@ -34,11 +34,15 @@ setup() {
         # except for Legacy version :/
         WEBENGINE_MODS=""
         if [ "${TARGET_ARCHS}" == "x86_64" ]; then
-            WEBENGINE_MODS="qtwebengine qtwebchannel qtpositioning"
+            # WEBENGINE_MODS="qtwebengine qtwebchannel qtpositioning"
+            python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
+                --archives qtbase qtdeclarative qtsvg qttools \
+                --modules qtwebengine        
+        else
+            python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
+                --archives qtbase qtdeclarative qtsvg qttools \
+                --modules qtwebview ${WEBENGINE_MODS}
         fi
-        python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
-            --archives qtbase qtdeclarative qtsvg qttools \
-            --modules qtwebview ${WEBENGINE_MODS}
             
         ## POSIX QT - for AppStore and SingleApplication compatibility
         # Install Qt from POSIX build release
