@@ -118,7 +118,13 @@ prepare_signing() {
 build_app_and_packages() {
     # Add the qt binaries to the PATH.
     ## For normal Qt:
-    NORMAL_PATH="${QT_DIR}/${QT_VERSION}/macos/bin:${PATH}"
+    # - for Universal build
+    if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
+        NORMAL_PATH="${QT_DIR}/${QT_VERSION}/macos/bin:${PATH}"
+    # - for legacy build
+    elif [ "${TARGET_ARCHS}" == "x86_64" ]; then
+        NORMAL_PATH="${QT_DIR}/${QT_VERSION}/clang_64/bin:${PATH}"
+    fi
     POSIX_PATH="${QT_POSIX_DIR}/bin:${PATH}"
     ## For POSIX Qt:
     # export PATH="${QT_POSIX_DIR}/bin:${PATH}"
