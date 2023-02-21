@@ -177,47 +177,47 @@ jobs:
         # Think of this like a foreach loop. Basically runs the steps with every combination of
         # the contents of this.
         config:
-          - config_name:            Android 8.1+ - Play Store
-            target_os:              android
-            building_on_os:         ubuntu-22.04
-            base_command:           ./.github/autobuild/android.sh
-            run_codeql:             false
-            is_main_build_target:   true
-
-          # Qt6 requires Ubuntu 20.04+ for build, but apt packages only in 22.04+ 
-          # Can install Qt using aqtinstall on 20.04 - thus needs glibc>=2.31 
-          - config_name:            Linux 2.31+ - AppImage
-            target_os:              linux
-            building_on_os:         ubuntu-20.04
-            base_command:           ./.github/autobuild/linux.sh
-            run_codeql:             false
-            is_main_build_target:   true
-
-          # # Qt6 from apt - crossbuild for armhf eg rPi
-          # # Disable for now: likely no Qt6 on rPi anyway. AppImage preferable
-          # - config_name:            Linux .deb armhf (artifacts)
-          #   target_os:              linux
+          # - config_name:            Android 8.1+ - Play Store
+          #   target_os:              android
           #   building_on_os:         ubuntu-22.04
-          #   base_command:           TARGET_ARCH=armhf ./.github/autobuild/linux.sh
+          #   base_command:           ./.github/autobuild/android.sh
           #   run_codeql:             false
+          #   is_main_build_target:   true
 
-          - config_name:            macOS 11+ - dmg+AppStore
-            target_os:              macos
-            building_on_os:         macos-12
-            base_command:           QT_VERSION=6.4.2 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64 arm64" ./.github/autobuild/mac.sh
-            # Disable CodeQL on mac as it interferes with signing the binaries (signing hangs, see #2563 and #2564)
-            run_codeql:             false
-            is_main_build_target:   true
-            xcode_version:          14.0.1
+          # # Qt6 requires Ubuntu 20.04+ for build, but apt packages only in 22.04+ 
+          # # Can install Qt using aqtinstall on 20.04 - thus needs glibc>=2.31 
+          # - config_name:            Linux 2.31+ - AppImage
+          #   target_os:              linux
+          #   building_on_os:         ubuntu-20.04
+          #   base_command:           ./.github/autobuild/linux.sh
+          #   run_codeql:             false
+          #   is_main_build_target:   true
 
-          # - config_name:            macOS 10.14+ legacy - dmg
+          # # # Qt6 from apt - crossbuild for armhf eg rPi
+          # # # Disable for now: likely no Qt6 on rPi anyway. AppImage preferable
+          # # - config_name:            Linux .deb armhf (artifacts)
+          # #   target_os:              linux
+          # #   building_on_os:         ubuntu-22.04
+          # #   base_command:           TARGET_ARCH=armhf ./.github/autobuild/linux.sh
+          # #   run_codeql:             false
+
+          # - config_name:            macOS 11+ - dmg+AppStore
           #   target_os:              macos
-          #   building_on_os:         macos-11
-          #   base_command:           QT_VERSION=6.4.2 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64" ./.github/autobuild/mac.sh
+          #   building_on_os:         macos-12
+          #   base_command:           QT_VERSION=6.4.2 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64 arm64" ./.github/autobuild/mac.sh
           #   # Disable CodeQL on mac as it interferes with signing the binaries (signing hangs, see #2563 and #2564)
           #   run_codeql:             false
           #   is_main_build_target:   true
-          #   xcode_version:          13.2.1
+          #   xcode_version:          14.0.1
+
+          # # - config_name:            macOS 10.14+ legacy - dmg
+          # #   target_os:              macos
+          # #   building_on_os:         macos-11
+          # #   base_command:           QT_VERSION=6.4.2 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64" ./.github/autobuild/mac.sh
+          # #   # Disable CodeQL on mac as it interferes with signing the binaries (signing hangs, see #2563 and #2564)
+          # #   run_codeql:             false
+          # #   is_main_build_target:   true
+          # #   xcode_version:          13.2.1
 
           - config_name:            macOS 10.10+ Legacy - dmg
             target_os:              macos
@@ -233,20 +233,20 @@ jobs:
             xcode_version:          12.1.1
             is_main_build_target:   true
 
-          - config_name:            iOS 10.13 - AppStore
-            target_os:              ios
-            building_on_os:         macos-12
-            base_command:           QT_VERSION=6.4.2 SIGN_IF_POSSIBLE=1 ./.github/autobuild/ios.sh
-            run_codeql:             false
-            is_main_build_target:   true
-            xcode_version:          14.0.1
+          # - config_name:            iOS 10.13 - AppStore
+          #   target_os:              ios
+          #   building_on_os:         macos-12
+          #   base_command:           QT_VERSION=6.4.2 SIGN_IF_POSSIBLE=1 ./.github/autobuild/ios.sh
+          #   run_codeql:             false
+          #   is_main_build_target:   true
+          #   xcode_version:          14.0.1
 
-          - config_name:            Windows 10+ - exe+msix
-            target_os:              windows
-            building_on_os:         windows-2022
-            base_command:           powershell .\.github\autobuild\windows.ps1 -Stage
-            run_codeql:             false
-            is_main_build_target:   true
+          # - config_name:            Windows 10+ - exe+msix
+          #   target_os:              windows
+          #   building_on_os:         windows-2022
+          #   base_command:           powershell .\.github\autobuild\windows.ps1 -Stage
+          #   run_codeql:             false
+          #   is_main_build_target:   true
 
         # This injects the build_all_targets information into each matrix output:
         build_all_targets:
