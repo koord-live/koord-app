@@ -79,7 +79,12 @@ build_app_compile_legacy()
         "DEFINES+=MAC_LEGACY" \
         "${BUILD_ARGS[@]}" \
         "${@:2}"
-    
+
+    #FIXME - ugly hack due to MOC bug? setPlaceHolderText() somehow gets generated - by Qt5 moc??
+    sed -i 's/^.*setPlaceholderText.*/\/\/&/' "${build_path}/ui_clientdlgbase.h"
+    echo "Hacked ${build_path}/ui_clientdlgbase.h - outputting grepped line.... "
+    grep setPlaceholderText "${build_path}/ui_clientdlgbase.h"
+
     local job_count
     job_count=$(sysctl -n hw.ncpu)
 
