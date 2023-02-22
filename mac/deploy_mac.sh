@@ -89,6 +89,14 @@ build_app_compile_legacy()
     job_count=$(sysctl -n hw.ncpu)
 
     make -f "${build_path}/Makefile" -C "${build_path}" -j "${job_count}"
+
+    echo ">>> Legacy Build complete - listing app directory.... "
+    ls -al ${build_path}/${client_target_name}.app/
+
+    echo ">>> Legacy Build follow-up - also listing executable file dir ...."
+    ls -al ${build_path}/${client_target_name}.app/Contents/MacOS/
+
+
 }
 
 build_app_compile_universal()
