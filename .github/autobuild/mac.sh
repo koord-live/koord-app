@@ -187,6 +187,7 @@ valid8_n_upload() {
     #     --team-id $APPLE_TEAM_ID \
     #     --password $NOTARIZATION_PASSWORD \
     #     --wait
+    xcrun stapler staple "${ARTIFACT_PATH}"
 
 }
 

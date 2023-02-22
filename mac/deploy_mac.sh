@@ -90,6 +90,7 @@ build_app_compile_legacy()
 
     # overcome build warning:
     #   ld: warning: directory not found for option '-F/Users/qt/work/install/lib'
+    echo ">>> Copying /usr/local/opt/qt/5.9.9/clang_64/lib/* to /Users/qt/work/install/lib...."
     sudo mkdir -p /Users/qt/work/install/lib
     sudo cp -av /usr/local/opt/qt/5.9.9/clang_64/lib/* /Users/qt/work/install/lib
 
@@ -100,7 +101,6 @@ build_app_compile_legacy()
 
     echo ">>> Legacy Build follow-up - also listing executable file dir ...."
     ls -al ${build_path}/${client_target_name}.app/Contents/MacOS/
-
 
 }
 
@@ -212,9 +212,6 @@ build_app_package()
         codesign --force --verify --verbose --sign "${macadhoc_cert_name}" --entitlements mac/QtWebEngineProcess.entitlements --options runtime \
             "${build_path}/${client_target_name}.app/Contents/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess"
         # "${build_path}/${client_target_name}.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess"
-        # sign main executable
-        echo "Running Codesign #3 ...."
-        codesign --force --verify --verbose --sign "${macadhoc_cert_name}" --options runtime Output/Koord.app/Contents/MacOS/Koord
 
     fi
 
@@ -295,6 +292,11 @@ build_disk_image()
       --icon "${client_target_name}.app" 630 210 \
       "${deploypkg_path}/${client_target_name}-${KOORD_BUILD_VERSION}-installer-mac.dmg" \
       "${deploy_path}/"
+
+    # sign main executable
+    echo "Running Codesign #3 ...."
+    codesign --force --verify --verbose --sign "${macadhoc_cert_name}" --options runtime \
+        "${deploypkg_path}/${client_target_name}-${KOORD_BUILD_VERSION}-installer-mac.dmg"
 }
 
 brew_install_pinned() {
