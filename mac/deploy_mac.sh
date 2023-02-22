@@ -173,17 +173,33 @@ build_app_package()
 
     # Note: "-appstore-compliant" does NOT do any sandbox-enforcing or anything
     # it just skips certain plugins/modules - useful to not include all of WebEngine!
-    APPSTORE_COMPLIANT=""  # for legacy case - we want webengine fully loaded
+    # for legacy case - we want webengine fully loaded
     if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
-        APPSTORE_COMPLIANT="-hardened-runtime -appstore-compliant"
+        macdeployqt "${build_path}/${client_target_name}.app" \
+            -verbose=2 \
+            -always-overwrite \
+            -timestamp -hardened-runtime -appstore-compliant \
+            -sign-for-notarization="${macadhoc_cert_name}" \
+            -qmldir="${root_path}/src"
+    else
+        macdeployqt "${build_path}/${client_target_name}.app" \
+            -verbose=2 \
+            -always-overwrite \
+            -qmldir="${root_path}/src"
+            
+        # Now we need to sign for notarization, as 5.9 Qt macdeployqt doesn't have signing options ...
+        # sign main application
+        codesign --deep --force --verify --verbose --sign "${macadhoc_cert_name}" --options runtime "${build_path}/${client_target_name}.app"
+        # sign QtWebEngineProcess
+        codesign --force --verify --verbose --sign "${macadhoc_cert_name}" --entitlements QtWebEngineProcess.entitlements --options runtime \
+            "${build_path}/${client_target_name}.app/Contents/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess"
+        # "${build_path}/${client_target_name}.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess"
+        # sign main executable
+        codesign --force --verify --verbose --sign "${macadhoc_cert_name}" --options runtime Output/Koord.app/Contents/MacOS/Koord
+
     fi
-    macdeployqt "${build_path}/${client_target_name}.app" \
-        -verbose=2 \
-        -always-overwrite \
-        -timestamp ${APPSTORE_COMPLIANT} \
-        -sign-for-notarization="${macadhoc_cert_name}" \
-        -qmldir="${root_path}/src"
-    
+
+
     # debug:
     echo ">>> BUILD FINISHED. Listing of ${build_path}/${client_target_name}.app/ :"
     ls -al ${build_path}/${client_target_name}.app/
