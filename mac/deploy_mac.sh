@@ -182,6 +182,7 @@ build_app_package()
             -sign-for-notarization="${macadhoc_cert_name}" \
             -qmldir="${root_path}/src"
     else
+        echo ">>> Running macdeployqt without signing....."
         macdeployqt "${build_path}/${client_target_name}.app" \
             -verbose=2 \
             -always-overwrite \
@@ -189,12 +190,15 @@ build_app_package()
             
         # Now we need to sign for notarization, as 5.9 Qt macdeployqt doesn't have signing options ...
         # sign main application
+        echo "Running Codesign #1 ...."
         codesign --deep --force --verify --verbose --sign "${macadhoc_cert_name}" --options runtime "${build_path}/${client_target_name}.app"
         # sign QtWebEngineProcess
-        codesign --force --verify --verbose --sign "${macadhoc_cert_name}" --entitlements QtWebEngineProcess.entitlements --options runtime \
+        echo "Running Codesign #2 ...."
+        codesign --force --verify --verbose --sign "${macadhoc_cert_name}" --entitlements mac/QtWebEngineProcess.entitlements --options runtime \
             "${build_path}/${client_target_name}.app/Contents/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess"
         # "${build_path}/${client_target_name}.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess"
         # sign main executable
+        echo "Running Codesign #3 ...."
         codesign --force --verify --verbose --sign "${macadhoc_cert_name}" --options runtime Output/Koord.app/Contents/MacOS/Koord
 
     fi
