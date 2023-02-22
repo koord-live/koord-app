@@ -193,7 +193,7 @@ build_app_package()
         echo ">>> Running macdeployqt without signing....."
         which macdeployqt
         macdeployqt "${build_path}/${client_target_name}.app" \
-            -executable "${build_path}/${client_target_name}.app/Contents/MacOS/${client_target_name}" \
+            -executable="${build_path}/${client_target_name}.app/Contents/MacOS/${client_target_name}" \
             -verbose=2 \
             -always-overwrite \
             -qmldir="${root_path}/src"
