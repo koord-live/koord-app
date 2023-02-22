@@ -1496,9 +1496,6 @@ QCheckBox::indicator {
                         <height>25</height>
                        </size>
                       </property>
-                      <property name="placeholderText">
-                       <string/>
-                      </property>
                      </widget>
                     </item>
                     <item>
