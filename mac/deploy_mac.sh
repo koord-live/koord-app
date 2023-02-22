@@ -80,10 +80,10 @@ build_app_compile_legacy()
         "${BUILD_ARGS[@]}" \
         "${@:2}"
 
-    #FIXME - ugly hack due to MOC bug? setPlaceHolderText() somehow gets generated - by Qt5 moc??
-    sed -i '' 's/^.*inviteComboBox->setPlaceholderText.*/\/\/&/' "${build_path}/ui_clientdlgbase.h"
-    echo "Hacked ${build_path}/ui_clientdlgbase.h - outputting grepped line(s).... "
-    grep setPlaceholderText "${build_path}/ui_clientdlgbase.h"
+    # #FIXME - ugly hack due to MOC bug? setPlaceHolderText() somehow gets generated - by Qt5 moc??
+    # sed -i '' 's/^.*inviteComboBox->setPlaceholderText.*/\/\/&/' "${build_path}/ui_clientdlgbase.h"
+    # echo "Hacked ${build_path}/ui_clientdlgbase.h - outputting grepped line(s).... "
+    # grep setPlaceholderText "${build_path}/ui_clientdlgbase.h"
 
     local job_count
     job_count=$(sysctl -n hw.ncpu)
