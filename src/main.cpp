@@ -876,7 +876,7 @@ int main ( int argc, char** argv )
     // Also: SingleApplication problematic on appstore macOS builds (posix)
 #if defined (Q_OS_IOS) || defined (Q_OS_ANDROID)
     KdApplication* pApp = new KdApplication ( argc, argv );
-#elif defined (Q_OS_WINDOWS) || defined (Q_OS_LINUX) || defined (Q_OS_MACOS)
+#elif defined ( _WIN32 ) || defined (Q_OS_LINUX) || defined (Q_OS_MACOS)
     KdSingleApplication* pApp = new KdSingleApplication (argc, argv);
 
 //    QPixmap pixmap(":/png/main/res/logo_land.png");

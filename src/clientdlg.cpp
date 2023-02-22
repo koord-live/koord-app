@@ -979,7 +979,10 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     QObject::connect ( butConnect, &QPushButton::clicked, this, &CClientDlg::OnConnectDisconBut );
     QObject::connect ( butNewStart, &QPushButton::clicked, this, &CClientDlg::OnNewStartClicked );
     QObject::connect ( downloadLinkButton, &QPushButton::clicked, this, &CClientDlg::OnDownloadUpdateClicked );
-    QObject::connect ( inviteComboBox, &QComboBox::activated, this, &CClientDlg::OnInviteBoxActivated );
+    QObject::connect ( inviteComboBox,
+                       static_cast<void ( QComboBox::* ) ( int )> ( &QComboBox::activated ),
+                       this,
+                       &CClientDlg::OnInviteBoxActivated );
     QObject::connect ( checkUpdateButton, &QPushButton::clicked, this, &CClientDlg::OnCheckForUpdate );
 
     // connection for macOS custom url event handler
@@ -1397,9 +1400,10 @@ void CClientDlg::OnJoinConnectClicked()
         qInfo() << "Requesting koord url from : " << https_url;
 
         // ACTUALLY make the request
-        endpoint_reply.reset(qNam->get(QNetworkRequest( https_url )));
+        QNetworkReply *endpoint_repl = qNam->get(QNetworkRequest( https_url ));
+//        endpoint_reply->reset(qNam->get(QNetworkRequest( https_url )));
         //FIXME - not sure why we need to connect here
-        connect( endpoint_reply.get(), &QNetworkReply::finished, this, &CClientDlg::GetKoordAddress );
+        connect( endpoint_repl, &QNetworkReply::finished, this, &CClientDlg::GetKoordAddress );
     } else {
         // clean up address
         strSelectedAddress = NetworkUtil::FixAddress ( joinFieldEdit->text() );
@@ -2229,7 +2233,7 @@ void CClientDlg::OnCheckForUpdate()
                                         }
                                     }
                                 }
-                                QMessageBox updateMessage = QMessageBox(this);
+                                QMessageBox updateMessage(this);
                                 updateMessage.setText(QString("There is an update available! Version: %1").arg(latestVersion));
                                 updateMessage.setInformativeText(QString("It's highly recommended to stay up to date "
                                                                          "with all the fixes and enhancements. Shall we get the update?"));
@@ -3517,8 +3521,12 @@ void CClientDlg::OnRegionTimerPing()
         {
 //            qDebug() << "lvwServer listing: " + lvwServers->topLevelItem ( iIdx )->data ( 0, Qt::UserRole ).toString();
             // if address is valid, send ping message using a new thread
+#if QT_VERSION >= QT_VERSION_CHECK( 6, 0, 0 )
             QFuture<void> f = QtConcurrent::run ( &CClientDlg::EmitCLServerListPingMes, this, haServerAddress );
             Q_UNUSED ( f );
+#else
+            QtConcurrent::run ( this, &CClientDlg::EmitCLServerListPingMes, haServerAddress );
+#endif
         }
     }
 }
