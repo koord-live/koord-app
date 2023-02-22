@@ -175,12 +175,12 @@ build_app_package()
     # it just skips certain plugins/modules - useful to not include all of WebEngine!
     APPSTORE_COMPLIANT=""  # for legacy case - we want webengine fully loaded
     if [ "${TARGET_ARCHS}" == "x86_64 arm64" ]; then
-        APPSTORE_COMPLIANT="-appstore-compliant"
+        APPSTORE_COMPLIANT="-hardened-runtime -appstore-compliant"
     fi
     macdeployqt "${build_path}/${client_target_name}.app" \
         -verbose=2 \
         -always-overwrite \
-        -hardened-runtime -timestamp ${APPSTORE_COMPLIANT} \
+        -timestamp ${APPSTORE_COMPLIANT} \
         -sign-for-notarization="${macadhoc_cert_name}" \
         -qmldir="${root_path}/src"
     
