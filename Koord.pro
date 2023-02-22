@@ -127,7 +127,11 @@ win32 {
     QMAKE_TARGET_BUNDLE_PREFIX = live.koord
     # QMAKE_APPLICATION_BUNDLE_NAME. = $$TARGET
 
-    QMAKE_INFO_PLIST = mac/Info-xcode.plist
+    equals(QT_VERSION, "5.9.9") {
+        QMAKE_INFO_PLIST = mac/Info-xcode-legacy.plist
+    } else {
+        QMAKE_INFO_PLIST = mac/Info-xcode.plist
+    }
 
     OSX_ENTITLEMENTS.files = mac/Koord.entitlements
     OSX_ENTITLEMENTS.path = Contents/Resources
