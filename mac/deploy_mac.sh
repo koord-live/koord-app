@@ -88,6 +88,11 @@ build_app_compile_legacy()
     local job_count
     job_count=$(sysctl -n hw.ncpu)
 
+    # overcome build warning:
+    #   ld: warning: directory not found for option '-F/Users/qt/work/install/lib'
+    mkdir -p /Users/qt/work/install/lib
+    cp -av /usr/local/opt/qt/5.9.9/clang_64/lib/* /Users/qt/work/install/lib
+
     make -f "${build_path}/Makefile" -C "${build_path}" -j "${job_count}"
 
     echo ">>> Legacy Build complete - listing app directory.... "
