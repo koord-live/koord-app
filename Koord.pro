@@ -117,6 +117,8 @@ win32 {
 } else:macx {
     defined(MAC_LEGACY) {
         QT += webengine positioning
+    } else {
+        QT += webenginequick
     }
 
     MACOSX_BUNDLE_ICON.files = mac/mac-mainicon.icns
