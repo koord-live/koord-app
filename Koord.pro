@@ -115,7 +115,8 @@ win32 {
         windows/ASIOSDK2/host/pc
 
 } else:macx {
-    defined(MAC_LEGACY) {
+    # different modules need loading for QT5/maclegacy
+    equals(QT_VERSION, "5.9.9") {
         QT += webengine positioning
     } else {
         QT += webenginequick
