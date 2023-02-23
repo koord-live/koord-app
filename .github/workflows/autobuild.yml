@@ -219,7 +219,7 @@ jobs:
           # #   is_main_build_target:   true
           # #   xcode_version:          13.2.1
 
-          - config_name:            macOS 10.10+ Legacy - dmg
+          - config_name:            macOS 10.12+ Legacy - dmg
             target_os:              macos
             building_on_os:         macos-10.15
             base_command:           QT_VERSION=5.13.2 SIGN_IF_POSSIBLE=1 TARGET_ARCHS="x86_64" ./.github/autobuild/mac.sh
