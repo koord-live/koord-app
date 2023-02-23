@@ -1,6 +1,6 @@
-import QtQuick 2.15
-import QtWebView 1.1
-import QtQuick.Controls 2.15
+import QtQuick
+import QtWebView
+import QtQuick.Controls
 
 
 Rectangle {
