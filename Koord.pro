@@ -61,12 +61,8 @@ DEFINES += QT_NO_DEPRECATED_WARNINGS
 
 win32 {
     # Windows desktop does not have native web runtime, need to package
-    equals(QT_VERSION, "5.9.9") {
-        QT += quick webengine multimedia
-    } else {
-        QT += quick webenginequick multimedia
-    }
-
+    QT += quick webenginequick multimedia
+    
     DEFINES -= UNICODE # fixes issue with ASIO SDK (asiolist.cpp is not unicode compatible)
     DEFINES += NOMINMAX # solves a compiler error with std::min/max
     DEFINES += _WINSOCKAPI_ # try fix winsock / winsock2 redefinition problems
@@ -117,7 +113,7 @@ win32 {
 } else:macx {
     # different modules need loading for QT5/maclegacy
     equals(QT_VERSION, "5.9.9") {
-        QT += webengine positioning
+        QT += webengine positioning quick qml
     } else {
         QT += webenginequick
     }
