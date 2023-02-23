@@ -36,8 +36,9 @@ setup() {
         if [ "${TARGET_ARCHS}" == "x86_64" ]; then
             #### LEGACY MODE 
             # WEBENGINE_MODS="qtwebengine qtwebchannel qtpositioning"
+            # before Qt6 qtpositioning was part of qtlocation
             python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
-                --archives qtbase qtdeclarative qtsvg qttools qtwebchannel qtwebview \
+                --archives qtbase qtdeclarative qtlocation qtsvg qttools qtwebchannel qtwebview \
                 --modules qtwebengine        
         else
             #### NORMAL MODE (Universal, AppStore)
