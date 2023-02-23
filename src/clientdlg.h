@@ -111,7 +111,7 @@ public:
     void UpdateSettingsDisplay();
     void UpdateSoundDeviceChannelSelectionFrame();
     void SetEnableFeedbackDetection ( bool enable );
-#if defined( Q_OS_WINDOWS )
+#if defined( Q_OS_WIN )
     void SetupBuiltinASIOBox();
 #endif
     // for QML
@@ -230,7 +230,7 @@ protected:
 //    bool         bEnableIPv6;
 
 // for Windows builtin kdasio stuff
-#if defined( Q_OS_WINDOWS )
+#if defined( Q_OS_WIN )
     QAudioDevice m_inputDeviceInfo;
     QAudioDevice m_outputDeviceInfo;
     QAudioDevice::Mode input_mode = QAudioDevice::Input;
@@ -437,7 +437,7 @@ public slots:
     void OnConnectFromURLHandler(const QString& connect_url);
 //    void setDefaultSingleUserMode(const QString& value);
 
-#if defined( Q_OS_WINDOWS )
+#if defined( Q_OS_WIN )
     // for built-in ASIO
     void kdasio_setup();
     void setKdasio_builtinDefaults();

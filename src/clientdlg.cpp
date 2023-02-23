@@ -85,7 +85,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     qNam = new QNetworkAccessManager;
     qNam->setRedirectPolicy(QNetworkRequest::ManualRedirectPolicy);
 
-#if defined( Q_OS_WINDOWS )
+#if defined( Q_OS_WIN )
     kdasio_setup();
 #endif
 
@@ -841,7 +841,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     SndCrdBufferDelayButtonGroup.addButton ( rbtBufferDelaySafe );
 
     UpdateSoundCardFrame();
-#if defined ( Q_OS_WINDOWS )
+#if defined ( Q_OS_WIN )
     SetupBuiltinASIOBox();
 #endif
 
@@ -1890,7 +1890,7 @@ void CClientDlg::OnSoundDeviceChanged ( QString strError )
 
     // update the settings
     UpdateSoundDeviceChannelSelectionFrame();
-#if defined( Q_OS_WINDOWS )
+#if defined( Q_OS_WIN )
     SetupBuiltinASIOBox();
 #endif
 }
@@ -2225,7 +2225,7 @@ void CClientDlg::OnCheckForUpdate()
                                             if (dl_url.endsWith("legacy.dmg")) new_download_url = dl_url;
 #elif defined( Q_OS_MACOS ) && !defined ( MAC_LEGACY )
                                             if (dl_url.endsWith(".dmg") && !dl_url.contains("legacy")) new_download_url = dl_url;
-#elif defined ( Q_OS_WINDOWS )
+#elif defined ( Q_OS_WIN )
                                             if (dl_url.endsWith(".exe")) new_download_url = dl_url;
 #elif defined ( Q_OS_LINUX )
                                             if (dl_url.endsWith(".AppImage")) new_download_url = dl_url;
@@ -2610,7 +2610,7 @@ void CClientDlg::UpdateSoundDeviceChannelSelectionFrame()
 #endif
 }
 
-#if defined( Q_OS_WINDOWS )
+#if defined( Q_OS_WIN )
 void CClientDlg::SetupBuiltinASIOBox() {
 
     if ( cbxSoundcard->currentText() == "Built-in" ) {
@@ -2622,7 +2622,7 @@ void CClientDlg::SetupBuiltinASIOBox() {
         grbSoundCrdBufDelay->hide();
 
     // multimedia stuff is only on Windows for now
-#if defined( Q_OS_WINDOWS )
+#if defined( Q_OS_WIN )
         // Simple test for USB devices - will typically contain string "usb" somewhere in device name
         if ( !inputDeviceName.contains("usb", Qt::CaseInsensitive) || !outputDeviceName.contains("usb", Qt::CaseInsensitive)) {
             qInfo() << "in_dev: " << inputDeviceName << " , out_dev: " << outputDeviceName;
@@ -2675,7 +2675,7 @@ void CClientDlg::OnSoundcardActivated ( int iSndDevIdx )
     pClient->SetSndCrdDev ( cbxSoundcard->itemText ( iSndDevIdx ) );
 
     UpdateSoundDeviceChannelSelectionFrame();
-#if defined( Q_OS_WINDOWS )
+#if defined( Q_OS_WIN )
     SetupBuiltinASIOBox();
 #endif
     UpdateDisplay();
@@ -3763,7 +3763,7 @@ void CClientDlg::UpdateDirectoryServerComboBox()
     }
 }
 
-#if defined ( Q_OS_WINDOWS )
+#if defined ( Q_OS_WIN )
 // for kdasio_builtin stuff
 void CClientDlg::kdasio_setup() {
     // init mmcpl proc
