@@ -38,7 +38,7 @@ setup() {
             # WEBENGINE_MODS="qtwebengine qtwebchannel qtpositioning"
             # before Qt6 qtpositioning was part of qtlocation
             python3 -m aqt install-qt --outputdir "${QT_DIR}" mac desktop "${QT_VERSION}" \
-                --archives qtbase qtdeclarative qtlocation qtsvg qttools qtwebchannel qtwebview \
+                --archives qtbase qtdeclarative qtlocation qtquickcontrols2 qtsvg qttools qtwebchannel qtwebview \
                 --modules qtwebengine        
         else
             #### NORMAL MODE (Universal, AppStore)
