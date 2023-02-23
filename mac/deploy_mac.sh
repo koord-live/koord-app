@@ -90,9 +90,9 @@ build_app_compile_legacy()
 
     # overcome build warning:
     #   ld: warning: directory not found for option '-F/Users/qt/work/install/lib'
-    echo ">>> Copying /usr/local/opt/qt/5.9.9/clang_64/lib/* to /Users/qt/work/install/lib...."
+    echo ">>> Copying /usr/local/opt/qt/5.13.2/clang_64/lib/* to /Users/qt/work/install/lib...."
     sudo mkdir -p /Users/qt/work/install/lib
-    sudo cp -av /usr/local/opt/qt/5.9.9/clang_64/lib/* /Users/qt/work/install/lib
+    sudo cp -av /usr/local/opt/qt/5.13.2/clang_64/lib/* /Users/qt/work/install/lib
 
     make -f "${build_path}/Makefile" -C "${build_path}" -j "${job_count}"
 
