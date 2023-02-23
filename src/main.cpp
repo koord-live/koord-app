@@ -870,10 +870,14 @@ int main ( int argc, char** argv )
 //    KdApplication* pApp = new KdApplication ( argc, argv );
 //#    else
 
-    // need this before new QApplication created
-    // AND before QPlatformOpenGLContext is created - https://doc.qt.io/qt-6/qtwebview-index.html#prerequisites
+// need this before new QApplication created
+// AND before QPlatformOpenGLContext is created - https://doc.qt.io/qt-6/qtwebview-index.html#prerequisites
 #if !defined(MAC_LEGACY)
     QtWebView::initialize();
+#else
+    // for Mac Legacy and Qt 5.13.2 we have to do webengine initialization BEFORE app object is constructed
+    // eg https://doc.qt.io/archives/qt-5.13/qtwebengine-webengine-minimal-example.html
+    QtWebEngine::initialize();
 #endif
 
     // Make main application object
@@ -903,12 +907,6 @@ int main ( int argc, char** argv )
             &MessageReceiver::receivedMessage
         );
     }
-#endif
-
-    // for Mac Legacy and Qt 5.9.9 we have to do webengine initialization AFTER app object is constructed
-    // eg https://doc.qt.io/archives/qt-5.9/qtwebengine-webengine-minimal-example.html
-#if defined(MAC_LEGACY)
-    QtWebEngine::initialize();
 #endif
 
     if (bUseGUI == true)

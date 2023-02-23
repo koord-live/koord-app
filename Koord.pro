@@ -112,7 +112,7 @@ win32 {
 
 } else:macx {
     # different modules need loading for QT5/maclegacy
-    equals(QT_VERSION, "5.9.9") {
+    equals(QT_VERSION, "5.13.2") {
         QT += webengine positioning quick qml
     } else {
         QT += webenginequick
@@ -126,7 +126,7 @@ win32 {
     QMAKE_TARGET_BUNDLE_PREFIX = live.koord
     # QMAKE_APPLICATION_BUNDLE_NAME. = $$TARGET
 
-    equals(QT_VERSION, "5.9.9") {
+    equals(QT_VERSION, "5.13.2") {
         QMAKE_INFO_PLIST = mac/Info-xcode-legacy.plist
     } else {
         QMAKE_INFO_PLIST = mac/Info-xcode.plist
